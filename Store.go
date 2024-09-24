@@ -386,7 +386,7 @@ func (store *Store) userQuery(options UserQueryOptions) *goqu.SelectDataset {
 	}
 
 	if !options.WithDeleted {
-		q = q.Where(goqu.C(COLUMN_DELETED_AT).Eq(sb.NULL_DATETIME))
+		q = q.Where(goqu.C(COLUMN_DELETED_AT).Gt(carbon.Now(carbon.UTC).ToDateTimeString()))
 	}
 
 	return q

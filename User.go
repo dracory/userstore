@@ -38,7 +38,7 @@ func NewUser() UserInterface {
 		SetMemo("").
 		SetCreatedAt(carbon.Now(carbon.UTC).ToDateTimeString(carbon.UTC)).
 		SetUpdatedAt(carbon.Now(carbon.UTC).ToDateTimeString(carbon.UTC)).
-		SetDeletedAt(sb.NULL_DATETIME).
+		SetDeletedAt(sb.MAX_DATETIME).
 		SetMetas(map[string]string{})
 
 	return o
