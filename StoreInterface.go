@@ -6,8 +6,9 @@ type StoreInterface interface {
 	UserCreate(user UserInterface) error
 	UserDelete(user UserInterface) error
 	UserDeleteByID(id string) error
+	UserFindByEmail(email string) (UserInterface, error)
 	UserFindByID(userID string) (UserInterface, error)
-	UserList(options UserQueryOptions) ([]UserInterface, error)
+	UserList(query UserQueryInterface) ([]UserInterface, error)
 	UserSoftDelete(user UserInterface) error
 	UserSoftDeleteByID(id string) error
 	UserUpdate(user UserInterface) error

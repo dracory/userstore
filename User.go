@@ -11,16 +11,16 @@ import (
 
 // == CLASS ===================================================================
 
-type User struct {
+type user struct {
 	dataobject.DataObject
 }
 
-var _ UserInterface = (*User)(nil)
+var _ UserInterface = (*user)(nil)
 
 // == CONSTRUCTORS ============================================================
 
 func NewUser() UserInterface {
-	o := &User{}
+	o := &user{}
 
 	o.SetID(uid.HumanUid()).
 		SetStatus(USER_STATUS_UNVERIFIED).
@@ -45,7 +45,7 @@ func NewUser() UserInterface {
 }
 
 func NewUserFromExistingData(data map[string]string) UserInterface {
-	o := &User{}
+	o := &user{}
 	o.Hydrate(data)
 	return o
 }
@@ -57,31 +57,31 @@ func UserNoImageUrl() string {
 	//return config.MediaUrl + "/user/default.png"
 }
 
-func (o *User) IsActive() bool {
+func (o *user) IsActive() bool {
 	return o.Status() == USER_STATUS_ACTIVE
 }
 
-func (o *User) IsDeleted() bool {
+func (o *user) IsDeleted() bool {
 	return o.Status() == USER_STATUS_DELETED
 }
 
-func (o *User) IsInactive() bool {
+func (o *user) IsInactive() bool {
 	return o.Status() == USER_STATUS_INACTIVE
 }
 
-func (o *User) IsUnverified() bool {
+func (o *user) IsUnverified() bool {
 	return o.Status() == USER_STATUS_UNVERIFIED
 }
 
-func (o *User) IsAdministrator() bool {
+func (o *user) IsAdministrator() bool {
 	return o.Role() == USER_ROLE_ADMINISTRATOR
 }
 
-func (o *User) IsManager() bool {
+func (o *user) IsManager() bool {
 	return o.Role() == USER_ROLE_MANAGER
 }
 
-func (o *User) IsSuperuser() bool {
+func (o *user) IsSuperuser() bool {
 	return o.Role() == USER_ROLE_SUPERUSER
 }
 
@@ -95,107 +95,107 @@ func (o *User) IsSuperuser() bool {
 //
 // Returns:
 // - bool: true if the user registration is incomplete, false otherwise.
-func (o *User) IsRegistrationCompleted() bool {
+func (o *user) IsRegistrationCompleted() bool {
 	return o.FirstName() != "" && o.LastName() != ""
 }
 
 // == SETTERS AND GETTERS =====================================================
 
-func (o *User) BusinessName() string {
+func (o *user) BusinessName() string {
 	return o.Get("business_name")
 }
 
-func (o *User) SetBusinessName(businessName string) UserInterface {
+func (o *user) SetBusinessName(businessName string) UserInterface {
 	o.Set("business_name", businessName)
 	return o
 }
 
-func (o *User) Country() string {
+func (o *user) Country() string {
 	return o.Get("country")
 }
 
-func (o *User) SetCountry(country string) UserInterface {
+func (o *user) SetCountry(country string) UserInterface {
 	o.Set("country", country)
 	return o
 }
 
-func (o *User) CreatedAt() string {
+func (o *user) CreatedAt() string {
 	return o.Get("created_at")
 }
 
-func (o *User) CreatedAtCarbon() carbon.Carbon {
+func (o *user) CreatedAtCarbon() carbon.Carbon {
 	return carbon.Parse(o.CreatedAt(), carbon.UTC)
 }
 
-func (o *User) SetCreatedAt(createdAt string) UserInterface {
+func (o *user) SetCreatedAt(createdAt string) UserInterface {
 	o.Set("created_at", createdAt)
 	return o
 }
 
-func (o *User) DeletedAt() string {
+func (o *user) DeletedAt() string {
 	return o.Get("deleted_at")
 }
 
-func (o *User) SetDeletedAt(deletedAt string) UserInterface {
+func (o *user) SetDeletedAt(deletedAt string) UserInterface {
 	o.Set("deleted_at", deletedAt)
 	return o
 }
 
-func (o *User) Email() string {
+func (o *user) Email() string {
 	return o.Get("email")
 }
 
-func (o *User) SetEmail(email string) UserInterface {
+func (o *user) SetEmail(email string) UserInterface {
 	o.Set("email", email)
 	return o
 }
 
-func (o *User) FirstName() string {
+func (o *user) FirstName() string {
 	return o.Get("first_name")
 }
 
-func (o *User) SetFirstName(firstName string) UserInterface {
+func (o *user) SetFirstName(firstName string) UserInterface {
 	o.Set("first_name", firstName)
 	return o
 }
 
-func (o *User) ID() string {
+func (o *user) ID() string {
 	return o.Get("id")
 }
 
-func (o *User) SetID(id string) UserInterface {
+func (o *user) SetID(id string) UserInterface {
 	o.Set("id", id)
 	return o
 }
 
-func (o *User) LastName() string {
+func (o *user) LastName() string {
 	return o.Get("last_name")
 }
 
-func (o *User) SetLastName(lastName string) UserInterface {
+func (o *user) SetLastName(lastName string) UserInterface {
 	o.Set("last_name", lastName)
 	return o
 }
 
-func (o *User) Memo() string {
+func (o *user) Memo() string {
 	return o.Get("memo")
 }
 
-func (o *User) SetMemo(memo string) UserInterface {
+func (o *user) SetMemo(memo string) UserInterface {
 	o.Set("memo", memo)
 	return o
 }
 
-func (o *User) MiddleNames() string {
+func (o *user) MiddleNames() string {
 	return o.Get("middle_names")
 }
 
-func (o *User) SetMiddleNames(middleNames string) UserInterface {
+func (o *user) SetMiddleNames(middleNames string) UserInterface {
 	o.Set("middle_names", middleNames)
 	return o
 }
 
-func (o *User) Metas() (map[string]string, error) {
+func (o *user) Metas() (map[string]string, error) {
 	metasStr := o.Get("metas")
 
 	if metasStr == "" {
@@ -210,7 +210,7 @@ func (o *User) Metas() (map[string]string, error) {
 	return maputils.MapStringAnyToMapStringString(metasJson.(map[string]any)), nil
 }
 
-func (o *User) Meta(name string) string {
+func (o *user) Meta(name string) string {
 	metas, err := o.Metas()
 
 	if err != nil {
@@ -224,14 +224,14 @@ func (o *User) Meta(name string) string {
 	return ""
 }
 
-func (o *User) SetMeta(name string, value string) error {
+func (o *user) SetMeta(name string, value string) error {
 	return o.UpsertMetas(map[string]string{name: value})
 	// return config.MetaStore.Set("user", o.ID(), name, value)
 }
 
 // SetMetas stores metas as json string
 // Warning: it overwrites any existing metas
-func (o *User) SetMetas(metas map[string]string) error {
+func (o *user) SetMetas(metas map[string]string) error {
 	mapString, err := utils.ToJSON(metas)
 	if err != nil {
 		return err
@@ -240,7 +240,7 @@ func (o *User) SetMetas(metas map[string]string) error {
 	return nil
 }
 
-func (o *User) UpsertMetas(metas map[string]string) error {
+func (o *user) UpsertMetas(metas map[string]string) error {
 	currentMetas, err := o.Metas()
 
 	if err != nil {
@@ -254,17 +254,17 @@ func (o *User) UpsertMetas(metas map[string]string) error {
 	return o.SetMetas(currentMetas)
 }
 
-func (o *User) Password() string {
+func (o *user) Password() string {
 	return o.Get("password")
 }
 
-func (o *User) PasswordCompare(password string) bool {
+func (o *user) PasswordCompare(password string) bool {
 	hash := o.Get("password")
 	return utils.StrToBcryptHashCompare(password, hash)
 }
 
 // SetPasswordAndHash hashes the password before saving
-func (o *User) SetPasswordAndHash(password string) error {
+func (o *user) SetPasswordAndHash(password string) error {
 	hash, err := utils.StrToBcryptHash(password)
 
 	if err != nil {
@@ -277,25 +277,25 @@ func (o *User) SetPasswordAndHash(password string) error {
 }
 
 // SetPassword sets the password as provided, if you want it hashed use SetPasswordAndHash() method
-func (o *User) SetPassword(password string) UserInterface {
+func (o *user) SetPassword(password string) UserInterface {
 	o.Set("password", password)
 	return o
 }
 
-func (o *User) Phone() string {
+func (o *user) Phone() string {
 	return o.Get("phone")
 }
 
-func (o *User) SetPhone(phone string) UserInterface {
+func (o *user) SetPhone(phone string) UserInterface {
 	o.Set("phone", phone)
 	return o
 }
 
-func (o *User) ProfileImageUrl() string {
+func (o *user) ProfileImageUrl() string {
 	return o.Get("profile_image_url")
 }
 
-func (o *User) ProfileImageOrDefaultUrl() string {
+func (o *user) ProfileImageOrDefaultUrl() string {
 	defaultURL := UserNoImageUrl()
 
 	if o.ProfileImageUrl() != "" {
@@ -305,47 +305,47 @@ func (o *User) ProfileImageOrDefaultUrl() string {
 	return defaultURL
 }
 
-func (o *User) SetProfileImageUrl(imageUrl string) UserInterface {
+func (o *user) SetProfileImageUrl(imageUrl string) UserInterface {
 	o.Set("profile_image_url", imageUrl)
 	return o
 }
 
-func (o *User) Role() string {
+func (o *user) Role() string {
 	return o.Get("role")
 }
 
-func (o *User) SetRole(role string) UserInterface {
+func (o *user) SetRole(role string) UserInterface {
 	o.Set("role", role)
 	return o
 }
 
-func (o *User) Status() string {
+func (o *user) Status() string {
 	return o.Get("status")
 }
 
-func (o *User) SetStatus(status string) UserInterface {
+func (o *user) SetStatus(status string) UserInterface {
 	o.Set("status", status)
 	return o
 }
 
-func (o *User) Timezone() string {
+func (o *user) Timezone() string {
 	return o.Get("timezone")
 }
 
-func (o *User) SetTimezone(timezone string) UserInterface {
+func (o *user) SetTimezone(timezone string) UserInterface {
 	o.Set("timezone", timezone)
 	return o
 }
 
-func (o *User) UpdatedAt() string {
+func (o *user) UpdatedAt() string {
 	return o.Get("updated_at")
 }
 
-func (o *User) UpdatedAtCarbon() carbon.Carbon {
+func (o *user) UpdatedAtCarbon() carbon.Carbon {
 	return carbon.NewCarbon().Parse(o.Get("updated_at"), carbon.UTC)
 }
 
-func (o *User) SetUpdatedAt(updatedAt string) UserInterface {
+func (o *user) SetUpdatedAt(updatedAt string) UserInterface {
 	o.Set("updated_at", updatedAt)
 	return o
 }
