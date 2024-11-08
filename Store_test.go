@@ -7,11 +7,19 @@ import (
 	"testing"
 
 	"github.com/gouniverse/sb"
+	"github.com/gouniverse/utils"
 	_ "modernc.org/sqlite"
 )
 
 func initDB(filepath string) *sql.DB {
-	os.Remove(filepath) // remove database
+	if filepath != ":memory:" && utils.FileExists(filepath) {
+		err := os.Remove(filepath) // remove database
+
+		if err != nil {
+			panic(err)
+		}
+	}
+
 	dsn := filepath + "?parseTime=true"
 	db, err := sql.Open("sqlite", dsn)
 
@@ -77,11 +85,15 @@ func TestStoreUserFindByEmail(t *testing.T) {
 		SetPassword("").
 		SetProfileImageUrl("http://test.com/profile.png")
 
-	user.SetMetas(map[string]string{
+	err = user.SetMetas(map[string]string{
 		"education_1": "Education 1",
 		"education_2": "Education 2",
 		"education_3": "Education 3",
 	})
+
+	if err != nil {
+		t.Fatal("unexpected error:", err)
+	}
 
 	err = store.UserCreate(user)
 	if err != nil {
@@ -169,11 +181,15 @@ func TestStoreUserFindByID(t *testing.T) {
 		SetPassword("").
 		SetProfileImageUrl("http://test.com/profile.png")
 
-	user.SetMetas(map[string]string{
+	err = user.SetMetas(map[string]string{
 		"education_1": "Education 1",
 		"education_2": "Education 2",
 		"education_3": "Education 3",
 	})
+
+	if err != nil {
+		t.Fatal("unexpected error:", err)
+	}
 
 	err = store.UserCreate(user)
 	if err != nil {
