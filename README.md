@@ -24,9 +24,9 @@ go get github.com/gouniverse/userstore
 ## Setup
 
 ```golang
-userStore, err = taskstore.NewStore(taskstore.NewStoreOptions{
+userStore, err = userstore.NewStore(userstore.NewStoreOptions{
 	DB:                 databaseInstance,
-    UserTableName:      "user",
+    	UserTableName:      "user",
 	AutomigrateEnabled: true,
 	DebugEnabled:       false,
 })
