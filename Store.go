@@ -15,7 +15,7 @@ import (
 
 // == TYPE ====================================================================
 
-type Store struct {
+type store struct {
 	userTableName      string
 	db                 *sql.DB
 	dbDriverName       string
@@ -25,12 +25,12 @@ type Store struct {
 
 // == INTERFACE ===============================================================
 
-var _ StoreInterface = (*Store)(nil) // verify it extends the interface
+var _ StoreInterface = (*store)(nil) // verify it extends the interface
 
 // PUBLIC METHODS ============================================================
 
 // AutoMigrate auto migrate
-func (store *Store) AutoMigrate() error {
+func (store *store) AutoMigrate() error {
 	sql := store.sqlUserTableCreate()
 
 	if sql == "" {
@@ -51,13 +51,14 @@ func (store *Store) AutoMigrate() error {
 }
 
 // EnableDebug - enables the debug option
-func (st *Store) EnableDebug(debug bool) {
+func (st *store) EnableDebug(debug bool) {
 	st.debugEnabled = debug
 }
 
-func (store *Store) UserCount(options UserQueryOptions) (int64, error) {
-	options.CountOnly = true
-	q := store.userQuery(options)
+func (store *store) UserCount(options UserQueryInterface) (int64, error) {
+	options.SetCountOnly(true)
+
+	q := store.userSelectQuery(options)
 
 	sqlStr, params, errSql := q.Prepared(true).
 		Limit(1).
@@ -94,7 +95,7 @@ func (store *Store) UserCount(options UserQueryOptions) (int64, error) {
 	return i, nil
 }
 
-func (store *Store) UserCreate(user UserInterface) error {
+func (store *store) UserCreate(user UserInterface) error {
 	user.SetCreatedAt(carbon.Now(carbon.UTC).ToDateTimeString(carbon.UTC))
 	user.SetUpdatedAt(carbon.Now(carbon.UTC).ToDateTimeString(carbon.UTC))
 
@@ -129,7 +130,7 @@ func (store *Store) UserCreate(user UserInterface) error {
 	return nil
 }
 
-func (store *Store) UserDelete(user UserInterface) error {
+func (store *store) UserDelete(user UserInterface) error {
 	if user == nil {
 		return errors.New("user is nil")
 	}
@@ -137,7 +138,7 @@ func (store *Store) UserDelete(user UserInterface) error {
 	return store.UserDeleteByID(user.ID())
 }
 
-func (store *Store) UserDeleteByID(id string) error {
+func (store *store) UserDeleteByID(id string) error {
 	if id == "" {
 		return errors.New("user id is empty")
 	}
@@ -161,15 +162,25 @@ func (store *Store) UserDeleteByID(id string) error {
 	return err
 }
 
-func (store *Store) UserFindByEmail(email string) (UserInterface, error) {
+func (store *store) UserFindByEmail(email string) (user UserInterface, err error) {
 	if email == "" {
 		return nil, errors.New("user email is empty")
 	}
 
-	list, err := store.UserList(UserQueryOptions{
-		Email: email,
-		Limit: 1,
-	})
+	query := NewUserQuery()
+	query, err = query.SetEmail(email)
+
+	if err != nil {
+		return nil, err
+	}
+
+	query, err = query.SetLimit(1)
+
+	if err != nil {
+		return nil, err
+	}
+
+	list, err := store.UserList(query)
 
 	if err != nil {
 		return nil, err
@@ -183,7 +194,7 @@ func (store *Store) UserFindByEmail(email string) (UserInterface, error) {
 }
 
 // UserFindByEmailOrCreate - finds by email or creates a user (with active status)
-func (store *Store) UserFindByEmailOrCreate(email string, createStatus string) (UserInterface, error) {
+func (store *store) UserFindByEmailOrCreate(email string, createStatus string) (UserInterface, error) {
 	existingUser, errUser := store.UserFindByEmail(email)
 
 	if errUser != nil {
@@ -207,15 +218,26 @@ func (store *Store) UserFindByEmailOrCreate(email string, createStatus string) (
 	return newUser, nil
 }
 
-func (store *Store) UserFindByID(id string) (UserInterface, error) {
+func (store *store) UserFindByID(id string) (user UserInterface, err error) {
 	if id == "" {
 		return nil, errors.New("user id is empty")
 	}
 
-	list, err := store.UserList(UserQueryOptions{
-		ID:    id,
-		Limit: 1,
-	})
+	query := NewUserQuery()
+
+	query, err = query.SetID(id)
+
+	if err != nil {
+		return nil, err
+	}
+
+	query, err = query.SetLimit(1)
+
+	if err != nil {
+		return nil, err
+	}
+
+	list, err := store.UserList(query)
 
 	if err != nil {
 		return nil, err
@@ -228,8 +250,8 @@ func (store *Store) UserFindByID(id string) (UserInterface, error) {
 	return nil, nil
 }
 
-func (store *Store) UserList(options UserQueryOptions) ([]UserInterface, error) {
-	q := store.userQuery(options)
+func (store *store) UserList(query UserQueryInterface) ([]UserInterface, error) {
+	q := store.userSelectQuery(query)
 
 	sqlStr, _, errSql := q.Select().ToSQL()
 
@@ -267,7 +289,7 @@ func (store *Store) UserList(options UserQueryOptions) ([]UserInterface, error) 
 	return list, nil
 }
 
-func (store *Store) UserSoftDelete(user UserInterface) error {
+func (store *store) UserSoftDelete(user UserInterface) error {
 	if user == nil {
 		return errors.New("user is nil")
 	}
@@ -277,7 +299,7 @@ func (store *Store) UserSoftDelete(user UserInterface) error {
 	return store.UserUpdate(user)
 }
 
-func (store *Store) UserSoftDeleteByID(id string) error {
+func (store *store) UserSoftDeleteByID(id string) error {
 	user, err := store.UserFindByID(id)
 
 	if err != nil {
@@ -287,7 +309,7 @@ func (store *Store) UserSoftDeleteByID(id string) error {
 	return store.UserSoftDelete(user)
 }
 
-func (store *Store) UserUpdate(user UserInterface) error {
+func (store *store) UserUpdate(user UserInterface) error {
 	if user == nil {
 		return errors.New("user is nil")
 	}
@@ -328,98 +350,69 @@ func (store *Store) UserUpdate(user UserInterface) error {
 	return err
 }
 
-func (store *Store) userQuery(options UserQueryOptions) *goqu.SelectDataset {
+func (store *store) userSelectQuery(options UserQueryInterface) *goqu.SelectDataset {
 	q := goqu.Dialect(store.dbDriverName).From(store.userTableName)
 
-	if options.ID != "" {
-		q = q.Where(goqu.C(COLUMN_ID).Eq(options.ID))
+	if options.ID() != "" {
+		q = q.Where(goqu.C(COLUMN_ID).Eq(options.ID()))
 	}
 
-	if len(options.IDIn) > 0 {
-		q = q.Where(goqu.C(COLUMN_ID).In(options.IDIn))
+	if len(options.IDIn()) > 0 {
+		q = q.Where(goqu.C(COLUMN_ID).In(options.IDIn()))
 	}
 
-	if options.Status != "" {
-		q = q.Where(goqu.C(COLUMN_STATUS).Eq(options.Status))
+	if options.Status() != "" {
+		q = q.Where(goqu.C(COLUMN_STATUS).Eq(options.Status()))
 	}
 
-	if len(options.StatusIn) > 0 {
-		q = q.Where(goqu.C(COLUMN_STATUS).In(options.StatusIn))
+	if len(options.StatusIn()) > 0 {
+		q = q.Where(goqu.C(COLUMN_STATUS).In(options.StatusIn()))
 	}
 
-	if options.Email != "" {
-		q = q.Where(goqu.C(COLUMN_EMAIL).Eq(options.Email))
+	if options.Email() != "" {
+		q = q.Where(goqu.C(COLUMN_EMAIL).Eq(options.Email()))
 	}
 
-	if options.CreatedAtGte != "" && options.CreatedAtLte != "" {
+	if options.CreatedAtGte() != "" && options.CreatedAtLte() != "" {
 		q = q.Where(
-			goqu.C(COLUMN_CREATED_AT).Gte(options.CreatedAtGte),
-			goqu.C(COLUMN_CREATED_AT).Lte(options.CreatedAtLte),
+			goqu.C(COLUMN_CREATED_AT).Gte(options.CreatedAtGte()),
+			goqu.C(COLUMN_CREATED_AT).Lte(options.CreatedAtLte()),
 		)
-	} else if options.CreatedAtGte != "" {
-		q = q.Where(goqu.C(COLUMN_CREATED_AT).Gte(options.CreatedAtGte))
-	} else if options.CreatedAtLte != "" {
-		q = q.Where(goqu.C(COLUMN_CREATED_AT).Lte(options.CreatedAtLte))
+	} else if options.CreatedAtGte() != "" {
+		q = q.Where(goqu.C(COLUMN_CREATED_AT).Gte(options.CreatedAtGte()))
+	} else if options.CreatedAtLte() != "" {
+		q = q.Where(goqu.C(COLUMN_CREATED_AT).Lte(options.CreatedAtLte()))
 	}
 
-	if !options.CountOnly {
-		if options.Limit > 0 {
-			q = q.Limit(uint(options.Limit))
+	if !options.CountOnly() {
+		if options.Limit() > 0 {
+			q = q.Limit(uint(options.Limit()))
 		}
 
-		if options.Offset > 0 {
-			q = q.Offset(uint(options.Offset))
+		if options.Offset() > 0 {
+			q = q.Offset(uint(options.Offset()))
 		}
 	}
 
 	sortOrder := sb.DESC
-	if options.SortOrder != "" {
-		sortOrder = options.SortOrder
+	if options.SortOrder() != "" {
+		sortOrder = options.SortOrder()
 	}
 
-	if options.OrderBy != "" {
+	if options.OrderBy() != "" {
 		if strings.EqualFold(sortOrder, sb.ASC) {
-			q = q.Order(goqu.I(options.OrderBy).Asc())
+			q = q.Order(goqu.I(options.OrderBy()).Asc())
 		} else {
-			q = q.Order(goqu.I(options.OrderBy).Desc())
+			q = q.Order(goqu.I(options.OrderBy()).Desc())
 		}
 	}
 
-	if options.WithDeleted {
-		return q
+	if options.WithSoftDeleted() {
+		return q // soft deleted users requested specifically
 	}
 
 	softDeleted := goqu.C(COLUMN_DELETED_AT).
 		Gt(carbon.Now(carbon.UTC).ToDateTimeString())
 
 	return q.Where(softDeleted)
-}
-
-type UserQueryOptions struct {
-	ID           string
-	IDIn         []string
-	Status       string
-	StatusIn     []string
-	Email        string
-	CreatedAtGte string
-	CreatedAtLte string
-	Offset       int
-	Limit        int
-	SortOrder    string
-	OrderBy      string
-	CountOnly    bool
-	WithDeleted  bool
-}
-
-type TimezoneQueryOptions struct {
-	ID        string
-	Status    string
-	StatusIn  []string
-	UserCode  string
-	Timezone  string
-	Offset    int
-	Limit     int
-	SortOrder string
-	SortBy    string
-	CountOnly bool
 }

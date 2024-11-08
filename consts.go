@@ -1,5 +1,9 @@
 package userstore
 
+const ERROR_EMPTY_ARRAY = "array cannot be empty"
+const ERROR_EMPTY_STRING = "string cannot be empty"
+const ERROR_NEGATIVE_NUMBER = "number cannot be negative"
+
 const USER_ROLE_SUPERUSER = "superuser"
 const USER_ROLE_ADMINISTRATOR = "administrator"
 const USER_ROLE_MANAGER = "manager"

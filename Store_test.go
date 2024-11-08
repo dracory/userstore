@@ -290,12 +290,21 @@ func TestStoreUserSoftDelete(t *testing.T) {
 	if userFound != nil {
 		t.Fatal("User MUST be nil")
 	}
+	query := NewUserQuery().SetWithSoftDeleted(true)
 
-	userFindWithDeleted, err := store.UserList(UserQueryOptions{
-		ID:          user.ID(),
-		Limit:       1,
-		WithDeleted: true,
-	})
+	query, err = query.SetID(user.ID())
+
+	if err != nil {
+		t.Fatal("unexpected error:", err)
+	}
+
+	query, err = query.SetLimit(1)
+
+	if err != nil {
+		t.Fatal("unexpected error:", err)
+	}
+
+	userFindWithDeleted, err := store.UserList(query)
 
 	if err != nil {
 		t.Fatal("unexpected error:", err)
