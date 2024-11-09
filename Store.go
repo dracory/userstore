@@ -294,7 +294,7 @@ func (store *store) UserSoftDelete(user UserInterface) error {
 		return errors.New("user is nil")
 	}
 
-	user.SetDeletedAt(carbon.Now(carbon.UTC).ToDateTimeString(carbon.UTC))
+	user.SetSoftDeletedAt(carbon.Now(carbon.UTC).ToDateTimeString(carbon.UTC))
 
 	return store.UserUpdate(user)
 }
@@ -411,7 +411,7 @@ func (store *store) userSelectQuery(options UserQueryInterface) *goqu.SelectData
 		return q // soft deleted users requested specifically
 	}
 
-	softDeleted := goqu.C(COLUMN_DELETED_AT).
+	softDeleted := goqu.C(COLUMN_SOFT_DELETED_AT).
 		Gt(carbon.Now(carbon.UTC).ToDateTimeString())
 
 	return q.Where(softDeleted)

@@ -38,7 +38,7 @@ func NewUser() UserInterface {
 		SetMemo("").
 		SetCreatedAt(carbon.Now(carbon.UTC).ToDateTimeString(carbon.UTC)).
 		SetUpdatedAt(carbon.Now(carbon.UTC).ToDateTimeString(carbon.UTC)).
-		SetDeletedAt(sb.MAX_DATETIME)
+		SetSoftDeletedAt(sb.MAX_DATETIME)
 
 	err := o.SetMetas(map[string]string{})
 
@@ -137,71 +137,75 @@ func (o *user) SetCreatedAt(createdAt string) UserInterface {
 	return o
 }
 
-func (o *user) DeletedAt() string {
-	return o.Get("deleted_at")
+func (o *user) SoftDeletedAt() string {
+	return o.Get(COLUMN_SOFT_DELETED_AT)
 }
 
-func (o *user) SetDeletedAt(deletedAt string) UserInterface {
-	o.Set("deleted_at", deletedAt)
+func (o *user) SoftDeletedAtCarbon() carbon.Carbon {
+	return carbon.NewCarbon().Parse(o.SoftDeletedAt(), carbon.UTC)
+}
+
+func (o *user) SetSoftDeletedAt(deletedAt string) UserInterface {
+	o.Set(COLUMN_SOFT_DELETED_AT, deletedAt)
 	return o
 }
 
 func (o *user) Email() string {
-	return o.Get("email")
+	return o.Get(COLUMN_EMAIL)
 }
 
 func (o *user) SetEmail(email string) UserInterface {
-	o.Set("email", email)
+	o.Set(COLUMN_EMAIL, email)
 	return o
 }
 
 func (o *user) FirstName() string {
-	return o.Get("first_name")
+	return o.Get(COLUMN_FIRST_NAME)
 }
 
 func (o *user) SetFirstName(firstName string) UserInterface {
-	o.Set("first_name", firstName)
+	o.Set(COLUMN_FIRST_NAME, firstName)
 	return o
 }
 
 func (o *user) ID() string {
-	return o.Get("id")
+	return o.Get(COLUMN_ID)
 }
 
 func (o *user) SetID(id string) UserInterface {
-	o.Set("id", id)
+	o.Set(COLUMN_ID, id)
 	return o
 }
 
 func (o *user) LastName() string {
-	return o.Get("last_name")
+	return o.Get(COLUMN_LAST_NAME)
 }
 
 func (o *user) SetLastName(lastName string) UserInterface {
-	o.Set("last_name", lastName)
+	o.Set(COLUMN_LAST_NAME, lastName)
 	return o
 }
 
 func (o *user) Memo() string {
-	return o.Get("memo")
+	return o.Get(COLUMN_MEMO)
 }
 
 func (o *user) SetMemo(memo string) UserInterface {
-	o.Set("memo", memo)
+	o.Set(COLUMN_MEMO, memo)
 	return o
 }
 
 func (o *user) MiddleNames() string {
-	return o.Get("middle_names")
+	return o.Get(COLUMN_MIDDLE_NAMES)
 }
 
 func (o *user) SetMiddleNames(middleNames string) UserInterface {
-	o.Set("middle_names", middleNames)
+	o.Set(COLUMN_MIDDLE_NAMES, middleNames)
 	return o
 }
 
 func (o *user) Metas() (map[string]string, error) {
-	metasStr := o.Get("metas")
+	metasStr := o.Get(COLUMN_METAS)
 
 	if metasStr == "" {
 		metasStr = "{}"
@@ -231,7 +235,6 @@ func (o *user) Meta(name string) string {
 
 func (o *user) SetMeta(name string, value string) error {
 	return o.UpsertMetas(map[string]string{name: value})
-	// return config.MetaStore.Set("user", o.ID(), name, value)
 }
 
 // SetMetas stores metas as json string
@@ -241,7 +244,7 @@ func (o *user) SetMetas(metas map[string]string) error {
 	if err != nil {
 		return err
 	}
-	o.Set("metas", mapString)
+	o.Set(COLUMN_METAS, mapString)
 	return nil
 }
 
@@ -260,11 +263,11 @@ func (o *user) UpsertMetas(metas map[string]string) error {
 }
 
 func (o *user) Password() string {
-	return o.Get("password")
+	return o.Get(COLUMN_PASSWORD)
 }
 
 func (o *user) PasswordCompare(password string) bool {
-	hash := o.Get("password")
+	hash := o.Get(COLUMN_PASSWORD)
 	return utils.StrToBcryptHashCompare(password, hash)
 }
 
@@ -283,21 +286,21 @@ func (o *user) SetPasswordAndHash(password string) error {
 
 // SetPassword sets the password as provided, if you want it hashed use SetPasswordAndHash() method
 func (o *user) SetPassword(password string) UserInterface {
-	o.Set("password", password)
+	o.Set(COLUMN_PASSWORD, password)
 	return o
 }
 
 func (o *user) Phone() string {
-	return o.Get("phone")
+	return o.Get(COLUMN_PHONE)
 }
 
 func (o *user) SetPhone(phone string) UserInterface {
-	o.Set("phone", phone)
+	o.Set(COLUMN_PHONE, phone)
 	return o
 }
 
 func (o *user) ProfileImageUrl() string {
-	return o.Get("profile_image_url")
+	return o.Get(COLUMN_PROFILE_IMAGE_URL)
 }
 
 func (o *user) ProfileImageOrDefaultUrl() string {
@@ -311,43 +314,43 @@ func (o *user) ProfileImageOrDefaultUrl() string {
 }
 
 func (o *user) SetProfileImageUrl(imageUrl string) UserInterface {
-	o.Set("profile_image_url", imageUrl)
+	o.Set(COLUMN_PROFILE_IMAGE_URL, imageUrl)
 	return o
 }
 
 func (o *user) Role() string {
-	return o.Get("role")
+	return o.Get(COLUMN_ROLE)
 }
 
 func (o *user) SetRole(role string) UserInterface {
-	o.Set("role", role)
+	o.Set(COLUMN_ROLE, role)
 	return o
 }
 
 func (o *user) Status() string {
-	return o.Get("status")
+	return o.Get(COLUMN_STATUS)
 }
 
 func (o *user) SetStatus(status string) UserInterface {
-	o.Set("status", status)
+	o.Set(COLUMN_STATUS, status)
 	return o
 }
 
 func (o *user) Timezone() string {
-	return o.Get("timezone")
+	return o.Get(COLUMN_TIMEZONE)
 }
 
 func (o *user) SetTimezone(timezone string) UserInterface {
-	o.Set("timezone", timezone)
+	o.Set(COLUMN_TIMEZONE, timezone)
 	return o
 }
 
 func (o *user) UpdatedAt() string {
-	return o.Get("updated_at")
+	return o.Get(COLUMN_UPDATED_AT)
 }
 
 func (o *user) UpdatedAtCarbon() carbon.Carbon {
-	return carbon.NewCarbon().Parse(o.Get("updated_at"), carbon.UTC)
+	return carbon.NewCarbon().Parse(o.Get(COLUMN_UPDATED_AT), carbon.UTC)
 }
 
 func (o *user) SetUpdatedAt(updatedAt string) UserInterface {

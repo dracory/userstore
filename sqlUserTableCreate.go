@@ -9,89 +9,89 @@ func (st *store) sqlUserTableCreate() string {
 	sql := sb.NewBuilder(sb.DatabaseDriverName(st.db)).
 		Table(st.userTableName).
 		Column(sb.Column{
-			Name:       "id",
+			Name:       COLUMN_ID,
 			Type:       sb.COLUMN_TYPE_STRING,
 			PrimaryKey: true,
 			Length:     40,
 		}).
 		Column(sb.Column{
-			Name:   "status",
+			Name:   COLUMN_STATUS,
 			Type:   sb.COLUMN_TYPE_STRING,
 			Length: 40,
 		}).
 		Column(sb.Column{
-			Name:   "first_name",
+			Name:   COLUMN_FIRST_NAME,
 			Type:   sb.COLUMN_TYPE_STRING,
 			Length: 50,
 		}).
 		Column(sb.Column{
-			Name:   "middle_names",
+			Name:   COLUMN_MIDDLE_NAMES,
 			Type:   sb.COLUMN_TYPE_STRING,
 			Length: 50,
 		}).
 		Column(sb.Column{
-			Name:   "last_name",
+			Name:   COLUMN_LAST_NAME,
 			Type:   sb.COLUMN_TYPE_STRING,
 			Length: 50,
 		}).
 		Column(sb.Column{
-			Name:   "business_name",
+			Name:   COLUMN_BUSINESS_NAME,
 			Type:   sb.COLUMN_TYPE_STRING,
 			Length: 100,
 		}).
 		Column(sb.Column{
-			Name:   "phone",
+			Name:   COLUMN_PHONE,
 			Type:   sb.COLUMN_TYPE_STRING,
 			Length: 20,
 		}).
 		Column(sb.Column{
-			Name:   "email",
+			Name:   COLUMN_EMAIL,
 			Type:   sb.COLUMN_TYPE_STRING,
 			Length: 100,
 		}).
 		Column(sb.Column{
-			Name:   "password",
+			Name:   COLUMN_PASSWORD,
 			Type:   sb.COLUMN_TYPE_STRING,
 			Length: 255,
 		}).
 		Column(sb.Column{
-			Name:   "role",
+			Name:   COLUMN_ROLE,
 			Type:   sb.COLUMN_TYPE_STRING,
 			Length: 50,
 		}).
 		Column(sb.Column{
-			Name:   "country",
+			Name:   COLUMN_COUNTRY,
 			Type:   sb.COLUMN_TYPE_STRING,
 			Length: 2,
 		}).
 		Column(sb.Column{
-			Name:   "timezone",
+			Name:   COLUMN_TIMEZONE,
 			Type:   sb.COLUMN_TYPE_STRING,
 			Length: 40,
 		}).
 		Column(sb.Column{
-			Name:   "profile_image_url",
+			Name:   COLUMN_PROFILE_IMAGE_URL,
 			Type:   sb.COLUMN_TYPE_STRING,
 			Length: 255,
 		}).
 		Column(sb.Column{
-			Name: "metas",
+			Name: COLUMN_METAS,
 			Type: sb.COLUMN_TYPE_TEXT,
 		}).
 		Column(sb.Column{
-			Name: "memo",
+			Name: COLUMN_MEMO,
 			Type: sb.COLUMN_TYPE_TEXT,
 		}).
 		Column(sb.Column{
-			Name: "created_at",
+			Name: COLUMN_CREATED_AT,
 			Type: sb.COLUMN_TYPE_DATETIME,
 		}).
 		Column(sb.Column{
-			Name: "updated_at",
+			Name: COLUMN_UPDATED_AT,
 			Type: sb.COLUMN_TYPE_DATETIME,
 		}).
 		Column(sb.Column{
-			Name: "deleted_at",
+			Name: COLUMN_SOFT_DELETED_AT,
 			Type: sb.COLUMN_TYPE_DATETIME,
 		}).
 		CreateIfNotExists()

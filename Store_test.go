@@ -293,7 +293,7 @@ func TestStoreUserSoftDelete(t *testing.T) {
 		t.Fatal("unexpected error:", err)
 	}
 
-	if user.DeletedAt() != sb.MAX_DATETIME {
+	if user.SoftDeletedAt() != sb.MAX_DATETIME {
 		t.Fatal("User MUST NOT be soft deleted")
 	}
 
@@ -330,8 +330,8 @@ func TestStoreUserSoftDelete(t *testing.T) {
 		t.Fatal("Exam MUST be soft deleted")
 	}
 
-	if strings.Contains(userFindWithDeleted[0].DeletedAt(), sb.NULL_DATETIME) {
-		t.Fatal("User MUST be soft deleted", user.DeletedAt())
+	if strings.Contains(userFindWithDeleted[0].SoftDeletedAt(), sb.NULL_DATETIME) {
+		t.Fatal("User MUST be soft deleted", user.SoftDeletedAt())
 	}
 
 }

@@ -26,9 +26,6 @@ type UserInterface interface {
 	CreatedAtCarbon() carbon.Carbon
 	SetCreatedAt(createdAt string) UserInterface
 
-	DeletedAt() string
-	SetDeletedAt(deletedAt string) UserInterface
-
 	Email() string
 	SetEmail(email string) UserInterface
 
@@ -48,6 +45,7 @@ type UserInterface interface {
 	SetMeta(name string, value string) error
 	Metas() (map[string]string, error)
 	SetMetas(metas map[string]string) error
+	UpsertMetas(metas map[string]string) error
 
 	MiddleNames() string
 	SetMiddleNames(middleNames string) UserInterface
@@ -63,6 +61,10 @@ type UserInterface interface {
 
 	Role() string
 	SetRole(role string) UserInterface
+
+	SoftDeletedAt() string
+	SoftDeletedAtCarbon() carbon.Carbon
+	SetSoftDeletedAt(deletedAt string) UserInterface
 
 	Timezone() string
 	SetTimezone(timezone string) UserInterface
