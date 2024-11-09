@@ -66,8 +66,8 @@ func (o *user) IsActive() bool {
 	return o.Status() == USER_STATUS_ACTIVE
 }
 
-func (o *user) IsDeleted() bool {
-	return o.Status() == USER_STATUS_DELETED
+func (o *user) IsSoftDeleted() bool {
+	return o.SoftDeletedAtCarbon().Compare("<", carbon.Now(carbon.UTC))
 }
 
 func (o *user) IsInactive() bool {

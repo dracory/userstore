@@ -330,8 +330,12 @@ func TestStoreUserSoftDelete(t *testing.T) {
 		t.Fatal("Exam MUST be soft deleted")
 	}
 
-	if strings.Contains(userFindWithDeleted[0].SoftDeletedAt(), sb.NULL_DATETIME) {
+	if strings.Contains(userFindWithDeleted[0].SoftDeletedAt(), sb.MAX_DATETIME) {
 		t.Fatal("User MUST be soft deleted", user.SoftDeletedAt())
+	}
+
+	if !userFindWithDeleted[0].IsSoftDeleted() {
+		t.Fatal("Page MUST be soft deleted")
 	}
 
 }

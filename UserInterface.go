@@ -8,12 +8,14 @@ type UserInterface interface {
 	MarkAsNotDirty()
 
 	IsActive() bool
-	IsDeleted() bool
 	IsInactive() bool
+	IsSoftDeleted() bool
 	IsUnverified() bool
+
 	IsAdministrator() bool
 	IsManager() bool
 	IsSuperuser() bool
+
 	IsRegistrationCompleted() bool
 
 	BusinessName() string
