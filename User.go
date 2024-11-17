@@ -107,25 +107,25 @@ func (o *user) IsRegistrationCompleted() bool {
 // == SETTERS AND GETTERS =====================================================
 
 func (o *user) BusinessName() string {
-	return o.Get("business_name")
+	return o.Get(COLUMN_BUSINESS_NAME)
 }
 
 func (o *user) SetBusinessName(businessName string) UserInterface {
-	o.Set("business_name", businessName)
+	o.Set(COLUMN_BUSINESS_NAME, businessName)
 	return o
 }
 
 func (o *user) Country() string {
-	return o.Get("country")
+	return o.Get(COLUMN_COUNTRY)
 }
 
 func (o *user) SetCountry(country string) UserInterface {
-	o.Set("country", country)
+	o.Set(COLUMN_COUNTRY, country)
 	return o
 }
 
 func (o *user) CreatedAt() string {
-	return o.Get("created_at")
+	return o.Get(COLUMN_CREATED_AT)
 }
 
 func (o *user) CreatedAtCarbon() carbon.Carbon {
@@ -133,7 +133,7 @@ func (o *user) CreatedAtCarbon() carbon.Carbon {
 }
 
 func (o *user) SetCreatedAt(createdAt string) UserInterface {
-	o.Set("created_at", createdAt)
+	o.Set(COLUMN_CREATED_AT, createdAt)
 	return o
 }
 
@@ -354,6 +354,6 @@ func (o *user) UpdatedAtCarbon() carbon.Carbon {
 }
 
 func (o *user) SetUpdatedAt(updatedAt string) UserInterface {
-	o.Set("updated_at", updatedAt)
+	o.Set(COLUMN_UPDATED_AT, updatedAt)
 	return o
 }
