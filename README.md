@@ -7,7 +7,7 @@
 
 UserStore is a robust user management package.
 
-TaskStore supports multiple database storages (SQLite, MySQL, or PostgreSQL)
+Supports multiple database storages (SQLite, MySQL, or PostgreSQL)
 
 ## License
 
