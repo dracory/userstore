@@ -2,6 +2,21 @@ package userstore
 
 import "github.com/golang-module/carbon/v2"
 
+type StoreInterface interface {
+	AutoMigrate() error
+	EnableDebug(debug bool)
+	UserCreate(user UserInterface) error
+	UserCount(options UserQueryInterface) (int64, error)
+	UserDelete(user UserInterface) error
+	UserDeleteByID(id string) error
+	UserFindByEmail(email string) (UserInterface, error)
+	UserFindByID(userID string) (UserInterface, error)
+	UserList(query UserQueryInterface) ([]UserInterface, error)
+	UserSoftDelete(user UserInterface) error
+	UserSoftDeleteByID(id string) error
+	UserUpdate(user UserInterface) error
+}
+
 type UserInterface interface {
 	Data() map[string]string
 	DataChanged() map[string]string
@@ -79,4 +94,45 @@ type UserInterface interface {
 	UpdatedAt() string
 	UpdatedAtCarbon() carbon.Carbon
 	SetUpdatedAt(updatedAt string) UserInterface
+}
+
+type UserQueryInterface interface {
+	ID() string
+	SetID(id string) (UserQueryInterface, error)
+
+	IDIn() []string
+	SetIDIn(idIn []string) (UserQueryInterface, error)
+
+	Status() string
+	SetStatus(status string) (UserQueryInterface, error)
+
+	StatusIn() []string
+	SetStatusIn(statusIn []string) (UserQueryInterface, error)
+
+	Email() string
+	SetEmail(email string) (UserQueryInterface, error)
+
+	CreatedAtGte() string
+	SetCreatedAtGte(createdAtGte string) (UserQueryInterface, error)
+
+	CreatedAtLte() string
+	SetCreatedAtLte(createdAtLte string) (UserQueryInterface, error)
+
+	Offset() int
+	SetOffset(offset int) (UserQueryInterface, error)
+
+	Limit() int
+	SetLimit(limit int) (UserQueryInterface, error)
+
+	SortOrder() string
+	SetSortOrder(sortOrder string) (UserQueryInterface, error)
+
+	OrderBy() string
+	SetOrderBy(orderBy string) (UserQueryInterface, error)
+
+	CountOnly() bool
+	SetCountOnly(countOnly bool) UserQueryInterface
+
+	WithSoftDeleted() bool
+	SetWithSoftDeleted(withDeleted bool) UserQueryInterface
 }
