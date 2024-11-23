@@ -59,7 +59,6 @@ func NewUserFromExistingData(data map[string]string) UserInterface {
 
 func UserNoImageUrl() string {
 	return "/user/default.png"
-	//return config.MediaUrl + "/user/default.png"
 }
 
 func (o *user) IsActive() bool {
@@ -233,7 +232,7 @@ func (o *user) Meta(name string) string {
 	return ""
 }
 
-func (o *user) SetMeta(name string, value string) error {
+func (o *user) SetMeta(name, value string) error {
 	return o.UpsertMetas(map[string]string{name: value})
 }
 

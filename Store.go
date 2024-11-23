@@ -11,6 +11,7 @@ import (
 	"github.com/golang-module/carbon/v2"
 	"github.com/gouniverse/sb"
 	"github.com/samber/lo"
+	"github.com/spf13/cast"
 )
 
 // == TYPE ====================================================================
@@ -31,9 +32,9 @@ var _ StoreInterface = (*store)(nil) // verify it extends the interface
 
 // AutoMigrate auto migrate
 func (store *store) AutoMigrate() error {
-	sql := store.sqlUserTableCreate()
+	sqlStr := store.sqlUserTableCreate()
 
-	if sql == "" {
+	if sqlStr == "" {
 		return errors.New("user table create sql is empty")
 	}
 
@@ -41,7 +42,7 @@ func (store *store) AutoMigrate() error {
 		return errors.New("userstore: database is nil")
 	}
 
-	_, err := store.db.Exec(sql)
+	_, err := store.db.Exec(sqlStr)
 
 	if err != nil {
 		return err
@@ -194,7 +195,7 @@ func (store *store) UserFindByEmail(email string) (user UserInterface, err error
 }
 
 // UserFindByEmailOrCreate - finds by email or creates a user (with active status)
-func (store *store) UserFindByEmailOrCreate(email string, createStatus string) (UserInterface, error) {
+func (store *store) UserFindByEmailOrCreate(email, createStatus string) (UserInterface, error) {
 	existingUser, errUser := store.UserFindByEmail(email)
 
 	if errUser != nil {
@@ -386,11 +387,11 @@ func (store *store) userSelectQuery(options UserQueryInterface) *goqu.SelectData
 
 	if !options.CountOnly() {
 		if options.Limit() > 0 {
-			q = q.Limit(uint(options.Limit()))
+			q = q.Limit(cast.ToUint(options.Limit()))
 		}
 
 		if options.Offset() > 0 {
-			q = q.Offset(uint(options.Offset()))
+			q = q.Offset(cast.ToUint(options.Offset()))
 		}
 	}
 
