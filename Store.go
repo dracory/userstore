@@ -97,6 +97,10 @@ func (store *store) UserCount(options UserQueryInterface) (int64, error) {
 }
 
 func (store *store) UserCreate(user UserInterface) error {
+	if user == nil {
+		return errors.New("user is nil")
+	}
+
 	user.SetCreatedAt(carbon.Now(carbon.UTC).ToDateTimeString(carbon.UTC))
 	user.SetUpdatedAt(carbon.Now(carbon.UTC).ToDateTimeString(carbon.UTC))
 
@@ -252,6 +256,10 @@ func (store *store) UserFindByID(id string) (user UserInterface, err error) {
 }
 
 func (store *store) UserList(query UserQueryInterface) ([]UserInterface, error) {
+	if query == nil {
+		return []UserInterface{}, errors.New("at user list > user query is nil")
+	}
+
 	q := store.userSelectQuery(query)
 
 	sqlStr, _, errSql := q.Select().ToSQL()
@@ -292,7 +300,7 @@ func (store *store) UserList(query UserQueryInterface) ([]UserInterface, error) 
 
 func (store *store) UserSoftDelete(user UserInterface) error {
 	if user == nil {
-		return errors.New("user is nil")
+		return errors.New("at user soft delete > user is nil")
 	}
 
 	user.SetSoftDeletedAt(carbon.Now(carbon.UTC).ToDateTimeString(carbon.UTC))
@@ -312,7 +320,7 @@ func (store *store) UserSoftDeleteByID(id string) error {
 
 func (store *store) UserUpdate(user UserInterface) error {
 	if user == nil {
-		return errors.New("user is nil")
+		return errors.New("at user update > user is nil")
 	}
 
 	user.SetUpdatedAt(carbon.Now(carbon.UTC).ToDateTimeString())
