@@ -2,6 +2,10 @@ package userstore
 
 import "errors"
 
+func NewUserQuery() UserQueryInterface {
+	return &userQuery{}
+}
+
 type userQuery struct {
 	id              string
 	idIn            []string
@@ -16,10 +20,6 @@ type userQuery struct {
 	sortOrder       string
 	orderBy         string
 	withSoftDeleted bool
-}
-
-func NewUserQuery() UserQueryInterface {
-	return &userQuery{}
 }
 
 var _ UserQueryInterface = (*userQuery)(nil)

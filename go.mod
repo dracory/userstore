@@ -11,6 +11,7 @@ require (
 	github.com/gouniverse/uid v1.5.0
 	github.com/gouniverse/utils v1.45.3
 	github.com/samber/lo v1.47.0
+	github.com/spf13/cast v1.7.0
 	modernc.org/sqlite v1.34.1
 )
 
@@ -39,7 +40,6 @@ require (
 	github.com/ncruces/go-strftime v0.1.9 // indirect
 	github.com/remyoudompheng/bigfft v0.0.0-20230129092748-24d4a6f8daec // indirect
 	github.com/rogpeppe/go-internal v1.13.1 // indirect
-	github.com/spf13/cast v1.7.0 // indirect
 	golang.org/x/crypto v0.29.0 // indirect
 	golang.org/x/exp v0.0.0-20241108190413-2d47ceb2692f // indirect
 	golang.org/x/mod v0.22.0 // indirect
