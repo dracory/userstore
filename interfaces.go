@@ -1,6 +1,6 @@
 package userstore
 
-import "github.com/golang-module/carbon/v2"
+import "github.com/dromara/carbon/v2"
 
 type StoreInterface interface {
 	AutoMigrate() error
