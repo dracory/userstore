@@ -1,6 +1,7 @@
 package userstore
 
 import (
+	"context"
 	"database/sql"
 	"errors"
 	"log"
@@ -9,6 +10,7 @@ import (
 
 	"github.com/doug-martin/goqu/v9"
 	"github.com/dromara/carbon/v2"
+	"github.com/gouniverse/base/database"
 	"github.com/gouniverse/sb"
 	"github.com/samber/lo"
 	"github.com/spf13/cast"
@@ -51,12 +53,17 @@ func (store *store) AutoMigrate() error {
 	return nil
 }
 
+// DB - returns the database
+func (store *store) DB() *sql.DB {
+	return store.db
+}
+
 // EnableDebug - enables the debug option
 func (st *store) EnableDebug(debug bool) {
 	st.debugEnabled = debug
 }
 
-func (store *store) UserCount(options UserQueryInterface) (int64, error) {
+func (store *store) UserCount(ctx context.Context, options UserQueryInterface) (int64, error) {
 	options.SetCountOnly(true)
 
 	q := store.userSelectQuery(options)
@@ -74,8 +81,10 @@ func (store *store) UserCount(options UserQueryInterface) (int64, error) {
 		log.Println(sqlStr)
 	}
 
-	db := sb.NewDatabase(store.db, store.dbDriverName)
-	mapped, err := db.SelectToMapString(sqlStr, params...)
+	// db := sb.NewDatabase(store.db, store.dbDriverName)
+	// mapped, err := db.SelectToMapString(sqlStr, params...)
+
+	mapped, err := database.SelectToMapString(store.toQuerableContext(ctx), sqlStr, params...)
 	if err != nil {
 		return -1, err
 	}
@@ -96,7 +105,7 @@ func (store *store) UserCount(options UserQueryInterface) (int64, error) {
 	return i, nil
 }
 
-func (store *store) UserCreate(user UserInterface) error {
+func (store *store) UserCreate(ctx context.Context, user UserInterface) error {
 	if user == nil {
 		return errors.New("user is nil")
 	}
@@ -124,7 +133,9 @@ func (store *store) UserCreate(user UserInterface) error {
 		return errors.New("userstore: database is nil")
 	}
 
-	_, err := store.db.Exec(sqlStr, params...)
+	// _, err := store.db.Exec(sqlStr, params...)
+
+	_, err := database.Execute(store.toQuerableContext(ctx), sqlStr, params...)
 
 	if err != nil {
 		return err
@@ -135,15 +146,15 @@ func (store *store) UserCreate(user UserInterface) error {
 	return nil
 }
 
-func (store *store) UserDelete(user UserInterface) error {
+func (store *store) UserDelete(ctx context.Context, user UserInterface) error {
 	if user == nil {
 		return errors.New("user is nil")
 	}
 
-	return store.UserDeleteByID(user.ID())
+	return store.UserDeleteByID(ctx, user.ID())
 }
 
-func (store *store) UserDeleteByID(id string) error {
+func (store *store) UserDeleteByID(ctx context.Context, id string) error {
 	if id == "" {
 		return errors.New("user id is empty")
 	}
@@ -151,7 +162,7 @@ func (store *store) UserDeleteByID(id string) error {
 	sqlStr, params, errSql := goqu.Dialect(store.dbDriverName).
 		Delete(store.userTableName).
 		Prepared(true).
-		Where(goqu.C("id").Eq(id)).
+		Where(goqu.C(COLUMN_ID).Eq(id)).
 		ToSQL()
 
 	if errSql != nil {
@@ -162,12 +173,14 @@ func (store *store) UserDeleteByID(id string) error {
 		log.Println(sqlStr)
 	}
 
-	_, err := store.db.Exec(sqlStr, params...)
+	// _, err := store.db.Exec(sqlStr, params...)
+
+	_, err := database.Execute(store.toQuerableContext(ctx), sqlStr, params...)
 
 	return err
 }
 
-func (store *store) UserFindByEmail(email string) (user UserInterface, err error) {
+func (store *store) UserFindByEmail(ctx context.Context, email string) (user UserInterface, err error) {
 	if email == "" {
 		return nil, errors.New("user email is empty")
 	}
@@ -185,7 +198,7 @@ func (store *store) UserFindByEmail(email string) (user UserInterface, err error
 		return nil, err
 	}
 
-	list, err := store.UserList(query)
+	list, err := store.UserList(ctx, query)
 
 	if err != nil {
 		return nil, err
@@ -199,8 +212,8 @@ func (store *store) UserFindByEmail(email string) (user UserInterface, err error
 }
 
 // UserFindByEmailOrCreate - finds by email or creates a user (with active status)
-func (store *store) UserFindByEmailOrCreate(email, createStatus string) (UserInterface, error) {
-	existingUser, errUser := store.UserFindByEmail(email)
+func (store *store) UserFindByEmailOrCreate(ctx context.Context, email, createStatus string) (UserInterface, error) {
+	existingUser, errUser := store.UserFindByEmail(ctx, email)
 
 	if errUser != nil {
 		return nil, errUser
@@ -214,7 +227,7 @@ func (store *store) UserFindByEmailOrCreate(email, createStatus string) (UserInt
 		SetEmail(email).
 		SetStatus(createStatus)
 
-	errCreate := store.UserCreate(newUser)
+	errCreate := store.UserCreate(ctx, newUser)
 
 	if errCreate != nil {
 		return nil, errCreate
@@ -223,7 +236,7 @@ func (store *store) UserFindByEmailOrCreate(email, createStatus string) (UserInt
 	return newUser, nil
 }
 
-func (store *store) UserFindByID(id string) (user UserInterface, err error) {
+func (store *store) UserFindByID(ctx context.Context, id string) (user UserInterface, err error) {
 	if id == "" {
 		return nil, errors.New("user id is empty")
 	}
@@ -242,7 +255,7 @@ func (store *store) UserFindByID(id string) (user UserInterface, err error) {
 		return nil, err
 	}
 
-	list, err := store.UserList(query)
+	list, err := store.UserList(ctx, query)
 
 	if err != nil {
 		return nil, err
@@ -255,7 +268,7 @@ func (store *store) UserFindByID(id string) (user UserInterface, err error) {
 	return nil, nil
 }
 
-func (store *store) UserList(query UserQueryInterface) ([]UserInterface, error) {
+func (store *store) UserList(ctx context.Context, query UserQueryInterface) ([]UserInterface, error) {
 	if query == nil {
 		return []UserInterface{}, errors.New("at user list > user query is nil")
 	}
@@ -282,7 +295,9 @@ func (store *store) UserList(query UserQueryInterface) ([]UserInterface, error) 
 		return []UserInterface{}, errors.New("userstore: database is nil")
 	}
 
-	modelMaps, err := db.SelectToMapString(sqlStr)
+	// modelMaps, err := db.SelectToMapString(sqlStr)
+
+	modelMaps, err := database.SelectToMapString(store.toQuerableContext(ctx), sqlStr)
 
 	if err != nil {
 		return []UserInterface{}, err
@@ -298,27 +313,27 @@ func (store *store) UserList(query UserQueryInterface) ([]UserInterface, error) 
 	return list, nil
 }
 
-func (store *store) UserSoftDelete(user UserInterface) error {
+func (store *store) UserSoftDelete(ctx context.Context, user UserInterface) error {
 	if user == nil {
 		return errors.New("at user soft delete > user is nil")
 	}
 
 	user.SetSoftDeletedAt(carbon.Now(carbon.UTC).ToDateTimeString(carbon.UTC))
 
-	return store.UserUpdate(user)
+	return store.UserUpdate(ctx, user)
 }
 
-func (store *store) UserSoftDeleteByID(id string) error {
-	user, err := store.UserFindByID(id)
+func (store *store) UserSoftDeleteByID(ctx context.Context, id string) error {
+	user, err := store.UserFindByID(ctx, id)
 
 	if err != nil {
 		return err
 	}
 
-	return store.UserSoftDelete(user)
+	return store.UserSoftDelete(ctx, user)
 }
 
-func (store *store) UserUpdate(user UserInterface) error {
+func (store *store) UserUpdate(ctx context.Context, user UserInterface) error {
 	if user == nil {
 		return errors.New("at user update > user is nil")
 	}
@@ -352,7 +367,8 @@ func (store *store) UserUpdate(user UserInterface) error {
 		return errors.New("userstore: database is nil")
 	}
 
-	_, err := store.db.Exec(sqlStr, params...)
+	// _, err := store.db.Exec(sqlStr, params...)
+	_, err := database.Execute(store.toQuerableContext(ctx), sqlStr, params...)
 
 	user.MarkAsNotDirty()
 
@@ -424,4 +440,12 @@ func (store *store) userSelectQuery(options UserQueryInterface) *goqu.SelectData
 		Gt(carbon.Now(carbon.UTC).ToDateTimeString())
 
 	return q.Where(softDeleted)
+}
+
+func (store *store) toQuerableContext(context context.Context) database.QueryableContext {
+	if database.IsQueryableContext(context) {
+		return context.(database.QueryableContext)
+	}
+
+	return database.Context(context, store.db)
 }

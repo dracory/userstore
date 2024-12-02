@@ -1,22 +1,24 @@
 package userstore
 
 import (
+	"context"
 	"database/sql"
 	"os"
 	"strings"
 	"testing"
 
+	"github.com/gouniverse/base/database"
 	"github.com/gouniverse/sb"
 	"github.com/gouniverse/utils"
 	_ "modernc.org/sqlite"
 )
 
-func initDB(filepath string) *sql.DB {
+func initDB(filepath string) (*sql.DB, error) {
 	if filepath != ":memory:" && utils.FileExists(filepath) {
 		err := os.Remove(filepath) // remove database
 
 		if err != nil {
-			panic(err)
+			return nil, err
 		}
 	}
 
@@ -24,14 +26,44 @@ func initDB(filepath string) *sql.DB {
 	db, err := sql.Open("sqlite", dsn)
 
 	if err != nil {
-		panic(err)
+		return nil, err
 	}
 
-	return db
+	return db, nil
+}
+
+func initStore(filepath string) (StoreInterface, error) {
+	db, err := initDB(filepath)
+
+	if err != nil {
+		return nil, err
+	}
+
+	store, err := NewStore(NewStoreOptions{
+		DB:                 db,
+		UserTableName:      "user_table",
+		AutomigrateEnabled: true,
+	})
+
+	if err != nil {
+		return nil, err
+	}
+
+	return store, nil
 }
 
 func TestStoreUserCreate(t *testing.T) {
-	db := initDB(":memory:")
+	db, err := initDB(":memory:")
+
+	if err != nil {
+		t.Fatal("unexpected error:", err)
+	}
+
+	defer func() {
+		if err := db.Close(); err != nil {
+			t.Fatal(err)
+		}
+	}()
 
 	store, err := NewStore(NewStoreOptions{
 		DB:                 db,
@@ -56,7 +88,7 @@ func TestStoreUserCreate(t *testing.T) {
 		SetPassword("").
 		SetProfileImageUrl("http://test.com/profile.png")
 
-	err = store.UserCreate(user)
+	err = store.UserCreate(context.Background(), user)
 
 	if err != nil {
 		t.Fatal("unexpected error:", err)
@@ -64,7 +96,17 @@ func TestStoreUserCreate(t *testing.T) {
 }
 
 func TestStoreUserFindByEmail(t *testing.T) {
-	db := initDB(":memory:")
+	db, err := initDB(":memory:")
+
+	if err != nil {
+		t.Fatal("unexpected error:", err)
+	}
+
+	defer func() {
+		if err := db.Close(); err != nil {
+			t.Fatal(err)
+		}
+	}()
 
 	store, err := NewStore(NewStoreOptions{
 		DB:                 db,
@@ -95,12 +137,12 @@ func TestStoreUserFindByEmail(t *testing.T) {
 		t.Fatal("unexpected error:", err)
 	}
 
-	err = store.UserCreate(user)
+	err = store.UserCreate(database.Context(context.Background(), db), user)
 	if err != nil {
 		t.Error("unexpected error:", err)
 	}
 
-	userFound, errFind := store.UserFindByEmail(user.Email())
+	userFound, errFind := store.UserFindByEmail(database.Context(context.Background(), db), user.Email())
 
 	if errFind != nil {
 		t.Fatal("unexpected error:", errFind)
@@ -160,7 +202,17 @@ func TestStoreUserFindByEmail(t *testing.T) {
 }
 
 func TestStoreUserFindByID(t *testing.T) {
-	db := initDB(":memory:")
+	db, err := initDB(":memory:")
+
+	if err != nil {
+		t.Fatal("unexpected error:", err)
+	}
+
+	defer func() {
+		if err := db.Close(); err != nil {
+			t.Fatal(err)
+		}
+	}()
 
 	store, err := NewStore(NewStoreOptions{
 		DB:                 db,
@@ -191,12 +243,12 @@ func TestStoreUserFindByID(t *testing.T) {
 		t.Fatal("unexpected error:", err)
 	}
 
-	err = store.UserCreate(user)
+	err = store.UserCreate(database.Context(context.Background(), db), user)
 	if err != nil {
 		t.Error("unexpected error:", err)
 	}
 
-	userFound, errFind := store.UserFindByID(user.ID())
+	userFound, errFind := store.UserFindByID(database.Context(context.Background(), db), user.ID())
 
 	if errFind != nil {
 		t.Fatal("unexpected error:", errFind)
@@ -256,7 +308,17 @@ func TestStoreUserFindByID(t *testing.T) {
 }
 
 func TestStoreUserSoftDelete(t *testing.T) {
-	db := initDB(":memory:")
+	db, err := initDB(":memory:")
+
+	if err != nil {
+		t.Fatal("unexpected error:", err)
+	}
+
+	defer func() {
+		if err := db.Close(); err != nil {
+			t.Fatal(err)
+		}
+	}()
 
 	store, err := NewStore(NewStoreOptions{
 		DB:                 db,
@@ -281,13 +343,13 @@ func TestStoreUserSoftDelete(t *testing.T) {
 		SetPassword("").
 		SetProfileImageUrl("http://test.com/profile.png")
 
-	err = store.UserCreate(user)
+	err = store.UserCreate(database.Context(context.Background(), db), user)
 
 	if err != nil {
 		t.Fatal("unexpected error:", err)
 	}
 
-	err = store.UserSoftDeleteByID(user.ID())
+	err = store.UserSoftDeleteByID(database.Context(context.Background(), db), user.ID())
 
 	if err != nil {
 		t.Fatal("unexpected error:", err)
@@ -297,7 +359,7 @@ func TestStoreUserSoftDelete(t *testing.T) {
 		t.Fatal("User MUST NOT be soft deleted")
 	}
 
-	userFound, errFind := store.UserFindByID(user.ID())
+	userFound, errFind := store.UserFindByID(database.Context(context.Background(), db), user.ID())
 
 	if errFind != nil {
 		t.Fatal("unexpected error:", errFind)
@@ -320,7 +382,7 @@ func TestStoreUserSoftDelete(t *testing.T) {
 		t.Fatal("unexpected error:", err)
 	}
 
-	userFindWithDeleted, err := store.UserList(query)
+	userFindWithDeleted, err := store.UserList(database.Context(context.Background(), db), query)
 
 	if err != nil {
 		t.Fatal("unexpected error:", err)
@@ -338,4 +400,94 @@ func TestStoreUserSoftDelete(t *testing.T) {
 		t.Fatal("Page MUST be soft deleted")
 	}
 
+}
+
+func TestStoreWithTx(t *testing.T) {
+	store, err := initStore("test_store_with_tx.db")
+
+	if err != nil {
+		t.Fatal("unexpected error:", err)
+	}
+
+	if store == nil {
+		t.Fatal("unexpected nil store")
+	}
+
+	db := store.DB()
+
+	if db == nil {
+		t.Fatal("unexpected nil db")
+	}
+
+	defer func() {
+		if err := db.Close(); err != nil {
+			t.Fatal(err)
+		}
+	}()
+
+	tx, err := db.Begin()
+
+	if err != nil {
+		t.Fatal("unexpected error:", err)
+	}
+
+	if tx == nil {
+		t.Fatal("unexpected nil tx")
+	}
+
+	txCtx := database.Context(context.Background(), tx)
+
+	// create user
+	user := NewUser().
+		SetStatus(USER_STATUS_UNVERIFIED).
+		SetFirstName("John").
+		SetMiddleNames("").
+		SetLastName("Doe").
+		SetEmail("test@test.com").
+		SetPassword("").
+		SetProfileImageUrl("http://test.com/profile.png")
+
+	err = store.UserCreate(txCtx, user)
+
+	if err != nil {
+		t.Fatal("unexpected error:", err)
+	}
+
+	// update user
+	user.SetFirstName("John 2")
+	err = store.UserUpdate(txCtx, user)
+
+	if err != nil {
+		t.Fatal("unexpected error:", err)
+	}
+
+	// check user
+	userFound, errFind := store.UserFindByID(database.Context(context.Background(), db), user.ID())
+
+	if errFind != nil {
+		t.Fatal("unexpected error:", errFind)
+	}
+
+	if userFound != nil {
+		t.Fatal("User MUST be nil, as transaction not committed")
+	}
+
+	if err := tx.Commit(); err != nil {
+		t.Fatal("unexpected error:", err)
+	}
+
+	// check user
+	userFound, errFind = store.UserFindByID(database.Context(context.Background(), db), user.ID())
+
+	if errFind != nil {
+		t.Fatal("unexpected error:", errFind)
+	}
+
+	if userFound == nil {
+		t.Fatal("User MUST be not nil, as transaction committed")
+	}
+
+	if userFound.FirstName() != "John 2" {
+		t.Fatal("User MUST be John 2, as transaction committed")
+	}
 }

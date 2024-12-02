@@ -1,20 +1,26 @@
 package userstore
 
-import "github.com/dromara/carbon/v2"
+import (
+	"context"
+	"database/sql"
+
+	"github.com/dromara/carbon/v2"
+)
 
 type StoreInterface interface {
 	AutoMigrate() error
 	EnableDebug(debug bool)
-	UserCreate(user UserInterface) error
-	UserCount(options UserQueryInterface) (int64, error)
-	UserDelete(user UserInterface) error
-	UserDeleteByID(id string) error
-	UserFindByEmail(email string) (UserInterface, error)
-	UserFindByID(userID string) (UserInterface, error)
-	UserList(query UserQueryInterface) ([]UserInterface, error)
-	UserSoftDelete(user UserInterface) error
-	UserSoftDeleteByID(id string) error
-	UserUpdate(user UserInterface) error
+	DB() *sql.DB
+	UserCreate(ctx context.Context, user UserInterface) error
+	UserCount(ctx context.Context, options UserQueryInterface) (int64, error)
+	UserDelete(ctx context.Context, user UserInterface) error
+	UserDeleteByID(ctx context.Context, id string) error
+	UserFindByEmail(ctx context.Context, email string) (UserInterface, error)
+	UserFindByID(ctx context.Context, userID string) (UserInterface, error)
+	UserList(ctx context.Context, query UserQueryInterface) ([]UserInterface, error)
+	UserSoftDelete(ctx context.Context, user UserInterface) error
+	UserSoftDeleteByID(ctx context.Context, id string) error
+	UserUpdate(ctx context.Context, user UserInterface) error
 }
 
 type UserInterface interface {
