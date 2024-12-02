@@ -81,9 +81,6 @@ func (store *store) UserCount(ctx context.Context, options UserQueryInterface) (
 		log.Println(sqlStr)
 	}
 
-	// db := sb.NewDatabase(store.db, store.dbDriverName)
-	// mapped, err := db.SelectToMapString(sqlStr, params...)
-
 	mapped, err := database.SelectToMapString(store.toQuerableContext(ctx), sqlStr, params...)
 	if err != nil {
 		return -1, err
@@ -133,8 +130,6 @@ func (store *store) UserCreate(ctx context.Context, user UserInterface) error {
 		return errors.New("userstore: database is nil")
 	}
 
-	// _, err := store.db.Exec(sqlStr, params...)
-
 	_, err := database.Execute(store.toQuerableContext(ctx), sqlStr, params...)
 
 	if err != nil {
@@ -172,8 +167,6 @@ func (store *store) UserDeleteByID(ctx context.Context, id string) error {
 	if store.debugEnabled {
 		log.Println(sqlStr)
 	}
-
-	// _, err := store.db.Exec(sqlStr, params...)
 
 	_, err := database.Execute(store.toQuerableContext(ctx), sqlStr, params...)
 
@@ -295,8 +288,6 @@ func (store *store) UserList(ctx context.Context, query UserQueryInterface) ([]U
 		return []UserInterface{}, errors.New("userstore: database is nil")
 	}
 
-	// modelMaps, err := db.SelectToMapString(sqlStr)
-
 	modelMaps, err := database.SelectToMapString(store.toQuerableContext(ctx), sqlStr)
 
 	if err != nil {
@@ -367,7 +358,6 @@ func (store *store) UserUpdate(ctx context.Context, user UserInterface) error {
 		return errors.New("userstore: database is nil")
 	}
 
-	// _, err := store.db.Exec(sqlStr, params...)
 	_, err := database.Execute(store.toQuerableContext(ctx), sqlStr, params...)
 
 	user.MarkAsNotDirty()
@@ -442,10 +432,10 @@ func (store *store) userSelectQuery(options UserQueryInterface) *goqu.SelectData
 	return q.Where(softDeleted)
 }
 
-func (store *store) toQuerableContext(context context.Context) database.QueryableContext {
-	if database.IsQueryableContext(context) {
-		return context.(database.QueryableContext)
+func (store *store) toQuerableContext(ctx context.Context) database.QueryableContext {
+	if database.IsQueryableContext(ctx) {
+		return ctx.(database.QueryableContext)
 	}
 
-	return database.Context(context, store.db)
+	return database.Context(ctx, store.db)
 }
