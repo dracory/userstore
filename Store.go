@@ -409,10 +409,7 @@ func (store *store) userSelectQuery(options UserQueryInterface) *goqu.SelectData
 		}
 	}
 
-	sortOrder := sb.DESC
-	if options.SortOrder() != "" {
-		sortOrder = options.SortOrder()
-	}
+	sortOrder := lo.Ternary(options.SortOrder() == "", options.SortOrder(), sb.DESC)
 
 	if options.OrderBy() != "" {
 		if strings.EqualFold(sortOrder, sb.ASC) {
