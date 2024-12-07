@@ -30,17 +30,14 @@ func UI(config shared.Config) (hb.TagInterface, error) {
 		return nil, errors.New("Layout is required")
 	}
 
-	if len(config.Tokenized) > 0 {
-		if config.Tokenize == nil {
-			return nil, errors.New("Tokenize function is required")
+	if len(config.TokenizedColumns) > 0 {
+		if config.TokensBulk == nil {
+			return nil, errors.New("TokensBulk function is required")
 		}
 
-		if config.Untokenize == nil {
-			return nil, errors.New("Untokenize function is required")
+		if config.TokensRead == nil {
+			return nil, errors.New("TokensRead function is required")
 		}
-	} else {
-		config.Tokenize = func(clear []string) (tokens []string) { return clear }
-		config.Untokenize = func(tokens []string) (clear []string) { return tokens }
 	}
 
 	return handler(config), nil
@@ -57,12 +54,20 @@ func handler(config shared.Config) hb.TagInterface {
 		return NewHomeController().ToTag(config)
 	}
 
-	if controller == shared.PathUsers {
-		return adminUsers.NewUserManagerController().ToTag(config)
-	}
-
 	if controller == shared.PathUserCreate {
 		return adminUsers.NewUserCreateController().ToTag(config)
+	}
+
+	if controller == shared.PathUserDelete {
+		return adminUsers.NewUserDeleteController().ToTag(config)
+	}
+
+	if controller == shared.PathUserUpdate {
+		return adminUsers.NewUserUpdateController().ToTag(config)
+	}
+
+	if controller == shared.PathUsers {
+		return adminUsers.NewUserManagerController().ToTag(config)
 	}
 
 	html := config.Layout(config.ResponseWriter, config.Request, shared.LayoutOptions{

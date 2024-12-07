@@ -26,12 +26,17 @@ type Config struct {
 	HomeURL        string
 	WebsiteUrl     string
 
-	Tokenized  []string
-	Tokenize   func(clear []string) (tokens []string)
-	Untokenize func(tokens []string) (clear []string)
+	TokenizedColumns []string
+	// TokenCreate      func(columnName, columnValue string) (token string, err error)
+	// TokenDelete      func(token string) (err error)
+	// TokenRead        func(token string) (columnName, columnValue string, err error)
+	// TokenUpdate      func(token string, columnName, columnValue string) (err error)
+	// TokensCreate     func(columnValueMap map[string]string) (columnTokenMap map[string]string, err error)
+	// TokensUpdate     func(tokenValueMap map[string]string) (err error)
+	TokensBulk func(tokensToCreate map[string]string, tokensToUpdate map[string]string, tokensToDelete []string) (createdTokens map[string]string, err error)
+	TokensRead func(columnTokenMap map[string]string) (columnValueMap map[string]string, err error)
 }
 
 type PageInterface interface {
-	// hb.TagInterface
 	ToTag(config Config) hb.TagInterface
 }

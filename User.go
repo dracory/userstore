@@ -105,6 +105,19 @@ func (o *user) IsRegistrationCompleted() bool {
 
 // == SETTERS AND GETTERS =====================================================
 
+// Get returns the value of the specified column.
+// Always prefers to use the existing Get* methods.
+// func (o *user) GetValue(columnName string) string {
+// 	return o.Get(columnName)
+// }
+
+// Set sets the value of the specified column.
+// Always prefers to use the existing Set* methods.
+// func (o *user) Set(columnName string, value string) UserInterface {
+// 	o.Set(columnName, value)
+// 	return o
+// }
+
 func (o *user) BusinessName() string {
 	return o.Get(COLUMN_BUSINESS_NAME)
 }

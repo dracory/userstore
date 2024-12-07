@@ -24,9 +24,15 @@ type StoreInterface interface {
 }
 
 type UserInterface interface {
+	// from dataobject
+
 	Data() map[string]string
 	DataChanged() map[string]string
 	MarkAsNotDirty()
+	Get(columnName string) string
+	Set(columnName string, value string)
+
+	// methods
 
 	IsActive() bool
 	IsInactive() bool
@@ -38,6 +44,8 @@ type UserInterface interface {
 	IsSuperuser() bool
 
 	IsRegistrationCompleted() bool
+
+	// setters and getters
 
 	BusinessName() string
 	SetBusinessName(businessName string) UserInterface
