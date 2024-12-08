@@ -1,7 +1,11 @@
 package shared
 
 import (
+	"context"
+
 	"github.com/gouniverse/hb"
+	"github.com/gouniverse/userstore"
+	"github.com/spf13/cast"
 )
 
 func AdminHeader(config Config) hb.TagInterface {
@@ -9,21 +13,21 @@ func AdminHeader(config Config) hb.TagInterface {
 		HTML("Dashboard").
 		Href(Url(config.Request, PathHome, nil)).
 		Class("nav-link")
-	// linkQueue := hb.Hyperlink().
-	// 	HTML("Queue").
-	// 	Href(url(r, pathQueueManager, nil)).
-	// 	Class("nav-link")
+	linkUsers := hb.Hyperlink().
+		HTML("Users").
+		Href(Url(config.Request, PathUsers, nil)).
+		Class("nav-link")
 	// linkTasks := hb.Hyperlink().
 	// 	HTML("Tasks").
 	// 	Href(url(r, pathTaskManager, nil)).
 	// 	Class("nav-link")
 
-	// queueCount, err := store.QueueCount(statsstore.QueueQuery())
+	userCount, err := config.Store.UserCount(context.Background(), userstore.NewUserQuery())
 
-	// if err != nil {
-	// 	logger.Error(err.Error())
-	// 	queueCount = -1
-	// }
+	if err != nil {
+		config.Logger.Error(err.Error())
+		userCount = -1
+	}
 
 	// taskCount, err := store.TaskCount(statsstore.TaskQuery())
 
@@ -35,12 +39,12 @@ func AdminHeader(config Config) hb.TagInterface {
 	ulNav := hb.NewUL().Class("nav  nav-pills justify-content-center")
 	ulNav.AddChild(hb.NewLI().Class("nav-item").Child(linkHome))
 
-	// ulNav.Child(hb.LI().
-	// 	Class("nav-item").
-	// 	Child(linkQueue.
-	// 		Child(hb.Span().
-	// 			Class("badge bg-secondary ms-2").
-	// 			HTML(cast.ToString(queueCount)))))
+	ulNav.Child(hb.LI().
+		Class("nav-item").
+		Child(linkUsers.
+			Child(hb.Span().
+				Class("badge bg-secondary ms-2").
+				HTML(cast.ToString(userCount)))))
 
 	// ulNav.Child(hb.LI().
 	// 	Class("nav-item").

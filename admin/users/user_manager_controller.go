@@ -212,14 +212,6 @@ func (controller *userManagerController) onModalUserFilterShow(data userManagerC
 func (controller *userManagerController) page(data userManagerControllerData) hb.TagInterface {
 	breadcrumbs := shared.Breadcrumbs(data.config, []shared.Breadcrumb{
 		{
-			Name: "Home",
-			URL:  shared.Url(data.config.Request, data.config.HomeURL, nil),
-		},
-		{
-			Name: "Users",
-			URL:  shared.Url(data.config.Request, shared.PathHome, nil),
-		},
-		{
 			Name: "User Manager",
 			URL:  shared.Url(data.config.Request, shared.PathUsers, nil),
 		},
@@ -275,17 +267,31 @@ func (controller *userManagerController) tableUsers(data userManagerControllerDa
 				}),
 			}),
 			hb.Tbody().Children(lo.Map(data.userList, func(user userstore.UserInterface, _ int) hb.TagInterface {
-				// firstName, lastName, email, err := helpers.UserUntokenized(user)
+				// firstName, lastName, email, err := userUntokenize(data.config, user)
 				firstName := user.FirstName()
 				lastName := user.LastName()
 				email := user.Email()
 
-				// if err != nil {
-				// 	data.config.Logger.Error("At userManagerController > tableUsers", "error", err.Error())
-				// 	firstName = "n/a"
-				// 	lastName = "n/a"
-				// 	email = "n/a"
-				// }
+				untokenized, err := userUntokenize(data.config, user)
+
+				if err != nil {
+					data.config.Logger.Error("At userManagerController > tableUsers", "error", err.Error())
+					firstName = "n/a"
+					lastName = "n/a"
+					email = "n/a"
+				}
+
+				if lo.HasKey(untokenized, userstore.COLUMN_FIRST_NAME) {
+					firstName = untokenized[userstore.COLUMN_FIRST_NAME]
+				}
+
+				if lo.HasKey(untokenized, userstore.COLUMN_LAST_NAME) {
+					lastName = untokenized[userstore.COLUMN_LAST_NAME]
+				}
+
+				if lo.HasKey(untokenized, userstore.COLUMN_EMAIL) {
+					email = untokenized[userstore.COLUMN_EMAIL]
+				}
 
 				userLink := hb.Hyperlink().
 					Text(firstName).

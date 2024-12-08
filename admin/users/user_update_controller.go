@@ -295,11 +295,11 @@ func (controller userUpdateController) saveUser(r *http.Request, data userUpdate
 
 	// err = userTokenize(data.user, data.formFirstName, data.formLastName, data.formEmail)
 
-	if err != nil {
-		data.config.Logger.Error("At userUpdateController > prepareDataAndValidate", "error", err.Error())
-		data.formErrorMessage = "System error. Saving user failed"
-		return data, ""
-	}
+	// if err != nil {
+	// 	data.config.Logger.Error("At userUpdateController > prepareDataAndValidate", "error", err.Error())
+	// 	data.formErrorMessage = "System error. Saving user failed"
+	// 	return data, ""
+	// }
 
 	data.formSuccessMessage = "User saved successfully"
 
@@ -449,16 +449,28 @@ func (controller userUpdateController) prepareDataAndValidate(config shared.Conf
 
 	data.user = user
 
-	// firstName, lastName, email, err := helpers.UserUntokenized(data.user)
+	untokenized, err := userUntokenize(data.config, data.user)
 
-	// if err != nil {
-	// 	config.Logger.Error("At userManagerController > tableUsers", "error", err.Error())
-	// 	return data, "Tokens failed to be read"
-	// }
+	if err != nil {
+		config.Logger.Error("At userManagerController > tableUsers", "error", err.Error())
+		return data, "Tokens failed to be read"
+	}
 
 	firstName := data.user.FirstName()
 	lastName := data.user.LastName()
 	email := data.user.Email()
+
+	if lo.HasKey(untokenized, userstore.COLUMN_FIRST_NAME) {
+		firstName = untokenized[userstore.COLUMN_FIRST_NAME]
+	}
+
+	if lo.HasKey(untokenized, userstore.COLUMN_LAST_NAME) {
+		lastName = untokenized[userstore.COLUMN_LAST_NAME]
+	}
+
+	if lo.HasKey(untokenized, userstore.COLUMN_EMAIL) {
+		email = untokenized[userstore.COLUMN_EMAIL]
+	}
 
 	data.formFirstName = firstName
 	data.formLastName = lastName
