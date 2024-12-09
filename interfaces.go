@@ -11,6 +11,16 @@ type StoreInterface interface {
 	AutoMigrate() error
 	EnableDebug(debug bool)
 	DB() *sql.DB
+
+	// RoleCreate(ctx context.Context, role RoleInterface) error
+	// RoleDelete(ctx context.Context, role RoleInterface) error
+	// RoleDeleteByID(ctx context.Context, id string) error
+	// RoleFindByID(ctx context.Context, id string) (RoleInterface, error)
+	// RoleList(ctx context.Context, query RoleQueryInterface) ([]RoleInterface, error)
+	// RoleSoftDelete(ctx context.Context, role RoleInterface) error
+	// RoleSoftDeleteByID(ctx context.Context, id string) error
+	// RoleUpdate(ctx context.Context, role RoleInterface) error
+
 	UserCreate(ctx context.Context, user UserInterface) error
 	UserCount(ctx context.Context, options UserQueryInterface) (int64, error)
 	UserDelete(ctx context.Context, user UserInterface) error
@@ -21,6 +31,48 @@ type StoreInterface interface {
 	UserSoftDelete(ctx context.Context, user UserInterface) error
 	UserSoftDeleteByID(ctx context.Context, id string) error
 	UserUpdate(ctx context.Context, user UserInterface) error
+}
+
+type RoleInterface interface {
+	// from dataobject
+
+	Data() map[string]string
+	DataChanged() map[string]string
+	MarkAsNotDirty()
+
+	// setters and getters
+
+	CreatedAt() string
+	CreatedAtCarbon() carbon.Carbon
+	SetCreatedAt(createdAt string) RoleInterface
+
+	Handle() string
+	SetHandle(handle string) RoleInterface
+
+	ID() string
+	SetID(id string) RoleInterface
+
+	Name() string
+	SetName(name string) RoleInterface
+
+	Memo() string
+	SetMemo(memo string) RoleInterface
+
+	Meta(name string) string
+	SetMeta(name string, value string) error
+	Metas() (map[string]string, error)
+	SetMetas(metas map[string]string) error
+
+	Status() string
+	SetStatus(status string) RoleInterface
+
+	SoftDeletedAt() string
+	SoftDeletedAtCarbon() carbon.Carbon
+	SetSoftDeletedAt(softDeletedAt string) RoleInterface
+
+	UpdatedAt() string
+	UpdatedAtCarbon() carbon.Carbon
+	SetUpdatedAt(updatedAt string) RoleInterface
 }
 
 type UserInterface interface {
@@ -108,45 +160,4 @@ type UserInterface interface {
 	UpdatedAt() string
 	UpdatedAtCarbon() carbon.Carbon
 	SetUpdatedAt(updatedAt string) UserInterface
-}
-
-type UserQueryInterface interface {
-	ID() string
-	SetID(id string) (UserQueryInterface, error)
-
-	IDIn() []string
-	SetIDIn(idIn []string) (UserQueryInterface, error)
-
-	Status() string
-	SetStatus(status string) (UserQueryInterface, error)
-
-	StatusIn() []string
-	SetStatusIn(statusIn []string) (UserQueryInterface, error)
-
-	Email() string
-	SetEmail(email string) (UserQueryInterface, error)
-
-	CreatedAtGte() string
-	SetCreatedAtGte(createdAtGte string) (UserQueryInterface, error)
-
-	CreatedAtLte() string
-	SetCreatedAtLte(createdAtLte string) (UserQueryInterface, error)
-
-	Offset() int
-	SetOffset(offset int) (UserQueryInterface, error)
-
-	Limit() int
-	SetLimit(limit int) (UserQueryInterface, error)
-
-	SortOrder() string
-	SetSortOrder(sortOrder string) (UserQueryInterface, error)
-
-	OrderBy() string
-	SetOrderBy(orderBy string) (UserQueryInterface, error)
-
-	CountOnly() bool
-	SetCountOnly(countOnly bool) UserQueryInterface
-
-	WithSoftDeleted() bool
-	SetWithSoftDeleted(withDeleted bool) UserQueryInterface
 }

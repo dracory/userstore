@@ -586,69 +586,27 @@ func (controller *userManagerController) fetchUserList(data userManagerControlle
 	query := userstore.NewUserQuery()
 
 	if len(userIDs) > 0 {
-		query, err = query.SetIDIn(userIDs)
-
-		if err != nil {
-			data.config.Logger.Error("At userManagerController > prepareData", "error", err.Error())
-			return []userstore.UserInterface{}, 0, err
-		}
+		query = query.SetIDIn(userIDs)
 	}
 
 	if data.formStatus != "" {
-		query, err = query.SetStatus(data.formStatus)
-
-		if err != nil {
-			data.config.Logger.Error("At userManagerController > prepareData", "error", err.Error())
-			return []userstore.UserInterface{}, 0, err
-		}
+		query = query.SetStatus(data.formStatus)
 	}
 
-	query, err = query.SetSortOrder(data.sortOrder)
+	query = query.SetSortDirection(data.sortOrder)
 
-	if err != nil {
-		data.config.Logger.Error("At userManagerController > prepareData", "error", err.Error())
-		return []userstore.UserInterface{}, 0, err
-	}
+	query = query.SetOrderBy(data.sortBy)
 
-	query, err = query.SetOrderBy(data.sortBy)
+	query = query.SetOffset(data.pageInt * data.perPage)
 
-	if err != nil {
-		data.config.Logger.Error("At userManagerController > prepareData", "error", err.Error())
-		return []userstore.UserInterface{}, 0, err
-	}
-
-	query, err = query.SetOffset(data.pageInt * data.perPage)
-
-	if err != nil {
-		data.config.Logger.Error("At userManagerController > prepareData", "error", err.Error())
-		return []userstore.UserInterface{}, 0, err
-	}
-
-	query, err = query.SetLimit(data.perPage)
-
-	if err != nil {
-		data.config.Logger.Error("At userManagerController > prepareData", "error", err.Error())
-		return []userstore.UserInterface{}, 0, err
-	}
+	query = query.SetLimit(data.perPage)
 
 	if data.formCreatedFrom != "" {
-		// query.CreatedAtGte = data.formCreatedFrom + " 00:00:00"
-		query, err = query.SetCreatedAtGte(data.formCreatedFrom + " 00:00:00")
-
-		if err != nil {
-			data.config.Logger.Error("At userManagerController > prepareData", "error", err.Error())
-			return []userstore.UserInterface{}, 0, err
-		}
+		query = query.SetCreatedAtGte(data.formCreatedFrom + " 00:00:00")
 	}
 
 	if data.formCreatedTo != "" {
-		// query.CreatedAtLte = data.formCreatedTo + " 23:59:59"
-		query, err = query.SetCreatedAtLte(data.formCreatedTo + " 23:59:59")
-
-		if err != nil {
-			data.config.Logger.Error("At userManagerController > prepareData", "error", err.Error())
-			return []userstore.UserInterface{}, 0, err
-		}
+		query = query.SetCreatedAtLte(data.formCreatedTo + " 23:59:59")
 	}
 
 	userList, err := data.config.Store.UserList(context.Background(), query)
