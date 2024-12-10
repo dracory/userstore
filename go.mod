@@ -6,11 +6,11 @@ require (
 	github.com/asaskevich/govalidator v0.0.0-20230301143203-a9d515a09cc2
 	github.com/doug-martin/goqu/v9 v9.19.0
 	github.com/dromara/carbon/v2 v2.5.2
-	github.com/gouniverse/base v0.0.9
+	github.com/gouniverse/base v0.1.0
 	github.com/gouniverse/bs v0.13.0
 	github.com/gouniverse/cdn v1.5.0
 	github.com/gouniverse/dataobject v0.3.0
-	github.com/gouniverse/form v0.15.3
+	github.com/gouniverse/form v0.15.4
 	github.com/gouniverse/hb v1.80.1
 	github.com/gouniverse/maputils v0.7.0
 	github.com/gouniverse/sb v0.8.0

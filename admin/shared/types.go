@@ -23,7 +23,7 @@ type Config struct {
 	Logger         *slog.Logger
 	Store          userstore.StoreInterface
 	Layout         func(http.ResponseWriter, *http.Request, LayoutOptions) string
-	HomeURL        string
+	AdminHomeURL   string
 	WebsiteUrl     string
 
 	TokenizedColumns []string

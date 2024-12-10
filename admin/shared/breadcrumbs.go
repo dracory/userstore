@@ -11,19 +11,17 @@ type Breadcrumb struct {
 }
 
 func Breadcrumbs(config Config, pageBreadcrumbs []Breadcrumb) hb.TagInterface {
-	adminHomeURL := config.HomeURL
-
 	adminHomeBreadcrumb := lo.
-		If(adminHomeURL != "", Breadcrumb{
+		If(config.AdminHomeURL != "", Breadcrumb{
 			Name: "Home",
-			URL:  adminHomeURL,
+			URL:  config.AdminHomeURL,
 		}).
 		Else(Breadcrumb{})
 
 	breadcrumbItems := []Breadcrumb{
 		adminHomeBreadcrumb,
 		{
-			Name: "Users",
+			Name: "User Dashboard",
 			URL:  Url(config.Request, PathHome, nil),
 		},
 	}

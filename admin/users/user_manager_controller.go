@@ -3,12 +3,6 @@ package admin
 import (
 	"context"
 	"net/http"
-
-	// "project/config"
-
-	// "project/internal/helpers"
-	// "project/internal/layouts"
-	// "project/internal/links"
 	"strings"
 
 	"github.com/gouniverse/bs"
@@ -366,7 +360,11 @@ func (controller *userManagerController) tableUsers(data userManagerControllerDa
 	})
 }
 
-func (controller *userManagerController) sortableColumnLabel(data userManagerControllerData, tableLabel string, columnName string) hb.TagInterface {
+func (controller *userManagerController) sortableColumnLabel(
+	data userManagerControllerData,
+	tableLabel string,
+	columnName string,
+) hb.TagInterface {
 	isSelected := strings.EqualFold(data.sortBy, columnName)
 
 	direction := lo.If(data.sortOrder == "asc", "desc").Else("asc")
@@ -390,7 +388,11 @@ func (controller *userManagerController) sortableColumnLabel(data userManagerCon
 		Href(link)
 }
 
-func (controller *userManagerController) sortingIndicator(columnName string, sortByColumnName string, sortOrder string) hb.TagInterface {
+func (controller *userManagerController) sortingIndicator(
+	columnName,
+	sortByColumnName,
+	sortOrder string,
+) hb.TagInterface {
 	isSelected := strings.EqualFold(sortByColumnName, columnName)
 
 	direction := lo.If(isSelected && sortOrder == "asc", "up").
@@ -470,7 +472,7 @@ func (controller *userManagerController) tableFilter(data userManagerControllerD
 		})
 }
 
-func (controller *userManagerController) tablePagination(data userManagerControllerData, count int, page int, perPage int) hb.TagInterface {
+func (controller *userManagerController) tablePagination(data userManagerControllerData, count, page, perPage int) hb.TagInterface {
 	url := shared.Url(data.config.Request, shared.PathUsers, map[string]string{
 		"status":       data.formStatus,
 		"first_name":   data.formFirstName,

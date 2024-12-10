@@ -67,10 +67,6 @@ func (controller userUpdateController) checkAndProcess(config shared.Config) (ht
 func (controller userUpdateController) page(data userUpdateControllerData) hb.TagInterface {
 	breadcrumbs := shared.Breadcrumbs(data.config, []shared.Breadcrumb{
 		{
-			Name: "Home",
-			URL:  shared.Url(data.config.Request, shared.PathHome, nil),
-		},
-		{
 			Name: "User Manager",
 			URL:  shared.Url(data.config.Request, shared.PathUsers, nil),
 		},
@@ -84,8 +80,9 @@ func (controller userUpdateController) page(data userUpdateControllerData) hb.Ta
 
 	buttonSave := hb.Button().
 		Class("btn btn-primary ms-2 float-end").
-		Child(hb.I().Class("bi bi-save").Style("margin-top:-4px;margin-right:8px;font-size:16px;")).
+		Child(hb.I().Class("bi bi-save me-3").Style("font-size:16px;")).
 		HTML("Save").
+		Child(hb.Span().Class("spinner-border spinner-border-sm ms-2 htmx-indicator")).
 		HxInclude("#FormUserUpdate").
 		HxPost(shared.Url(data.config.Request, shared.PathUserUpdate, map[string]string{"user_id": data.userID})).
 		HxTarget("#FormUserUpdate")
@@ -98,7 +95,7 @@ func (controller userUpdateController) page(data userUpdateControllerData) hb.Ta
 
 	heading := hb.Heading1().
 		HTML("Edit User").
-		Child(buttonSave).
+		// Child(buttonSave).
 		Child(buttonCancel)
 
 	card := hb.Div().
@@ -117,96 +114,128 @@ func (controller userUpdateController) page(data userUpdateControllerData) hb.Ta
 				Class("card-body").
 				Child(controller.form(data)))
 
-	userTitle := hb.Heading2().
+	subheading := hb.Heading2().
 		Class("mb-3").
 		Text("User: ").
-		Text(data.user.FirstName()).
+		Text(data.userFirstName).
 		Text(" ").
-		Text(data.user.LastName())
+		Text(data.userLastName)
 
 	return hb.Div().
 		Class("container").
 		Child(breadcrumbs).
 		Child(hb.HR()).
 		Child(heading).
-		Child(userTitle).
+		Child(subheading).
 		Child(card)
 }
 
 func (controller userUpdateController) form(data userUpdateControllerData) hb.TagInterface {
-	fieldsDetails := []form.FieldInterface{
-		form.NewField(form.FieldOptions{
-			Label: "Status",
-			Name:  "user_status",
-			Type:  form.FORM_FIELD_TYPE_SELECT,
-			Value: data.formStatus,
-			Help:  `The status of the user.`,
-			Options: []form.FieldOption{
-				{
-					Value: "- not selected -",
-					Key:   "",
-				},
-				{
-					Value: "Active",
-					Key:   userstore.USER_STATUS_ACTIVE,
-				},
-				{
-					Value: "Unverified",
-					Key:   userstore.USER_STATUS_UNVERIFIED,
-				},
-				{
-					Value: "Inactive",
-					Key:   userstore.USER_STATUS_INACTIVE,
-				},
-				{
-					Value: "In Trash Bin",
-					Key:   userstore.USER_STATUS_DELETED,
-				},
+	fieldStatus := form.NewField(form.FieldOptions{
+		Label: "Status",
+		Name:  "user_status",
+		Type:  form.FORM_FIELD_TYPE_SELECT,
+		Value: data.formStatus,
+		Help:  `The status of the user.`,
+		Options: []form.FieldOption{
+			{
+				Value: "- not selected -",
+				Key:   "",
 			},
-		}),
-		form.NewField(form.FieldOptions{
-			Label: "First Name",
-			Name:  "user_first_name",
-			Type:  form.FORM_FIELD_TYPE_STRING,
-			Value: data.formFirstName,
-			Help:  `The first name of the user.`,
-		}),
-		form.NewField(form.FieldOptions{
-			Label: "Last Name",
-			Name:  "user_last_name",
-			Type:  form.FORM_FIELD_TYPE_STRING,
-			Value: data.formLastName,
-			Help:  `The last name of the user.`,
-		}),
-		form.NewField(form.FieldOptions{
-			Label: "Email",
-			Name:  "user_email",
-			Type:  form.FORM_FIELD_TYPE_STRING,
-			Value: data.formEmail,
-			Help:  `The email address of the user.`,
-		}),
-		form.NewField(form.FieldOptions{
-			Label: "Admin Notes",
-			Name:  "user_memo",
-			Type:  form.FORM_FIELD_TYPE_TEXTAREA,
-			Value: data.formMemo,
-			Help:  "Admin notes for this bloguser. These notes will not be visible to the public.",
-		}),
-		form.NewField(form.FieldOptions{
-			Label:    "User ID",
-			Name:     "user_id",
-			Type:     form.FORM_FIELD_TYPE_STRING,
-			Value:    data.userID,
-			Readonly: true,
-			Help:     "The reference number (ID) of the user.",
-		}),
-		form.NewField(form.FieldOptions{
-			Label:    "User ID",
-			Name:     "user_id",
-			Type:     form.FORM_FIELD_TYPE_HIDDEN,
-			Value:    data.userID,
-			Readonly: true,
-		}),
+			{
+				Value: "Active",
+				Key:   userstore.USER_STATUS_ACTIVE,
+			},
+			{
+				Value: "Unverified",
+				Key:   userstore.USER_STATUS_UNVERIFIED,
+			},
+			{
+				Value: "Inactive",
+				Key:   userstore.USER_STATUS_INACTIVE,
+			},
+			{
+				Value: "In Trash Bin",
+				Key:   userstore.USER_STATUS_DELETED,
+			},
+		},
+	})
+
+	fieldFirstName := form.NewField(form.FieldOptions{
+		Label: "First Name",
+		Name:  "user_first_name",
+		Type:  form.FORM_FIELD_TYPE_STRING,
+		Value: data.formFirstName,
+		Help:  `The first name of the user.`,
+	})
+
+	fieldMiddleNames := form.NewField(form.FieldOptions{
+		Label: "Middle Names",
+		Name:  "user_middle_names",
+		Type:  form.FORM_FIELD_TYPE_STRING,
+		Value: data.formMiddleNames,
+		Help:  `The middle names of the user.`,
+	})
+
+	fieldLastName := form.NewField(form.FieldOptions{
+		Label: "Last Name",
+		Name:  "user_last_name",
+		Type:  form.FORM_FIELD_TYPE_STRING,
+		Value: data.formLastName,
+		Help:  `The last name of the user.`,
+	})
+
+	fieldBusinessName := form.NewField(form.FieldOptions{
+		Label: "Business Name",
+		Name:  "user_business_name",
+		Type:  form.FORM_FIELD_TYPE_STRING,
+		Value: data.formBusinessName,
+		Help:  `The business name of the user.`,
+	})
+
+	fieldEmail := form.NewField(form.FieldOptions{
+		Label: "Email",
+		Name:  "user_email",
+		Type:  form.FORM_FIELD_TYPE_STRING,
+		Value: data.formEmail,
+		Help:  `The email address of the user.`,
+	})
+
+	fieldPhone := form.NewField(form.FieldOptions{
+		Label: "Phone",
+		Name:  "user_phone",
+		Type:  form.FORM_FIELD_TYPE_STRING,
+		Value: data.formPhone,
+		Help:  `The phone number of the user.`,
+	})
+
+	fieldMemo := form.NewField(form.FieldOptions{
+		Label: "Admin Notes",
+		Name:  "user_memo",
+		Type:  form.FORM_FIELD_TYPE_TEXTAREA,
+		Value: data.formMemo,
+		Help:  "Admin notes for this bloguser. These notes will not be visible to the public.",
+	})
+
+	fieldUserID := form.NewField(form.FieldOptions{
+		Label:    "User ID",
+		Name:     "user_id",
+		Type:     form.FORM_FIELD_TYPE_STRING,
+		Value:    data.userID,
+		Readonly: true,
+		Help:     "The reference number (ID) of the user.",
+	})
+
+	fieldsDetails := []form.FieldInterface{
+		fieldStatus,
+		fieldFirstName,
+		fieldMiddleNames,
+		fieldLastName,
+		fieldBusinessName,
+		fieldEmail,
+		fieldPhone,
+		fieldMemo,
+		fieldUserID,
 	}
 
 	formUserUpdate := form.NewForm(form.FormOptions{
@@ -234,8 +263,11 @@ func (controller userUpdateController) form(data userUpdateControllerData) hb.Ta
 
 func (controller userUpdateController) saveUser(r *http.Request, data userUpdateControllerData) (d userUpdateControllerData, errorMessage string) {
 	data.formFirstName = utils.Req(r, "user_first_name", "")
+	data.formMiddleNames = utils.Req(r, "user_middle_names", "")
 	data.formLastName = utils.Req(r, "user_last_name", "")
+	data.formBusinessName = utils.Req(r, "user_business_name", "")
 	data.formEmail = utils.Req(r, "user_email", "")
+	data.formPhone = utils.Req(r, "user_phone", "")
 	data.formMemo = utils.Req(r, "user_memo", "")
 	data.formStatus = utils.Req(r, "user_status", "")
 
@@ -281,25 +313,6 @@ func (controller userUpdateController) saveUser(r *http.Request, data userUpdate
 		data.formErrorMessage = "System error. Saving user failed at regular columns"
 		return data, ""
 	}
-
-	// data.user.SetMemo(data.formMemo)
-	// data.user.SetStatus(data.formStatus)
-
-	// err := data.config.Store.UserUpdate(context.Background(), data.user)
-
-	// if err != nil {
-	// 	data.config.Logger.Error("At userUpdateController > prepareDataAndValidate", "error", err.Error())
-	// 	data.formErrorMessage = "System error. Saving user failed"
-	// 	return data, ""
-	// }
-
-	// err = userTokenize(data.user, data.formFirstName, data.formLastName, data.formEmail)
-
-	// if err != nil {
-	// 	data.config.Logger.Error("At userUpdateController > prepareDataAndValidate", "error", err.Error())
-	// 	data.formErrorMessage = "System error. Saving user failed"
-	// 	return data, ""
-	// }
 
 	data.formSuccessMessage = "User saved successfully"
 
@@ -382,6 +395,8 @@ func (controller userUpdateController) saveRegularColumns(data userUpdateControl
 			data.user.SetFirstName(value)
 		case userstore.COLUMN_LAST_NAME:
 			data.user.SetLastName(value)
+		case userstore.COLUMN_BUSINESS_NAME:
+			data.user.SetBusinessName(value)
 		case userstore.COLUMN_EMAIL:
 			data.user.SetEmail(value)
 		case userstore.COLUMN_STATUS:
@@ -403,11 +418,14 @@ func (controller userUpdateController) saveRegularColumns(data userUpdateControl
 	return nil
 }
 
-func (controller userUpdateController) prepareColumnsForUpdate(data userUpdateControllerData) (tokenizedColumns map[string]string, regularColumns map[string]string) {
+func (controller userUpdateController) prepareColumnsForUpdate(data userUpdateControllerData) (tokenizedColumns, regularColumns map[string]string) {
 	allColumnUpdates := map[string]string{}
 	allColumnUpdates[userstore.COLUMN_FIRST_NAME] = data.formFirstName
+	allColumnUpdates[userstore.COLUMN_MIDDLE_NAMES] = data.formMiddleNames
 	allColumnUpdates[userstore.COLUMN_LAST_NAME] = data.formLastName
+	allColumnUpdates[userstore.COLUMN_BUSINESS_NAME] = data.formBusinessName
 	allColumnUpdates[userstore.COLUMN_EMAIL] = data.formEmail
+	allColumnUpdates[userstore.COLUMN_PHONE] = data.formPhone
 	allColumnUpdates[userstore.COLUMN_STATUS] = data.formStatus
 	allColumnUpdates[userstore.COLUMN_MEMO] = data.formMemo
 
@@ -458,10 +476,16 @@ func (controller userUpdateController) prepareDataAndValidate(config shared.Conf
 
 	firstName := data.user.FirstName()
 	lastName := data.user.LastName()
+	businessName := data.user.BusinessName()
 	email := data.user.Email()
+	phone := data.user.Phone()
 
 	if lo.HasKey(untokenized, userstore.COLUMN_FIRST_NAME) {
 		firstName = untokenized[userstore.COLUMN_FIRST_NAME]
+	}
+
+	if lo.HasKey(untokenized, userstore.COLUMN_BUSINESS_NAME) {
+		businessName = untokenized[userstore.COLUMN_BUSINESS_NAME]
 	}
 
 	if lo.HasKey(untokenized, userstore.COLUMN_LAST_NAME) {
@@ -472,9 +496,19 @@ func (controller userUpdateController) prepareDataAndValidate(config shared.Conf
 		email = untokenized[userstore.COLUMN_EMAIL]
 	}
 
+	if lo.HasKey(untokenized, userstore.COLUMN_PHONE) {
+		phone = untokenized[userstore.COLUMN_PHONE]
+	}
+
+	data.userFirstName = firstName // used in subheading
+	data.userLastName = lastName   // used in subheading
+
 	data.formFirstName = firstName
 	data.formLastName = lastName
+	data.formMiddleNames = data.user.MiddleNames()
+	data.formBusinessName = businessName
 	data.formEmail = email
+	data.formPhone = phone
 	data.formMemo = data.user.Memo()
 	data.formStatus = data.user.Status()
 
@@ -486,16 +520,21 @@ func (controller userUpdateController) prepareDataAndValidate(config shared.Conf
 }
 
 type userUpdateControllerData struct {
-	config shared.Config
-	action string
-	userID string
-	user   userstore.UserInterface
+	config        shared.Config
+	action        string
+	userID        string
+	userFirstName string
+	userLastName  string
+	user          userstore.UserInterface
 
 	formErrorMessage   string
 	formSuccessMessage string
+	formBusinessName   string
 	formEmail          string
 	formFirstName      string
 	formLastName       string
+	formMiddleNames    string
+	formPhone          string
 	formMemo           string
 	formStatus         string
 }
