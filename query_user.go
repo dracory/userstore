@@ -32,6 +32,10 @@ type UserQueryInterface interface {
 	IDIn() []string
 	SetIDIn(idIn []string) UserQueryInterface
 
+	HasMetaLike() bool
+	MetaLike() string
+	SetMetaLike(metaLike string) UserQueryInterface
+
 	HasLimit() bool
 	Limit() int
 	SetLimit(limit int) UserQueryInterface
@@ -92,6 +96,10 @@ func (c *userQueryImplementation) Validate() error {
 
 	if c.HasIDIn() && len(c.IDIn()) == 0 {
 		return errors.New("user query. id_in cannot be empty")
+	}
+
+	if c.HasMetaLike() && c.MetaLike() == "" {
+		return errors.New("user query. meta_like cannot be empty")
 	}
 
 	if c.HasStatus() && c.Status() == "" {
@@ -261,6 +269,24 @@ func (c *userQueryImplementation) Limit() int {
 
 func (c *userQueryImplementation) SetLimit(limit int) UserQueryInterface {
 	c.properties["limit"] = limit
+
+	return c
+}
+
+func (c *userQueryImplementation) HasMetaLike() bool {
+	return c.hasProperty("meta_like")
+}
+
+func (c *userQueryImplementation) MetaLike() string {
+	if !c.HasMetaLike() {
+		return ""
+	}
+
+	return c.properties["meta_like"].(string)
+}
+
+func (c *userQueryImplementation) SetMetaLike(metaLike string) UserQueryInterface {
+	c.properties["meta_like"] = metaLike
 
 	return c
 }

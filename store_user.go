@@ -325,6 +325,10 @@ func (store *store) userSelectQuery(options UserQueryInterface) (selectDataset *
 		q = q.Where(goqu.C(COLUMN_EMAIL).Eq(options.Email()))
 	}
 
+	if options.HasMetaLike() {
+		q = q.Where(goqu.C(COLUMN_METAS).Like(`%` + options.MetaLike() + `%`))
+	}
+
 	if options.HasCreatedAtGte() && options.HasCreatedAtLte() {
 		q = q.Where(
 			goqu.C(COLUMN_CREATED_AT).Gte(options.CreatedAtGte()),

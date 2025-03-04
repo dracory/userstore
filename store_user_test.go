@@ -615,3 +615,56 @@ func TestStoreUserSoftDeleteByID(t *testing.T) {
 		t.Fatal("User MUST be soft deleted")
 	}
 }
+
+func TestStoreUserMetaLike(t *testing.T) {
+	store, err := initStore(":memory:")
+	if err != nil {
+		t.Fatal("unexpected error:", err)
+	}
+	defer func() {
+		if err := store.DB().Close(); err != nil {
+			t.Fatal(err)
+		}
+	}()
+
+	// Create a user with metadata containing the search term
+	user := NewUser()
+
+	err = user.SetMetas(map[string]string{"key": "searchTermValue"})
+
+	if err != nil {
+		t.Fatal("unexpected error:", err)
+	}
+
+	err = store.UserCreate(context.Background(), user)
+	if err != nil {
+		t.Fatal("unexpected error:", err)
+	}
+
+	user2 := NewUser()
+
+	err = user2.SetMetas(map[string]string{"key": "searchTermValue2"})
+
+	if err != nil {
+		t.Fatal("unexpected error:", err)
+	}
+
+	err = store.UserCreate(context.Background(), user2)
+	if err != nil {
+		t.Fatal("unexpected error:", err)
+	}
+
+	// Query for users matching the search term
+	users, err := store.UserList(context.Background(), NewUserQuery().SetMetaLike(`"key":"searchTermValue"`))
+	if err != nil {
+		t.Fatal("unexpected error:", err)
+	}
+
+	// Assertions
+	if len(users) != 1 {
+		t.Errorf("Expected one user to be found, but got %d", len(users))
+	}
+	if users[0].ID() != user.ID() {
+		t.Errorf("Incorrect user returned, expected ID %s, but got %s", user.ID(), users[0].ID())
+	}
+}
