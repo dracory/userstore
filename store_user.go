@@ -20,6 +20,10 @@ func (store *store) UserCount(ctx context.Context, options UserQueryInterface) (
 
 	q, _, err := store.userSelectQuery(options)
 
+	if err != nil {
+		return -1, err
+	}
+
 	sqlStr, params, errSql := q.Prepared(true).
 		Limit(1).
 		Select(goqu.COUNT(goqu.Star()).As("count")).
