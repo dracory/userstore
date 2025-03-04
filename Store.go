@@ -11,7 +11,7 @@ import (
 // == TYPE ====================================================================
 
 type store struct {
-	roleTableName      string
+	// roleTableName      string
 	userTableName      string
 	db                 *sql.DB
 	dbDriverName       string

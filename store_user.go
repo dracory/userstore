@@ -201,6 +201,10 @@ func (store *store) UserList(ctx context.Context, query UserQueryInterface) ([]U
 
 	q, columns, err := store.userSelectQuery(query)
 
+	if err != nil {
+		return []UserInterface{}, err
+	}
+
 	sqlStr, sqlParams, errSql := q.Prepared(true).Select(columns...).ToSQL()
 
 	if errSql != nil {
