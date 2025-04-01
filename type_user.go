@@ -140,7 +140,7 @@ func (o *user) CreatedAt() string {
 	return o.Get(COLUMN_CREATED_AT)
 }
 
-func (o *user) CreatedAtCarbon() carbon.Carbon {
+func (o *user) CreatedAtCarbon() *carbon.Carbon {
 	return carbon.Parse(o.CreatedAt(), carbon.UTC)
 }
 
@@ -153,8 +153,8 @@ func (o *user) SoftDeletedAt() string {
 	return o.Get(COLUMN_SOFT_DELETED_AT)
 }
 
-func (o *user) SoftDeletedAtCarbon() carbon.Carbon {
-	return carbon.NewCarbon().Parse(o.SoftDeletedAt(), carbon.UTC)
+func (o *user) SoftDeletedAtCarbon() *carbon.Carbon {
+	return carbon.Parse(o.SoftDeletedAt(), carbon.UTC)
 }
 
 func (o *user) SetSoftDeletedAt(deletedAt string) UserInterface {
@@ -361,8 +361,8 @@ func (o *user) UpdatedAt() string {
 	return o.Get(COLUMN_UPDATED_AT)
 }
 
-func (o *user) UpdatedAtCarbon() carbon.Carbon {
-	return carbon.NewCarbon().Parse(o.Get(COLUMN_UPDATED_AT), carbon.UTC)
+func (o *user) UpdatedAtCarbon() *carbon.Carbon {
+	return carbon.Parse(o.Get(COLUMN_UPDATED_AT), carbon.UTC)
 }
 
 func (o *user) SetUpdatedAt(updatedAt string) UserInterface {

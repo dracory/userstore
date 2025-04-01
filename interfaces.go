@@ -43,7 +43,7 @@ type RoleInterface interface {
 	// setters and getters
 
 	CreatedAt() string
-	CreatedAtCarbon() carbon.Carbon
+	CreatedAtCarbon() *carbon.Carbon
 	SetCreatedAt(createdAt string) RoleInterface
 
 	Handle() string
@@ -67,11 +67,11 @@ type RoleInterface interface {
 	SetStatus(status string) RoleInterface
 
 	SoftDeletedAt() string
-	SoftDeletedAtCarbon() carbon.Carbon
+	SoftDeletedAtCarbon() *carbon.Carbon
 	SetSoftDeletedAt(softDeletedAt string) RoleInterface
 
 	UpdatedAt() string
-	UpdatedAtCarbon() carbon.Carbon
+	UpdatedAtCarbon() *carbon.Carbon
 	SetUpdatedAt(updatedAt string) RoleInterface
 }
 
@@ -106,7 +106,7 @@ type UserInterface interface {
 	SetCountry(country string) UserInterface
 
 	CreatedAt() string
-	CreatedAtCarbon() carbon.Carbon
+	CreatedAtCarbon() *carbon.Carbon
 	SetCreatedAt(createdAt string) UserInterface
 
 	Email() string
@@ -146,7 +146,7 @@ type UserInterface interface {
 	SetRole(role string) UserInterface
 
 	SoftDeletedAt() string
-	SoftDeletedAtCarbon() carbon.Carbon
+	SoftDeletedAtCarbon() *carbon.Carbon
 	SetSoftDeletedAt(deletedAt string) UserInterface
 
 	Timezone() string
@@ -158,6 +158,6 @@ type UserInterface interface {
 	PasswordCompare(password string) bool
 
 	UpdatedAt() string
-	UpdatedAtCarbon() carbon.Carbon
+	UpdatedAtCarbon() *carbon.Carbon
 	SetUpdatedAt(updatedAt string) UserInterface
 }

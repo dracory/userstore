@@ -67,7 +67,7 @@ func (o *role) CreatedAt() string {
 	return o.Get(COLUMN_CREATED_AT)
 }
 
-func (o *role) CreatedAtCarbon() carbon.Carbon {
+func (o *role) CreatedAtCarbon() *carbon.Carbon {
 	return carbon.Parse(o.CreatedAt(), carbon.UTC)
 }
 
@@ -174,8 +174,8 @@ func (o *role) SoftDeletedAt() string {
 	return o.Get(COLUMN_SOFT_DELETED_AT)
 }
 
-func (o *role) SoftDeletedAtCarbon() carbon.Carbon {
-	return carbon.NewCarbon().Parse(o.SoftDeletedAt(), carbon.UTC)
+func (o *role) SoftDeletedAtCarbon() *carbon.Carbon {
+	return carbon.Parse(o.SoftDeletedAt(), carbon.UTC)
 }
 
 func (o *role) SetSoftDeletedAt(deletedAt string) RoleInterface {
@@ -196,8 +196,8 @@ func (o *role) UpdatedAt() string {
 	return o.Get(COLUMN_UPDATED_AT)
 }
 
-func (o *role) UpdatedAtCarbon() carbon.Carbon {
-	return carbon.NewCarbon().Parse(o.Get(COLUMN_UPDATED_AT), carbon.UTC)
+func (o *role) UpdatedAtCarbon() *carbon.Carbon {
+	return carbon.Parse(o.Get(COLUMN_UPDATED_AT), carbon.UTC)
 }
 
 func (o *role) SetUpdatedAt(updatedAt string) RoleInterface {
