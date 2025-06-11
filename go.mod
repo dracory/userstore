@@ -5,20 +5,20 @@ go 1.23.3
 require (
 	github.com/asaskevich/govalidator v0.0.0-20230301143203-a9d515a09cc2
 	github.com/doug-martin/goqu/v9 v9.19.0
-	github.com/dromara/carbon/v2 v2.6.1
+	github.com/dromara/carbon/v2 v2.6.7
 	github.com/gouniverse/base v0.9.0
 	github.com/gouniverse/bs v0.13.0
 	github.com/gouniverse/cdn v1.6.0
-	github.com/gouniverse/dataobject v1.2.0
-	github.com/gouniverse/form v0.16.0
-	github.com/gouniverse/hb v1.83.4
+	github.com/gouniverse/dataobject v1.3.0
+	github.com/gouniverse/form v0.17.0
+	github.com/gouniverse/hb v1.85.0
 	github.com/gouniverse/maputils v0.7.0
 	github.com/gouniverse/sb v0.8.0
 	github.com/gouniverse/uid v1.5.0
 	github.com/gouniverse/utils v1.45.4
-	github.com/samber/lo v1.49.1
-	github.com/spf13/cast v1.7.1
-	modernc.org/sqlite v1.37.0
+	github.com/samber/lo v1.51.0
+	github.com/spf13/cast v1.9.2
+	modernc.org/sqlite v1.38.0
 )
 
 require (
@@ -38,13 +38,13 @@ require (
 	github.com/mingrammer/cfmt v1.1.0 // indirect
 	github.com/ncruces/go-strftime v0.1.9 // indirect
 	github.com/remyoudompheng/bigfft v0.0.0-20230129092748-24d4a6f8daec // indirect
-	golang.org/x/crypto v0.36.0 // indirect
-	golang.org/x/exp v0.0.0-20250305212735-054e65f0b394 // indirect
-	golang.org/x/net v0.38.0 // indirect
-	golang.org/x/sys v0.31.0 // indirect
-	golang.org/x/term v0.30.0 // indirect
-	golang.org/x/text v0.23.0 // indirect
-	modernc.org/libc v1.62.1 // indirect
+	golang.org/x/crypto v0.39.0 // indirect
+	golang.org/x/exp v0.0.0-20250606033433-dcc06ee1d476 // indirect
+	golang.org/x/net v0.41.0 // indirect
+	golang.org/x/sys v0.33.0 // indirect
+	golang.org/x/term v0.32.0 // indirect
+	golang.org/x/text v0.26.0 // indirect
+	modernc.org/libc v1.65.10 // indirect
 	modernc.org/mathutil v1.7.1 // indirect
-	modernc.org/memory v1.9.1 // indirect
+	modernc.org/memory v1.11.0 // indirect
 )
