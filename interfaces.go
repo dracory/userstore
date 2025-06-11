@@ -134,7 +134,9 @@ type UserInterface interface {
 	SetMiddleNames(middleNames string) UserInterface
 
 	Password() string
+	PasswordCompare(password string) bool
 	SetPassword(password string) UserInterface
+	SetPasswordAndHash(password string) error
 
 	Phone() string
 	SetPhone(phone string) UserInterface
@@ -154,8 +156,6 @@ type UserInterface interface {
 
 	Status() string
 	SetStatus(status string) UserInterface
-
-	PasswordCompare(password string) bool
 
 	UpdatedAt() string
 	UpdatedAtCarbon() *carbon.Carbon
