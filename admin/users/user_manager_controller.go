@@ -5,12 +5,12 @@ import (
 	"net/http"
 	"strings"
 
+	"github.com/dracory/bs"
 	"github.com/dracory/form"
 	"github.com/dracory/req"
 	"github.com/dracory/sb"
 	"github.com/dracory/userstore"
 	"github.com/dracory/userstore/admin/shared"
-	"github.com/gouniverse/bs"
 	"github.com/gouniverse/hb"
 	"github.com/samber/lo"
 	"github.com/spf13/cast"

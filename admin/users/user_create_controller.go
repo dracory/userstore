@@ -4,10 +4,10 @@ import (
 	"context"
 	"net/http"
 
+	"github.com/dracory/bs"
 	"github.com/dracory/req"
 	"github.com/dracory/userstore"
 	"github.com/dracory/userstore/admin/shared"
-	"github.com/gouniverse/bs"
 	"github.com/gouniverse/hb"
 )
 
