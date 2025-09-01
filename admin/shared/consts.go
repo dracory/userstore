@@ -1,6 +1,6 @@
 package shared
 
-import "github.com/gouniverse/cdn"
+import "github.com/dracory/cdn"
 
 const PathHome = "home"
 const PathGroups = "groups"
