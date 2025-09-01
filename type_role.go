@@ -2,10 +2,10 @@ package userstore
 
 import (
 	"github.com/dracory/dataobject"
+	"github.com/dracory/uid"
 	"github.com/dromara/carbon/v2"
 	"github.com/gouniverse/maputils"
 	"github.com/gouniverse/sb"
-	"github.com/gouniverse/uid"
 	"github.com/gouniverse/utils"
 )
 
