@@ -1,7 +1,7 @@
 package userstore
 
 import (
-	"github.com/gouniverse/sb"
+	"github.com/dracory/sb"
 )
 
 // sqlRoleTableCreate returns a SQL string for creating the role table

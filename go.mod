@@ -9,13 +9,13 @@ require (
 	github.com/dracory/dataobject v1.5.0
 	github.com/dracory/form v0.18.0
 	github.com/dracory/req v0.1.0
+	github.com/dracory/sb v0.11.0
 	github.com/dracory/str v0.3.0
 	github.com/dracory/uid v1.7.0
 	github.com/dromara/carbon/v2 v2.6.11
 	github.com/gouniverse/base v0.9.0
 	github.com/gouniverse/bs v0.13.0
 	github.com/gouniverse/hb v1.87.0
-	github.com/gouniverse/sb v0.10.0
 	github.com/samber/lo v1.51.0
 	github.com/spf13/cast v1.9.2
 	modernc.org/sqlite v1.38.2
@@ -23,6 +23,7 @@ require (
 
 require (
 	github.com/darkoatanasovski/htmltags v1.0.0 // indirect
+	github.com/dracory/database v0.3.0 // indirect
 	github.com/dustin/go-humanize v1.0.1 // indirect
 	github.com/georgysavva/scany v1.2.3 // indirect
 	github.com/google/uuid v1.6.0 // indirect
