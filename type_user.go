@@ -1,12 +1,13 @@
 package userstore
 
 import (
+	"encoding/json"
+
 	"github.com/dracory/dataobject"
+	"github.com/dracory/str"
 	"github.com/dracory/uid"
 	"github.com/dromara/carbon/v2"
-	"github.com/gouniverse/maputils"
 	"github.com/gouniverse/sb"
-	"github.com/gouniverse/utils"
 )
 
 // == CLASS ===================================================================
@@ -223,12 +224,12 @@ func (o *user) Metas() (map[string]string, error) {
 		metasStr = "{}"
 	}
 
-	metasJson, errJson := utils.FromJSON(metasStr, map[string]string{})
-	if errJson != nil {
-		return map[string]string{}, errJson
+	var metas map[string]string
+	if err := json.Unmarshal([]byte(metasStr), &metas); err != nil {
+		return map[string]string{}, err
 	}
 
-	return maputils.MapStringAnyToMapStringString(metasJson.(map[string]any)), nil
+	return metas, nil
 }
 
 func (o *user) Meta(name string) string {
@@ -252,11 +253,11 @@ func (o *user) SetMeta(name, value string) error {
 // SetMetas stores metas as json string
 // Warning: it overwrites any existing metas
 func (o *user) SetMetas(metas map[string]string) error {
-	mapString, err := utils.ToJSON(metas)
+	mapString, err := json.Marshal(metas)
 	if err != nil {
 		return err
 	}
-	o.Set(COLUMN_METAS, mapString)
+	o.Set(COLUMN_METAS, string(mapString))
 	return nil
 }
 
@@ -280,12 +281,12 @@ func (o *user) Password() string {
 
 func (o *user) PasswordCompare(password string) bool {
 	hash := o.Get(COLUMN_PASSWORD)
-	return utils.StrToBcryptHashCompare(password, hash)
+	return str.BcryptHashCompare(password, hash)
 }
 
 // SetPasswordAndHash hashes the password before saving
 func (o *user) SetPasswordAndHash(password string) error {
-	hash, err := utils.StrToBcryptHash(password)
+	hash, err := str.ToBcryptHash(password)
 
 	if err != nil {
 		return err

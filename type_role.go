@@ -1,12 +1,12 @@
 package userstore
 
 import (
+	"encoding/json"
+
 	"github.com/dracory/dataobject"
 	"github.com/dracory/uid"
 	"github.com/dromara/carbon/v2"
-	"github.com/gouniverse/maputils"
 	"github.com/gouniverse/sb"
-	"github.com/gouniverse/utils"
 )
 
 // == CLASS ===================================================================
@@ -110,12 +110,13 @@ func (o *role) Metas() (map[string]string, error) {
 		metasStr = "{}"
 	}
 
-	metasJson, errJson := utils.FromJSON(metasStr, map[string]string{})
+	metasJson := map[string]string{}
+	errJson := json.Unmarshal([]byte(metasStr), &metasJson)
 	if errJson != nil {
 		return map[string]string{}, errJson
 	}
 
-	return maputils.MapStringAnyToMapStringString(metasJson.(map[string]any)), nil
+	return metasJson, nil
 }
 
 func (o *role) Meta(name string) string {
@@ -139,11 +140,11 @@ func (o *role) SetMeta(name, value string) error {
 // SetMetas stores metas as json string
 // Warning: it overwrites any existing metas
 func (o *role) SetMetas(metas map[string]string) error {
-	mapString, err := utils.ToJSON(metas)
+	mapString, err := json.Marshal(metas)
 	if err != nil {
 		return err
 	}
-	o.Set(COLUMN_METAS, mapString)
+	o.Set(COLUMN_METAS, string(mapString))
 	return nil
 }
 

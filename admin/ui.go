@@ -3,10 +3,10 @@ package admin
 import (
 	"errors"
 
+	"github.com/dracory/req"
 	"github.com/dracory/userstore/admin/shared"
 	adminUsers "github.com/dracory/userstore/admin/users"
 	"github.com/gouniverse/hb"
-	"github.com/gouniverse/utils"
 )
 
 func UI(config shared.Config) (hb.TagInterface, error) {
@@ -44,7 +44,7 @@ func UI(config shared.Config) (hb.TagInterface, error) {
 }
 
 func handler(config shared.Config) hb.TagInterface {
-	controller := utils.Req(config.Request, "controller", "")
+	controller := req.GetString(config.Request, "controller")
 
 	if controller == "" {
 		controller = shared.PathHome

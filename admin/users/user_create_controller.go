@@ -3,13 +3,12 @@ package admin
 import (
 	"context"
 	"net/http"
-	"strings"
 
+	"github.com/dracory/req"
 	"github.com/dracory/userstore"
 	"github.com/dracory/userstore/admin/shared"
 	"github.com/gouniverse/bs"
 	"github.com/gouniverse/hb"
-	"github.com/gouniverse/utils"
 )
 
 type userCreateController struct{}
@@ -135,9 +134,9 @@ func (controller *userCreateController) modal(data userCreateControllerData) hb.
 
 func (controller *userCreateController) prepareDataAndValidate(config shared.Config) (data userCreateControllerData, errorMessage string) {
 	data.config = config
-	data.firstName = strings.TrimSpace(utils.Req(config.Request, "user_first_name", ""))
-	data.lastName = strings.TrimSpace(utils.Req(config.Request, "user_last_name", ""))
-	data.email = strings.TrimSpace(utils.Req(config.Request, "user_email", ""))
+	data.firstName = req.GetStringTrimmed(config.Request, "user_first_name")
+	data.lastName = req.GetStringTrimmed(config.Request, "user_last_name")
+	data.email = req.GetStringTrimmed(config.Request, "user_email")
 
 	if config.Request.Method != http.MethodPost {
 		return data, ""

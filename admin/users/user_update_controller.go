@@ -8,11 +8,12 @@ import (
 	"strings"
 
 	"github.com/asaskevich/govalidator"
+	"github.com/dracory/req"
 	"github.com/dracory/userstore"
 	"github.com/dracory/userstore/admin/shared"
 	"github.com/gouniverse/form"
 	"github.com/gouniverse/hb"
-	"github.com/gouniverse/utils"
+
 	"github.com/samber/lo"
 )
 
@@ -262,14 +263,14 @@ func (controller userUpdateController) form(data userUpdateControllerData) hb.Ta
 }
 
 func (controller userUpdateController) saveUser(r *http.Request, data userUpdateControllerData) (d userUpdateControllerData, errorMessage string) {
-	data.formFirstName = utils.Req(r, "user_first_name", "")
-	data.formMiddleNames = utils.Req(r, "user_middle_names", "")
-	data.formLastName = utils.Req(r, "user_last_name", "")
-	data.formBusinessName = utils.Req(r, "user_business_name", "")
-	data.formEmail = utils.Req(r, "user_email", "")
-	data.formPhone = utils.Req(r, "user_phone", "")
-	data.formMemo = utils.Req(r, "user_memo", "")
-	data.formStatus = utils.Req(r, "user_status", "")
+	data.formFirstName = req.GetStringTrimmed(r, "user_first_name")
+	data.formMiddleNames = req.GetStringTrimmed(r, "user_middle_names")
+	data.formLastName = req.GetStringTrimmed(r, "user_last_name")
+	data.formBusinessName = req.GetStringTrimmed(r, "user_business_name")
+	data.formEmail = req.GetStringTrimmed(r, "user_email")
+	data.formPhone = req.GetStringTrimmed(r, "user_phone")
+	data.formMemo = req.GetStringTrimmed(r, "user_memo")
+	data.formStatus = req.GetStringTrimmed(r, "user_status")
 
 	if data.formStatus == "" {
 		data.formErrorMessage = "Status is required"
@@ -447,8 +448,8 @@ func (controller userUpdateController) prepareColumnsForUpdate(data userUpdateCo
 
 func (controller userUpdateController) prepareDataAndValidate(config shared.Config) (data userUpdateControllerData, errorMessage string) {
 	data.config = config
-	data.action = utils.Req(config.Request, "action", "")
-	data.userID = utils.Req(config.Request, "user_id", "")
+	data.action = req.GetStringTrimmed(config.Request, "action")
+	data.userID = req.GetStringTrimmed(config.Request, "user_id")
 
 	if data.userID == "" {
 		return data, "User ID is required"

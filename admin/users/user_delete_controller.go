@@ -3,11 +3,11 @@ package admin
 import (
 	"context"
 
+	"github.com/dracory/req"
 	"github.com/dracory/userstore"
 	"github.com/dracory/userstore/admin/shared"
 	"github.com/gouniverse/bs"
 	"github.com/gouniverse/hb"
-	"github.com/gouniverse/utils"
 )
 
 type userDeleteController struct{}
@@ -120,7 +120,7 @@ func (controller *userDeleteController) modal(data userDeleteControllerData) hb.
 
 func (controller *userDeleteController) prepareDataAndValidate(config shared.Config) (data userDeleteControllerData, errorMessage string) {
 	data.config = config
-	data.userID = utils.Req(config.Request, "user_id", "")
+	data.userID = req.GetString(config.Request, "user_id")
 
 	if data.userID == "" {
 		return data, "user id is required"

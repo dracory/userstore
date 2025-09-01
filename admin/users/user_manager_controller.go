@@ -5,13 +5,13 @@ import (
 	"net/http"
 	"strings"
 
+	"github.com/dracory/req"
 	"github.com/dracory/userstore"
 	"github.com/dracory/userstore/admin/shared"
 	"github.com/gouniverse/bs"
 	"github.com/gouniverse/form"
 	"github.com/gouniverse/hb"
 	"github.com/gouniverse/sb"
-	"github.com/gouniverse/utils"
 	"github.com/samber/lo"
 	"github.com/spf13/cast"
 )
@@ -502,18 +502,18 @@ func (controller *userManagerController) tablePagination(data userManagerControl
 func (controller *userManagerController) prepareData(config shared.Config) (data userManagerControllerData, errorMessage string) {
 	var err error
 	data.config = config
-	data.action = utils.Req(config.Request, "action", "")
-	data.page = utils.Req(config.Request, "page", "0")
+	data.action = req.GetStringTrimmed(config.Request, "action")
+	data.page = req.GetStringTrimmedOr(config.Request, "page", "0")
 	data.pageInt = cast.ToInt(data.page)
-	data.perPage = cast.ToInt(utils.Req(config.Request, "per_page", "10"))
-	data.sortOrder = utils.Req(config.Request, "sort_order", sb.DESC)
-	data.sortBy = utils.Req(config.Request, "by", userstore.COLUMN_CREATED_AT)
-	data.formEmail = utils.Req(config.Request, "email", "")
-	data.formFirstName = utils.Req(config.Request, "first_name", "")
-	data.formLastName = utils.Req(config.Request, "last_name", "")
-	data.formStatus = utils.Req(config.Request, "status", "")
-	data.formCreatedFrom = utils.Req(config.Request, "created_from", "")
-	data.formCreatedTo = utils.Req(config.Request, "created_to", "")
+	data.perPage = cast.ToInt(req.GetStringTrimmedOr(config.Request, "per_page", "10"))
+	data.sortOrder = req.GetStringTrimmedOr(config.Request, "sort_order", sb.DESC)
+	data.sortBy = req.GetStringTrimmedOr(config.Request, "by", userstore.COLUMN_CREATED_AT)
+	data.formEmail = req.GetStringTrimmed(config.Request, "email")
+	data.formFirstName = req.GetStringTrimmed(config.Request, "first_name")
+	data.formLastName = req.GetStringTrimmed(config.Request, "last_name")
+	data.formStatus = req.GetStringTrimmed(config.Request, "status")
+	data.formCreatedFrom = req.GetStringTrimmed(config.Request, "created_from")
+	data.formCreatedTo = req.GetStringTrimmed(config.Request, "created_to")
 
 	userList, userCount, err := controller.fetchUserList(data)
 
