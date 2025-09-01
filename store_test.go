@@ -7,7 +7,7 @@ import (
 	"os"
 	"testing"
 
-	"github.com/gouniverse/base/database"
+	"github.com/dracory/database"
 	_ "modernc.org/sqlite"
 )
 

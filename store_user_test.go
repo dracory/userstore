@@ -5,8 +5,8 @@ import (
 	"strings"
 	"testing"
 
+	"github.com/dracory/database"
 	"github.com/dracory/sb"
-	"github.com/gouniverse/base/database"
 )
 
 func TestStoreUserCount(t *testing.T) {
