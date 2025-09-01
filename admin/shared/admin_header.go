@@ -3,8 +3,8 @@ package shared
 import (
 	"context"
 
+	"github.com/dracory/userstore"
 	"github.com/gouniverse/hb"
-	"github.com/gouniverse/userstore"
 	"github.com/spf13/cast"
 )
 

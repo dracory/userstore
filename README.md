@@ -1,9 +1,9 @@
-# UserStore <a href="https://gitpod.io/#https://github.com/gouniverse/userstore" style="float:right:"><img src="https://gitpod.io/button/open-in-gitpod.svg" alt="Open in Gitpod" loading="lazy"></a>
+# UserStore <a href="https://gitpod.io/#https://github.com/dracory/userstore" style="float:right:"><img src="https://gitpod.io/button/open-in-gitpod.svg" alt="Open in Gitpod" loading="lazy"></a>
 
 
-[![Tests Status](https://github.com/gouniverse/userstore/actions/workflows/tests.yml/badge.svg?branch=main)](https://github.com/gouniverse/userstore/actions/workflows/tests.yml)
-[![Go Report Card](https://goreportcard.com/badge/github.com/gouniverse/userstore)](https://goreportcard.com/report/github.com/gouniverse/userstore)
-[![PkgGoDev](https://pkg.go.dev/badge/github.com/gouniverse/userstore)](https://pkg.go.dev/github.com/gouniverse/userstore)
+[![Tests Status](https://github.com/dracory/userstore/actions/workflows/tests.yml/badge.svg?branch=main)](https://github.com/dracory/userstore/actions/workflows/tests.yml)
+[![Go Report Card](https://goreportcard.com/badge/github.com/dracory/userstore)](https://goreportcard.com/report/github.com/dracory/userstore)
+[![PkgGoDev](https://pkg.go.dev/badge/github.com/dracory/userstore)](https://pkg.go.dev/github.com/dracory/userstore)
 
 UserStore is a robust user management package.
 
@@ -18,7 +18,7 @@ For commercial use, please use my [contact page](https://lesichkov.co.uk/contact
 ## Installation
 
 ```
-go get github.com/gouniverse/userstore
+go get github.com/dracory/userstore
 ```
 
 ## Setup

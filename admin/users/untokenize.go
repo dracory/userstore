@@ -1,8 +1,8 @@
 package admin
 
 import (
-	"github.com/gouniverse/userstore"
-	"github.com/gouniverse/userstore/admin/shared"
+	"github.com/dracory/userstore"
+	"github.com/dracory/userstore/admin/shared"
 )
 
 func userUntokenize(config shared.Config, user userstore.UserInterface) (columnNameValueMap map[string]string, err error) {

@@ -3,10 +3,10 @@ package admin
 import (
 	"context"
 
+	"github.com/dracory/userstore"
+	"github.com/dracory/userstore/admin/shared"
 	"github.com/gouniverse/bs"
 	"github.com/gouniverse/hb"
-	"github.com/gouniverse/userstore"
-	"github.com/gouniverse/userstore/admin/shared"
 	"github.com/gouniverse/utils"
 )
 

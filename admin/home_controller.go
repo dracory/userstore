@@ -1,9 +1,9 @@
 package admin
 
 import (
+	"github.com/dracory/userstore"
+	"github.com/dracory/userstore/admin/shared"
 	"github.com/gouniverse/hb"
-	"github.com/gouniverse/userstore"
-	"github.com/gouniverse/userstore/admin/shared"
 	"github.com/samber/lo"
 	"github.com/spf13/cast"
 )

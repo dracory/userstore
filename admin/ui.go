@@ -3,9 +3,9 @@ package admin
 import (
 	"errors"
 
+	"github.com/dracory/userstore/admin/shared"
+	adminUsers "github.com/dracory/userstore/admin/users"
 	"github.com/gouniverse/hb"
-	"github.com/gouniverse/userstore/admin/shared"
-	adminUsers "github.com/gouniverse/userstore/admin/users"
 	"github.com/gouniverse/utils"
 )
 
