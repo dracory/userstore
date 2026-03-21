@@ -45,8 +45,8 @@ import (
 // }
 
 // sqlUserTableCreate returns a SQL string for creating the user table
-func (st *store) sqlUserTableCreate() string {
-	sql := sb.NewBuilder(sb.DatabaseDriverName(st.db)).
+func (st *store) sqlUserTableCreate() (string, error) {
+	sql, err := sb.NewBuilder(sb.DatabaseDriverName(st.db)).
 		Table(st.userTableName).
 		Column(sb.Column{
 			Name:       COLUMN_ID,
@@ -136,5 +136,5 @@ func (st *store) sqlUserTableCreate() string {
 		}).
 		CreateIfNotExists()
 
-	return sql
+	return sql, err
 }

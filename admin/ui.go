@@ -3,10 +3,10 @@ package admin
 import (
 	"errors"
 
+	"github.com/dracory/hb"
 	"github.com/dracory/req"
 	"github.com/dracory/userstore/admin/shared"
 	adminUsers "github.com/dracory/userstore/admin/users"
-	"github.com/gouniverse/hb"
 )
 
 func UI(config shared.Config) (hb.TagInterface, error) {

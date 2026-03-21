@@ -4,10 +4,10 @@ import (
 	"context"
 
 	"github.com/dracory/bs"
+	"github.com/dracory/hb"
 	"github.com/dracory/req"
 	"github.com/dracory/userstore"
 	"github.com/dracory/userstore/admin/shared"
-	"github.com/gouniverse/hb"
 )
 
 type userDeleteController struct{}

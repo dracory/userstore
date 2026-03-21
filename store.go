@@ -27,7 +27,10 @@ var _ StoreInterface = (*store)(nil) // verify it extends the interface
 
 // AutoMigrate auto migrate
 func (store *store) AutoMigrate() error {
-	sqlStr := store.sqlUserTableCreate()
+	sqlStr, err := store.sqlUserTableCreate()
+	if err != nil {
+		return err
+	}
 
 	if sqlStr == "" {
 		return errors.New("user table create sql is empty")
@@ -37,7 +40,7 @@ func (store *store) AutoMigrate() error {
 		return errors.New("userstore: database is nil")
 	}
 
-	_, err := store.db.Exec(sqlStr)
+	_, err = store.db.Exec(sqlStr)
 
 	if err != nil {
 		return err
