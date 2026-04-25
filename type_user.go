@@ -6,7 +6,6 @@ import (
 	"github.com/dracory/dataobject"
 	"github.com/dracory/sb"
 	"github.com/dracory/str"
-	"github.com/dracory/uid"
 	"github.com/dromara/carbon/v2"
 )
 
@@ -23,7 +22,7 @@ var _ UserInterface = (*user)(nil)
 func NewUser() UserInterface {
 	o := &user{}
 
-	o.SetID(uid.HumanUid()).
+	o.SetID(GenerateShortID()).
 		SetStatus(USER_STATUS_UNVERIFIED).
 		SetFirstName("").
 		SetMiddleNames("").
