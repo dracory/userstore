@@ -11,27 +11,27 @@ func TestNewUser(t *testing.T) {
 		t.Fatal("NewUser should not return nil")
 	}
 
-	if user.ID() == "" {
+	if user.GetID() == "" {
 		t.Error("ID should not be empty")
 	}
 
-	if user.Status() != USER_STATUS_UNVERIFIED {
-		t.Errorf("Expected status %s, got %s", USER_STATUS_UNVERIFIED, user.Status())
+	if user.GetStatus() != USER_STATUS_UNVERIFIED {
+		t.Errorf("Expected status %s, got %s", USER_STATUS_UNVERIFIED, user.GetStatus())
 	}
 
-	if user.Role() != USER_ROLE_USER {
-		t.Errorf("Expected role %s, got %s", USER_ROLE_USER, user.Role())
+	if user.GetRole() != USER_ROLE_USER {
+		t.Errorf("Expected role %s, got %s", USER_ROLE_USER, user.GetRole())
 	}
 
-	if user.FirstName() != "" {
+	if user.GetFirstName() != "" {
 		t.Error("FirstName should be empty")
 	}
 
-	if user.LastName() != "" {
+	if user.GetLastName() != "" {
 		t.Error("LastName should be empty")
 	}
 
-	if user.Email() != "" {
+	if user.GetEmail() != "" {
 		t.Error("Email should be empty")
 	}
 }
@@ -53,32 +53,32 @@ func TestNewUserFromExistingData(t *testing.T) {
 		t.Fatal("NewUserFromExistingData should not return nil")
 	}
 
-	if user.ID() != "test123" {
-		t.Errorf("Expected ID test123, got %s", user.ID())
+	if user.GetID() != "test123" {
+		t.Errorf("Expected ID test123, got %s", user.GetID())
 	}
 
-	if user.Email() != "test@example.com" {
-		t.Errorf("Expected email test@example.com, got %s", user.Email())
+	if user.GetEmail() != "test@example.com" {
+		t.Errorf("Expected email test@example.com, got %s", user.GetEmail())
 	}
 
-	if user.FirstName() != "John" {
-		t.Errorf("Expected FirstName John, got %s", user.FirstName())
+	if user.GetFirstName() != "John" {
+		t.Errorf("Expected FirstName John, got %s", user.GetFirstName())
 	}
 
-	if user.LastName() != "Doe" {
-		t.Errorf("Expected LastName Doe, got %s", user.LastName())
+	if user.GetLastName() != "Doe" {
+		t.Errorf("Expected LastName Doe, got %s", user.GetLastName())
 	}
 
-	if user.Status() != USER_STATUS_ACTIVE {
-		t.Errorf("Expected status %s, got %s", USER_STATUS_ACTIVE, user.Status())
+	if user.GetStatus() != USER_STATUS_ACTIVE {
+		t.Errorf("Expected status %s, got %s", USER_STATUS_ACTIVE, user.GetStatus())
 	}
 
-	if user.Role() != USER_ROLE_ADMINISTRATOR {
-		t.Errorf("Expected role %s, got %s", USER_ROLE_ADMINISTRATOR, user.Role())
+	if user.GetRole() != USER_ROLE_ADMINISTRATOR {
+		t.Errorf("Expected role %s, got %s", USER_ROLE_ADMINISTRATOR, user.GetRole())
 	}
 
-	if user.BusinessName() != "Acme Inc" {
-		t.Errorf("Expected BusinessName Acme Inc, got %s", user.BusinessName())
+	if user.GetBusinessName() != "Acme Inc" {
+		t.Errorf("Expected BusinessName Acme Inc, got %s", user.GetBusinessName())
 	}
 }
 
@@ -180,58 +180,58 @@ func TestUserSettersAndGetters(t *testing.T) {
 	user := NewUser()
 
 	user.SetID("test123")
-	if user.ID() != "test123" {
-		t.Errorf("Expected ID test123, got %s", user.ID())
+	if user.GetID() != "test123" {
+		t.Errorf("Expected ID test123, got %s", user.GetID())
 	}
 
 	user.SetEmail("test@example.com")
-	if user.Email() != "test@example.com" {
-		t.Errorf("Expected email test@example.com, got %s", user.Email())
+	if user.GetEmail() != "test@example.com" {
+		t.Errorf("Expected email test@example.com, got %s", user.GetEmail())
 	}
 
 	user.SetFirstName("John")
-	if user.FirstName() != "John" {
-		t.Errorf("Expected FirstName John, got %s", user.FirstName())
+	if user.GetFirstName() != "John" {
+		t.Errorf("Expected FirstName John, got %s", user.GetFirstName())
 	}
 
 	user.SetLastName("Doe")
-	if user.LastName() != "Doe" {
-		t.Errorf("Expected LastName Doe, got %s", user.LastName())
+	if user.GetLastName() != "Doe" {
+		t.Errorf("Expected LastName Doe, got %s", user.GetLastName())
 	}
 
 	user.SetMiddleNames("William")
-	if user.MiddleNames() != "William" {
-		t.Errorf("Expected MiddleNames William, got %s", user.MiddleNames())
+	if user.GetMiddleNames() != "William" {
+		t.Errorf("Expected MiddleNames William, got %s", user.GetMiddleNames())
 	}
 
 	user.SetPhone("+1234567890")
-	if user.Phone() != "+1234567890" {
-		t.Errorf("Expected Phone +1234567890, got %s", user.Phone())
+	if user.GetPhone() != "+1234567890" {
+		t.Errorf("Expected Phone +1234567890, got %s", user.GetPhone())
 	}
 
 	user.SetCountry("US")
-	if user.Country() != "US" {
-		t.Errorf("Expected Country US, got %s", user.Country())
+	if user.GetCountry() != "US" {
+		t.Errorf("Expected Country US, got %s", user.GetCountry())
 	}
 
 	user.SetTimezone("UTC")
-	if user.Timezone() != "UTC" {
-		t.Errorf("Expected Timezone UTC, got %s", user.Timezone())
+	if user.GetTimezone() != "UTC" {
+		t.Errorf("Expected Timezone UTC, got %s", user.GetTimezone())
 	}
 
 	user.SetBusinessName("Acme Inc")
-	if user.BusinessName() != "Acme Inc" {
-		t.Errorf("Expected BusinessName Acme Inc, got %s", user.BusinessName())
+	if user.GetBusinessName() != "Acme Inc" {
+		t.Errorf("Expected BusinessName Acme Inc, got %s", user.GetBusinessName())
 	}
 
 	user.SetMemo("Test memo")
-	if user.Memo() != "Test memo" {
-		t.Errorf("Expected Memo Test memo, got %s", user.Memo())
+	if user.GetMemo() != "Test memo" {
+		t.Errorf("Expected Memo Test memo, got %s", user.GetMemo())
 	}
 
 	user.SetProfileImageUrl("https://example.com/image.jpg")
-	if user.ProfileImageUrl() != "https://example.com/image.jpg" {
-		t.Errorf("Expected ProfileImageUrl https://example.com/image.jpg, got %s", user.ProfileImageUrl())
+	if user.GetProfileImageUrl() != "https://example.com/image.jpg" {
+		t.Errorf("Expected ProfileImageUrl https://example.com/image.jpg, got %s", user.GetProfileImageUrl())
 	}
 }
 
@@ -244,7 +244,7 @@ func TestUserMetas(t *testing.T) {
 		t.Errorf("SetMetas should not return error, got %v", err)
 	}
 
-	metas, err := user.Metas()
+	metas, err := user.GetMetas()
 	if err != nil {
 		t.Errorf("Metas should not return error, got %v", err)
 	}
@@ -258,12 +258,12 @@ func TestUserMetas(t *testing.T) {
 	}
 
 	// Test getting a single meta
-	if user.Meta("key1") != "value1" {
-		t.Errorf("Expected Meta key1 to return value1, got %s", user.Meta("key1"))
+	if user.GetMeta("key1") != "value1" {
+		t.Errorf("Expected Meta key1 to return value1, got %s", user.GetMeta("key1"))
 	}
 
 	// Test non-existent meta
-	if user.Meta("nonexistent") != "" {
+	if user.GetMeta("nonexistent") != "" {
 		t.Error("Meta should return empty string for non-existent key")
 	}
 
@@ -273,7 +273,7 @@ func TestUserMetas(t *testing.T) {
 		t.Errorf("UpsertMetas should not return error, got %v", err)
 	}
 
-	metas, err = user.Metas()
+	metas, err = user.GetMetas()
 	if err != nil {
 		t.Errorf("Metas should not return error, got %v", err)
 	}
@@ -296,8 +296,8 @@ func TestUserMetas(t *testing.T) {
 		t.Errorf("SetMeta should not return error, got %v", err)
 	}
 
-	if user.Meta("key4") != "value4" {
-		t.Errorf("Expected Meta key4 to return value4, got %s", user.Meta("key4"))
+	if user.GetMeta("key4") != "value4" {
+		t.Errorf("Expected Meta key4 to return value4, got %s", user.GetMeta("key4"))
 	}
 }
 
@@ -312,7 +312,7 @@ func TestUserPassword(t *testing.T) {
 	}
 
 	// Password should be hashed, not plain text
-	if user.Password() == password {
+	if user.GetPassword() == password {
 		t.Error("Password should be hashed, not plain text")
 	}
 
@@ -327,7 +327,7 @@ func TestUserPassword(t *testing.T) {
 
 	// Test SetPassword (without hashing)
 	user.SetPassword("plainpassword")
-	if user.Password() != "plainpassword" {
+	if user.GetPassword() != "plainpassword" {
 		t.Error("SetPassword should set plain password without hashing")
 	}
 }
@@ -347,23 +347,23 @@ func TestUserChaining(t *testing.T) {
 		SetStatus(USER_STATUS_ACTIVE).
 		SetRole(USER_ROLE_ADMINISTRATOR)
 
-	if user.Email() != "test@example.com" {
+	if user.GetEmail() != "test@example.com" {
 		t.Error("Method chaining should work")
 	}
 
-	if user.FirstName() != "John" {
+	if user.GetFirstName() != "John" {
 		t.Error("Method chaining should work")
 	}
 
-	if user.LastName() != "Doe" {
+	if user.GetLastName() != "Doe" {
 		t.Error("Method chaining should work")
 	}
 
-	if user.Status() != USER_STATUS_ACTIVE {
+	if user.GetStatus() != USER_STATUS_ACTIVE {
 		t.Error("Method chaining should work")
 	}
 
-	if user.Role() != USER_ROLE_ADMINISTRATOR {
+	if user.GetRole() != USER_ROLE_ADMINISTRATOR {
 		t.Error("Method chaining should work")
 	}
 }

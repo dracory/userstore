@@ -114,7 +114,7 @@ func TestStoreWithTx(t *testing.T) {
 	}
 
 	// check user
-	userFound, errFind := store.UserFindByID(database.Context(context.Background(), db), user.ID())
+	userFound, errFind := store.UserFindByID(database.Context(context.Background(), db), user.GetID())
 
 	if errFind != nil {
 		t.Fatal("unexpected error:", errFind)
@@ -129,7 +129,7 @@ func TestStoreWithTx(t *testing.T) {
 	}
 
 	// check user
-	userFound, errFind = store.UserFindByID(database.Context(context.Background(), db), user.ID())
+	userFound, errFind = store.UserFindByID(database.Context(context.Background(), db), user.GetID())
 
 	if errFind != nil {
 		t.Fatal("unexpected error:", errFind)
@@ -139,7 +139,7 @@ func TestStoreWithTx(t *testing.T) {
 		t.Fatal("User MUST be not nil, as transaction committed")
 	}
 
-	if userFound.FirstName() != "John 2" {
+	if userFound.GetFirstName() != "John 2" {
 		t.Fatal("User MUST be John 2, as transaction committed")
 	}
 }

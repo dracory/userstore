@@ -62,31 +62,31 @@ func UserNoImageUrl() string {
 }
 
 func (o *userImplementation) IsActive() bool {
-	return o.Status() == USER_STATUS_ACTIVE
+	return o.GetStatus() == USER_STATUS_ACTIVE
 }
 
 func (o *userImplementation) IsSoftDeleted() bool {
-	return o.SoftDeletedAtCarbon().Compare("<", carbon.Now(carbon.UTC))
+	return o.GetSoftDeletedAtCarbon().Compare("<", carbon.Now(carbon.UTC))
 }
 
 func (o *userImplementation) IsInactive() bool {
-	return o.Status() == USER_STATUS_INACTIVE
+	return o.GetStatus() == USER_STATUS_INACTIVE
 }
 
 func (o *userImplementation) IsUnverified() bool {
-	return o.Status() == USER_STATUS_UNVERIFIED
+	return o.GetStatus() == USER_STATUS_UNVERIFIED
 }
 
 func (o *userImplementation) IsAdministrator() bool {
-	return o.Role() == USER_ROLE_ADMINISTRATOR
+	return o.GetRole() == USER_ROLE_ADMINISTRATOR
 }
 
 func (o *userImplementation) IsManager() bool {
-	return o.Role() == USER_ROLE_MANAGER
+	return o.GetRole() == USER_ROLE_MANAGER
 }
 
 func (o *userImplementation) IsSuperuser() bool {
-	return o.Role() == USER_ROLE_SUPERUSER
+	return o.GetRole() == USER_ROLE_SUPERUSER
 }
 
 // IsRegistrationCompleted checks if the user registration is incomplete.
@@ -100,7 +100,7 @@ func (o *userImplementation) IsSuperuser() bool {
 // Returns:
 // - bool: true if the user registration is incomplete, false otherwise.
 func (o *userImplementation) IsRegistrationCompleted() bool {
-	return o.FirstName() != "" && o.LastName() != ""
+	return o.GetFirstName() != "" && o.GetLastName() != ""
 }
 
 // == SETTERS AND GETTERS =====================================================
@@ -118,7 +118,7 @@ func (o *userImplementation) IsRegistrationCompleted() bool {
 // 	return o
 // }
 
-func (o *userImplementation) BusinessName() string {
+func (o *userImplementation) GetBusinessName() string {
 	return o.Get(COLUMN_BUSINESS_NAME)
 }
 
@@ -127,7 +127,7 @@ func (o *userImplementation) SetBusinessName(businessName string) UserInterface 
 	return o
 }
 
-func (o *userImplementation) Country() string {
+func (o *userImplementation) GetCountry() string {
 	return o.Get(COLUMN_COUNTRY)
 }
 
@@ -136,12 +136,12 @@ func (o *userImplementation) SetCountry(country string) UserInterface {
 	return o
 }
 
-func (o *userImplementation) CreatedAt() string {
+func (o *userImplementation) GetCreatedAt() string {
 	return o.Get(COLUMN_CREATED_AT)
 }
 
-func (o *userImplementation) CreatedAtCarbon() *carbon.Carbon {
-	return carbon.Parse(o.CreatedAt(), carbon.UTC)
+func (o *userImplementation) GetCreatedAtCarbon() *carbon.Carbon {
+	return carbon.Parse(o.GetCreatedAt(), carbon.UTC)
 }
 
 func (o *userImplementation) SetCreatedAt(createdAt string) UserInterface {
@@ -149,12 +149,12 @@ func (o *userImplementation) SetCreatedAt(createdAt string) UserInterface {
 	return o
 }
 
-func (o *userImplementation) SoftDeletedAt() string {
+func (o *userImplementation) GetSoftDeletedAt() string {
 	return o.Get(COLUMN_SOFT_DELETED_AT)
 }
 
-func (o *userImplementation) SoftDeletedAtCarbon() *carbon.Carbon {
-	return carbon.Parse(o.SoftDeletedAt(), carbon.UTC)
+func (o *userImplementation) GetSoftDeletedAtCarbon() *carbon.Carbon {
+	return carbon.Parse(o.GetSoftDeletedAt(), carbon.UTC)
 }
 
 func (o *userImplementation) SetSoftDeletedAt(deletedAt string) UserInterface {
@@ -162,7 +162,7 @@ func (o *userImplementation) SetSoftDeletedAt(deletedAt string) UserInterface {
 	return o
 }
 
-func (o *userImplementation) Email() string {
+func (o *userImplementation) GetEmail() string {
 	return o.Get(COLUMN_EMAIL)
 }
 
@@ -171,7 +171,7 @@ func (o *userImplementation) SetEmail(email string) UserInterface {
 	return o
 }
 
-func (o *userImplementation) FirstName() string {
+func (o *userImplementation) GetFirstName() string {
 	return o.Get(COLUMN_FIRST_NAME)
 }
 
@@ -180,7 +180,7 @@ func (o *userImplementation) SetFirstName(firstName string) UserInterface {
 	return o
 }
 
-func (o *userImplementation) ID() string {
+func (o *userImplementation) GetID() string {
 	return o.Get(COLUMN_ID)
 }
 
@@ -189,7 +189,7 @@ func (o *userImplementation) SetID(id string) UserInterface {
 	return o
 }
 
-func (o *userImplementation) LastName() string {
+func (o *userImplementation) GetLastName() string {
 	return o.Get(COLUMN_LAST_NAME)
 }
 
@@ -198,7 +198,7 @@ func (o *userImplementation) SetLastName(lastName string) UserInterface {
 	return o
 }
 
-func (o *userImplementation) Memo() string {
+func (o *userImplementation) GetMemo() string {
 	return o.Get(COLUMN_MEMO)
 }
 
@@ -207,7 +207,7 @@ func (o *userImplementation) SetMemo(memo string) UserInterface {
 	return o
 }
 
-func (o *userImplementation) MiddleNames() string {
+func (o *userImplementation) GetMiddleNames() string {
 	return o.Get(COLUMN_MIDDLE_NAMES)
 }
 
@@ -216,7 +216,7 @@ func (o *userImplementation) SetMiddleNames(middleNames string) UserInterface {
 	return o
 }
 
-func (o *userImplementation) Metas() (map[string]string, error) {
+func (o *userImplementation) GetMetas() (map[string]string, error) {
 	metasStr := o.Get(COLUMN_METAS)
 
 	if metasStr == "" {
@@ -231,8 +231,8 @@ func (o *userImplementation) Metas() (map[string]string, error) {
 	return metas, nil
 }
 
-func (o *userImplementation) Meta(name string) string {
-	metas, err := o.Metas()
+func (o *userImplementation) GetMeta(name string) string {
+	metas, err := o.GetMetas()
 
 	if err != nil {
 		return ""
@@ -261,7 +261,7 @@ func (o *userImplementation) SetMetas(metas map[string]string) error {
 }
 
 func (o *userImplementation) UpsertMetas(metas map[string]string) error {
-	currentMetas, err := o.Metas()
+	currentMetas, err := o.GetMetas()
 
 	if err != nil {
 		return err
@@ -274,7 +274,7 @@ func (o *userImplementation) UpsertMetas(metas map[string]string) error {
 	return o.SetMetas(currentMetas)
 }
 
-func (o *userImplementation) Password() string {
+func (o *userImplementation) GetPassword() string {
 	return o.Get(COLUMN_PASSWORD)
 }
 
@@ -302,7 +302,7 @@ func (o *userImplementation) SetPassword(password string) UserInterface {
 	return o
 }
 
-func (o *userImplementation) Phone() string {
+func (o *userImplementation) GetPhone() string {
 	return o.Get(COLUMN_PHONE)
 }
 
@@ -311,15 +311,15 @@ func (o *userImplementation) SetPhone(phone string) UserInterface {
 	return o
 }
 
-func (o *userImplementation) ProfileImageUrl() string {
+func (o *userImplementation) GetProfileImageUrl() string {
 	return o.Get(COLUMN_PROFILE_IMAGE_URL)
 }
 
 func (o *userImplementation) ProfileImageOrDefaultUrl() string {
 	defaultURL := UserNoImageUrl()
 
-	if o.ProfileImageUrl() != "" {
-		return o.ProfileImageUrl()
+	if o.GetProfileImageUrl() != "" {
+		return o.GetProfileImageUrl()
 	}
 
 	return defaultURL
@@ -330,7 +330,7 @@ func (o *userImplementation) SetProfileImageUrl(imageUrl string) UserInterface {
 	return o
 }
 
-func (o *userImplementation) Role() string {
+func (o *userImplementation) GetRole() string {
 	return o.Get(COLUMN_ROLE)
 }
 
@@ -339,7 +339,7 @@ func (o *userImplementation) SetRole(role string) UserInterface {
 	return o
 }
 
-func (o *userImplementation) Status() string {
+func (o *userImplementation) GetStatus() string {
 	return o.Get(COLUMN_STATUS)
 }
 
@@ -348,7 +348,7 @@ func (o *userImplementation) SetStatus(status string) UserInterface {
 	return o
 }
 
-func (o *userImplementation) Timezone() string {
+func (o *userImplementation) GetTimezone() string {
 	return o.Get(COLUMN_TIMEZONE)
 }
 
@@ -357,11 +357,11 @@ func (o *userImplementation) SetTimezone(timezone string) UserInterface {
 	return o
 }
 
-func (o *userImplementation) UpdatedAt() string {
+func (o *userImplementation) GetUpdatedAt() string {
 	return o.Get(COLUMN_UPDATED_AT)
 }
 
-func (o *userImplementation) UpdatedAtCarbon() *carbon.Carbon {
+func (o *userImplementation) GetUpdatedAtCarbon() *carbon.Carbon {
 	return carbon.Parse(o.Get(COLUMN_UPDATED_AT), carbon.UTC)
 }
 

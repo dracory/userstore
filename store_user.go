@@ -102,7 +102,7 @@ func (store *storeImplementation) UserDelete(ctx context.Context, user UserInter
 		return errors.New("user is nil")
 	}
 
-	return store.UserDeleteByID(ctx, user.ID())
+	return store.UserDeleteByID(ctx, user.GetID())
 }
 
 func (store *storeImplementation) UserDeleteByID(ctx context.Context, id string) error {
@@ -280,7 +280,7 @@ func (store *storeImplementation) UserUpdate(ctx context.Context, user UserInter
 		Update(store.userTableName).
 		Prepared(true).
 		Set(dataChanged).
-		Where(goqu.C(COLUMN_ID).Eq(user.ID())).
+		Where(goqu.C(COLUMN_ID).Eq(user.GetID())).
 		ToSQL()
 
 	if errSql != nil {
@@ -314,7 +314,7 @@ func (store *storeImplementation) userSelectQuery(options UserQueryInterface) (s
 	q := goqu.Dialect(store.dbDriverName).From(store.userTableName)
 
 	if options.HasID() {
-		q = q.Where(goqu.C(COLUMN_ID).Eq(options.ID()))
+		q = q.Where(goqu.C(COLUMN_ID).Eq(options.GetID()))
 	}
 
 	if options.HasIDIn() {

@@ -42,36 +42,36 @@ type RoleInterface interface {
 
 	// setters and getters
 
-	CreatedAt() string
-	CreatedAtCarbon() *carbon.Carbon
+	GetCreatedAt() string
+	GetCreatedAtCarbon() *carbon.Carbon
 	SetCreatedAt(createdAt string) RoleInterface
 
-	Handle() string
+	GetHandle() string
 	SetHandle(handle string) RoleInterface
 
-	ID() string
+	GetID() string
 	SetID(id string) RoleInterface
 
-	Name() string
+	GetName() string
 	SetName(name string) RoleInterface
 
-	Memo() string
+	GetMemo() string
 	SetMemo(memo string) RoleInterface
 
-	Meta(name string) string
+	GetMeta(name string) string
 	SetMeta(name string, value string) error
-	Metas() (map[string]string, error)
+	GetMetas() (map[string]string, error)
 	SetMetas(metas map[string]string) error
 
-	Status() string
+	GetStatus() string
 	SetStatus(status string) RoleInterface
 
-	SoftDeletedAt() string
-	SoftDeletedAtCarbon() *carbon.Carbon
+	GetSoftDeletedAt() string
+	GetSoftDeletedAtCarbon() *carbon.Carbon
 	SetSoftDeletedAt(softDeletedAt string) RoleInterface
 
-	UpdatedAt() string
-	UpdatedAtCarbon() *carbon.Carbon
+	GetUpdatedAt() string
+	GetUpdatedAtCarbon() *carbon.Carbon
 	SetUpdatedAt(updatedAt string) RoleInterface
 }
 
@@ -99,65 +99,65 @@ type UserInterface interface {
 
 	// setters and getters
 
-	BusinessName() string
+	GetBusinessName() string
 	SetBusinessName(businessName string) UserInterface
 
-	Country() string
+	GetCountry() string
 	SetCountry(country string) UserInterface
 
-	CreatedAt() string
-	CreatedAtCarbon() *carbon.Carbon
+	GetCreatedAt() string
+	GetCreatedAtCarbon() *carbon.Carbon
 	SetCreatedAt(createdAt string) UserInterface
 
-	Email() string
+	GetEmail() string
 	SetEmail(email string) UserInterface
 
-	ID() string
+	GetID() string
 	SetID(id string) UserInterface
 
-	FirstName() string
+	GetFirstName() string
 	SetFirstName(firstName string) UserInterface
 
-	LastName() string
+	GetLastName() string
 	SetLastName(lastName string) UserInterface
 
-	Memo() string
+	GetMemo() string
 	SetMemo(memo string) UserInterface
 
-	Meta(name string) string
+	GetMeta(name string) string
 	SetMeta(name string, value string) error
-	Metas() (map[string]string, error)
+	GetMetas() (map[string]string, error)
 	SetMetas(metas map[string]string) error
 	UpsertMetas(metas map[string]string) error
 
-	MiddleNames() string
+	GetMiddleNames() string
 	SetMiddleNames(middleNames string) UserInterface
 
-	Password() string
+	GetPassword() string
 	PasswordCompare(password string) bool
 	SetPassword(password string) UserInterface
 	SetPasswordAndHash(password string) error
 
-	Phone() string
+	GetPhone() string
 	SetPhone(phone string) UserInterface
 
-	ProfileImageUrl() string
+	GetProfileImageUrl() string
 	SetProfileImageUrl(profileImageUrl string) UserInterface
 
-	Role() string
+	GetRole() string
 	SetRole(role string) UserInterface
 
-	SoftDeletedAt() string
-	SoftDeletedAtCarbon() *carbon.Carbon
+	GetSoftDeletedAt() string
+	GetSoftDeletedAtCarbon() *carbon.Carbon
 	SetSoftDeletedAt(deletedAt string) UserInterface
 
-	Timezone() string
+	GetTimezone() string
 	SetTimezone(timezone string) UserInterface
 
-	Status() string
+	GetStatus() string
 	SetStatus(status string) UserInterface
 
-	UpdatedAt() string
-	UpdatedAtCarbon() *carbon.Carbon
+	GetUpdatedAt() string
+	GetUpdatedAtCarbon() *carbon.Carbon
 	SetUpdatedAt(updatedAt string) UserInterface
 }

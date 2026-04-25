@@ -11,23 +11,23 @@ func TestNewRole(t *testing.T) {
 		t.Fatal("NewRole should not return nil")
 	}
 
-	if role.ID() == "" {
+	if role.GetID() == "" {
 		t.Error("ID should not be empty")
 	}
 
-	if role.Status() != USER_STATUS_UNVERIFIED {
-		t.Errorf("Expected status %s, got %s", USER_STATUS_UNVERIFIED, role.Status())
+	if role.GetStatus() != USER_STATUS_UNVERIFIED {
+		t.Errorf("Expected status %s, got %s", USER_STATUS_UNVERIFIED, role.GetStatus())
 	}
 
-	if role.Name() != "" {
+	if role.GetName() != "" {
 		t.Error("Name should be empty")
 	}
 
-	if role.Handle() != "" {
+	if role.GetHandle() != "" {
 		t.Error("Handle should be empty")
 	}
 
-	if role.Memo() != "" {
+	if role.GetMemo() != "" {
 		t.Error("Memo should be empty")
 	}
 }
@@ -47,24 +47,24 @@ func TestNewRoleFromExistingData(t *testing.T) {
 		t.Fatal("NewRoleFromExistingData should not return nil")
 	}
 
-	if role.ID() != "test123" {
-		t.Errorf("Expected ID test123, got %s", role.ID())
+	if role.GetID() != "test123" {
+		t.Errorf("Expected ID test123, got %s", role.GetID())
 	}
 
-	if role.Name() != "Administrator" {
-		t.Errorf("Expected Name Administrator, got %s", role.Name())
+	if role.GetName() != "Administrator" {
+		t.Errorf("Expected Name Administrator, got %s", role.GetName())
 	}
 
-	if role.Handle() != "admin" {
-		t.Errorf("Expected Handle admin, got %s", role.Handle())
+	if role.GetHandle() != "admin" {
+		t.Errorf("Expected Handle admin, got %s", role.GetHandle())
 	}
 
-	if role.Status() != USER_STATUS_ACTIVE {
-		t.Errorf("Expected status %s, got %s", USER_STATUS_ACTIVE, role.Status())
+	if role.GetStatus() != USER_STATUS_ACTIVE {
+		t.Errorf("Expected status %s, got %s", USER_STATUS_ACTIVE, role.GetStatus())
 	}
 
-	if role.Memo() != "Test memo" {
-		t.Errorf("Expected Memo Test memo, got %s", role.Memo())
+	if role.GetMemo() != "Test memo" {
+		t.Errorf("Expected Memo Test memo, got %s", role.GetMemo())
 	}
 }
 
@@ -72,28 +72,28 @@ func TestRoleSettersAndGetters(t *testing.T) {
 	role := NewRole()
 
 	role.SetID("test123")
-	if role.ID() != "test123" {
-		t.Errorf("Expected ID test123, got %s", role.ID())
+	if role.GetID() != "test123" {
+		t.Errorf("Expected ID test123, got %s", role.GetID())
 	}
 
 	role.SetName("Administrator")
-	if role.Name() != "Administrator" {
-		t.Errorf("Expected Name Administrator, got %s", role.Name())
+	if role.GetName() != "Administrator" {
+		t.Errorf("Expected Name Administrator, got %s", role.GetName())
 	}
 
 	role.SetHandle("admin")
-	if role.Handle() != "admin" {
-		t.Errorf("Expected Handle admin, got %s", role.Handle())
+	if role.GetHandle() != "admin" {
+		t.Errorf("Expected Handle admin, got %s", role.GetHandle())
 	}
 
 	role.SetMemo("Test memo")
-	if role.Memo() != "Test memo" {
-		t.Errorf("Expected Memo Test memo, got %s", role.Memo())
+	if role.GetMemo() != "Test memo" {
+		t.Errorf("Expected Memo Test memo, got %s", role.GetMemo())
 	}
 
 	role.SetStatus(USER_STATUS_ACTIVE)
-	if role.Status() != USER_STATUS_ACTIVE {
-		t.Errorf("Expected status %s, got %s", USER_STATUS_ACTIVE, role.Status())
+	if role.GetStatus() != USER_STATUS_ACTIVE {
+		t.Errorf("Expected status %s, got %s", USER_STATUS_ACTIVE, role.GetStatus())
 	}
 }
 
@@ -106,9 +106,9 @@ func TestRoleMetas(t *testing.T) {
 		t.Errorf("SetMetas should not return error, got %v", err)
 	}
 
-	metas, err := role.Metas()
+	metas, err := role.GetMetas()
 	if err != nil {
-		t.Errorf("Metas should not return error, got %v", err)
+		t.Errorf("GetMetas should not return error, got %v", err)
 	}
 
 	if metas["key1"] != "value1" {
@@ -120,13 +120,13 @@ func TestRoleMetas(t *testing.T) {
 	}
 
 	// Test getting a single meta
-	if role.Meta("key1") != "value1" {
-		t.Errorf("Expected Meta key1 to return value1, got %s", role.Meta("key1"))
+	if role.GetMeta("key1") != "value1" {
+		t.Errorf("Expected GetMeta key1 to return value1, got %s", role.GetMeta("key1"))
 	}
 
 	// Test non-existent meta
-	if role.Meta("nonexistent") != "" {
-		t.Error("Meta should return empty string for non-existent key")
+	if role.GetMeta("nonexistent") != "" {
+		t.Error("GetMeta should return empty string for non-existent key")
 	}
 
 	// Test SetMeta
@@ -135,8 +135,8 @@ func TestRoleMetas(t *testing.T) {
 		t.Errorf("SetMeta should not return error, got %v", err)
 	}
 
-	if role.Meta("key4") != "value4" {
-		t.Errorf("Expected Meta key4 to return value4, got %s", role.Meta("key4"))
+	if role.GetMeta("key4") != "value4" {
+		t.Errorf("Expected GetMeta key4 to return value4, got %s", role.GetMeta("key4"))
 	}
 }
 
@@ -154,19 +154,19 @@ func TestRoleChaining(t *testing.T) {
 		SetStatus(USER_STATUS_ACTIVE).
 		SetMemo("Test memo")
 
-	if role.Name() != "Administrator" {
+	if role.GetName() != "Administrator" {
 		t.Error("Method chaining should work")
 	}
 
-	if role.Handle() != "admin" {
+	if role.GetHandle() != "admin" {
 		t.Error("Method chaining should work")
 	}
 
-	if role.Status() != USER_STATUS_ACTIVE {
+	if role.GetStatus() != USER_STATUS_ACTIVE {
 		t.Error("Method chaining should work")
 	}
 
-	if role.Memo() != "Test memo" {
+	if role.GetMemo() != "Test memo" {
 		t.Error("Method chaining should work")
 	}
 }

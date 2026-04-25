@@ -17,7 +17,7 @@ type RoleQueryInterface interface {
 	SetHandle(handle string) RoleQueryInterface
 
 	HasID() bool
-	ID() string
+	GetID() string
 	SetID(id string) RoleQueryInterface
 
 	HasLimit() bool
@@ -62,7 +62,7 @@ type roleQueryImplementation struct {
 }
 
 func (c *roleQueryImplementation) Validate() error {
-	if c.HasID() && c.ID() == "" {
+	if c.HasID() && c.GetID() == "" {
 		return errors.New("category query. id cannot be empty")
 	}
 
@@ -155,7 +155,7 @@ func (c *roleQueryImplementation) SetHandle(handle string) RoleQueryInterface {
 	return c
 }
 
-func (c *roleQueryImplementation) ID() string {
+func (c *roleQueryImplementation) GetID() string {
 	if !c.HasID() {
 		return ""
 	}

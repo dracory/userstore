@@ -49,25 +49,25 @@ func RoleNoImageUrl() string {
 }
 
 func (o *roleImplementation) IsActive() bool {
-	return o.Status() == USER_STATUS_ACTIVE
+	return o.GetStatus() == USER_STATUS_ACTIVE
 }
 
 func (o *roleImplementation) IsSoftDeleted() bool {
-	return o.SoftDeletedAtCarbon().Compare("<", carbon.Now(carbon.UTC))
+	return o.GetSoftDeletedAtCarbon().Compare("<", carbon.Now(carbon.UTC))
 }
 
 func (o *roleImplementation) IsInactive() bool {
-	return o.Status() == USER_STATUS_INACTIVE
+	return o.GetStatus() == USER_STATUS_INACTIVE
 }
 
 // == SETTERS AND GETTERS =====================================================
 
-func (o *roleImplementation) CreatedAt() string {
+func (o *roleImplementation) GetCreatedAt() string {
 	return o.Get(COLUMN_CREATED_AT)
 }
 
-func (o *roleImplementation) CreatedAtCarbon() *carbon.Carbon {
-	return carbon.Parse(o.CreatedAt(), carbon.UTC)
+func (o *roleImplementation) GetCreatedAtCarbon() *carbon.Carbon {
+	return carbon.Parse(o.GetCreatedAt(), carbon.UTC)
 }
 
 func (o *roleImplementation) SetCreatedAt(createdAt string) RoleInterface {
@@ -75,7 +75,7 @@ func (o *roleImplementation) SetCreatedAt(createdAt string) RoleInterface {
 	return o
 }
 
-func (o *roleImplementation) Handle() string {
+func (o *roleImplementation) GetHandle() string {
 	return o.Get(COLUMN_HANDLE)
 }
 
@@ -84,7 +84,7 @@ func (o *roleImplementation) SetHandle(handle string) RoleInterface {
 	return o
 }
 
-func (o *roleImplementation) ID() string {
+func (o *roleImplementation) GetID() string {
 	return o.Get(COLUMN_ID)
 }
 
@@ -93,7 +93,7 @@ func (o *roleImplementation) SetID(id string) RoleInterface {
 	return o
 }
 
-func (o *roleImplementation) Memo() string {
+func (o *roleImplementation) GetMemo() string {
 	return o.Get(COLUMN_MEMO)
 }
 
@@ -102,7 +102,7 @@ func (o *roleImplementation) SetMemo(memo string) RoleInterface {
 	return o
 }
 
-func (o *roleImplementation) Metas() (map[string]string, error) {
+func (o *roleImplementation) GetMetas() (map[string]string, error) {
 	metasStr := o.Get(COLUMN_METAS)
 
 	if metasStr == "" {
@@ -118,8 +118,8 @@ func (o *roleImplementation) Metas() (map[string]string, error) {
 	return metasJson, nil
 }
 
-func (o *roleImplementation) Meta(name string) string {
-	metas, err := o.Metas()
+func (o *roleImplementation) GetMeta(name string) string {
+	metas, err := o.GetMetas()
 
 	if err != nil {
 		return ""
@@ -148,7 +148,7 @@ func (o *roleImplementation) SetMetas(metas map[string]string) error {
 }
 
 func (o *roleImplementation) UpsertMetas(metas map[string]string) error {
-	currentMetas, err := o.Metas()
+	currentMetas, err := o.GetMetas()
 
 	if err != nil {
 		return err
@@ -161,7 +161,7 @@ func (o *roleImplementation) UpsertMetas(metas map[string]string) error {
 	return o.SetMetas(currentMetas)
 }
 
-func (o *roleImplementation) Name() string {
+func (o *roleImplementation) GetName() string {
 	return o.Get(COLUMN_NAME)
 }
 
@@ -170,12 +170,12 @@ func (o *roleImplementation) SetName(name string) RoleInterface {
 	return o
 }
 
-func (o *roleImplementation) SoftDeletedAt() string {
+func (o *roleImplementation) GetSoftDeletedAt() string {
 	return o.Get(COLUMN_SOFT_DELETED_AT)
 }
 
-func (o *roleImplementation) SoftDeletedAtCarbon() *carbon.Carbon {
-	return carbon.Parse(o.SoftDeletedAt(), carbon.UTC)
+func (o *roleImplementation) GetSoftDeletedAtCarbon() *carbon.Carbon {
+	return carbon.Parse(o.GetSoftDeletedAt(), carbon.UTC)
 }
 
 func (o *roleImplementation) SetSoftDeletedAt(deletedAt string) RoleInterface {
@@ -183,7 +183,7 @@ func (o *roleImplementation) SetSoftDeletedAt(deletedAt string) RoleInterface {
 	return o
 }
 
-func (o *roleImplementation) Status() string {
+func (o *roleImplementation) GetStatus() string {
 	return o.Get(COLUMN_STATUS)
 }
 
@@ -192,11 +192,11 @@ func (o *roleImplementation) SetStatus(status string) RoleInterface {
 	return o
 }
 
-func (o *roleImplementation) UpdatedAt() string {
+func (o *roleImplementation) GetUpdatedAt() string {
 	return o.Get(COLUMN_UPDATED_AT)
 }
 
-func (o *roleImplementation) UpdatedAtCarbon() *carbon.Carbon {
+func (o *roleImplementation) GetUpdatedAtCarbon() *carbon.Carbon {
 	return carbon.Parse(o.Get(COLUMN_UPDATED_AT), carbon.UTC)
 }
 

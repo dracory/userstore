@@ -475,11 +475,11 @@ func (controller userUpdateController) prepareDataAndValidate(config shared.Conf
 		return data, "Tokens failed to be read"
 	}
 
-	firstName := data.user.FirstName()
-	lastName := data.user.LastName()
-	businessName := data.user.BusinessName()
-	email := data.user.Email()
-	phone := data.user.Phone()
+	firstName := data.user.GetFirstName()
+	lastName := data.user.GetLastName()
+	businessName := data.user.GetBusinessName()
+	email := data.user.GetEmail()
+	phone := data.user.GetPhone()
 
 	if lo.HasKey(untokenized, userstore.COLUMN_FIRST_NAME) {
 		firstName = untokenized[userstore.COLUMN_FIRST_NAME]
@@ -506,12 +506,12 @@ func (controller userUpdateController) prepareDataAndValidate(config shared.Conf
 
 	data.formFirstName = firstName
 	data.formLastName = lastName
-	data.formMiddleNames = data.user.MiddleNames()
+	data.formMiddleNames = data.user.GetMiddleNames()
 	data.formBusinessName = businessName
 	data.formEmail = email
 	data.formPhone = phone
-	data.formMemo = data.user.Memo()
-	data.formStatus = data.user.Status()
+	data.formMemo = data.user.GetMemo()
+	data.formStatus = data.user.GetStatus()
 
 	if config.Request.Method != http.MethodPost {
 		return data, ""

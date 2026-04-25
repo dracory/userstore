@@ -25,7 +25,7 @@ type UserQueryInterface interface {
 	SetEmail(email string) UserQueryInterface
 
 	HasID() bool
-	ID() string
+	GetID() string
 	SetID(id string) UserQueryInterface
 
 	HasIDIn() bool
@@ -90,7 +90,7 @@ func (c *userQueryImplementation) Validate() error {
 		return errors.New("user query. email cannot be empty")
 	}
 
-	if c.HasID() && c.ID() == "" {
+	if c.HasID() && c.GetID() == "" {
 		return errors.New("user query. id cannot be empty")
 	}
 
@@ -223,7 +223,7 @@ func (c *userQueryImplementation) HasID() bool {
 	return c.hasProperty("id")
 }
 
-func (c *userQueryImplementation) ID() string {
+func (c *userQueryImplementation) GetID() string {
 	if !c.HasID() {
 		return ""
 	}

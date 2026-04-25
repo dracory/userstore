@@ -262,9 +262,9 @@ func (controller *userManagerController) tableUsers(data userManagerControllerDa
 			}),
 			hb.Tbody().Children(lo.Map(data.userList, func(user userstore.UserInterface, _ int) hb.TagInterface {
 				// firstName, lastName, email, err := userUntokenize(data.config, user)
-				firstName := user.FirstName()
-				lastName := user.LastName()
-				email := user.Email()
+				firstName := user.GetFirstName()
+				lastName := user.GetLastName()
+				email := user.GetEmail()
 
 				untokenized, err := userUntokenize(data.config, user)
 
@@ -291,7 +291,7 @@ func (controller *userManagerController) tableUsers(data userManagerControllerDa
 					Text(firstName).
 					Text(` `).
 					Text(lastName).
-					Href(shared.Url(data.config.Request, shared.PathUserUpdate, map[string]string{"user_id": user.ID()}))
+					Href(shared.Url(data.config.Request, shared.PathUserUpdate, map[string]string{"user_id": user.GetID()}))
 
 				status := hb.Span().
 					Style(`font-weight: bold;`).
@@ -299,20 +299,20 @@ func (controller *userManagerController) tableUsers(data userManagerControllerDa
 					StyleIf(user.IsSoftDeleted(), `color:silver;`).
 					StyleIf(user.IsUnverified(), `color:blue;`).
 					StyleIf(user.IsInactive(), `color:red;`).
-					HTML(user.Status())
+					HTML(user.GetStatus())
 
 				buttonEdit := hb.Hyperlink().
 					Class("btn btn-primary me-2").
 					Child(hb.I().Class("bi bi-pencil-square")).
 					Title("Edit").
-					Href(shared.Url(data.config.Request, shared.PathUserUpdate, map[string]string{"user_id": user.ID()})).
+					Href(shared.Url(data.config.Request, shared.PathUserUpdate, map[string]string{"user_id": user.GetID()})).
 					Target("_blank")
 
 				buttonDelete := hb.Hyperlink().
 					Class("btn btn-danger").
 					Child(hb.I().Class("bi bi-trash")).
 					Title("Delete").
-					HxGet(shared.Url(data.config.Request, shared.PathUserDelete, map[string]string{"user_id": user.ID()})).
+					HxGet(shared.Url(data.config.Request, shared.PathUserDelete, map[string]string{"user_id": user.GetID()})).
 					HxTarget("body").
 					HxSwap("beforeend")
 
@@ -320,7 +320,7 @@ func (controller *userManagerController) tableUsers(data userManagerControllerDa
 					Class("btn btn-warning me-2").
 					Child(hb.I().Class("bi bi-shuffle")).
 					Title("Impersonate").
-					Href(shared.Url(data.config.Request, shared.PathUserImpersonate, map[string]string{"user_id": user.ID()}))
+					Href(shared.Url(data.config.Request, shared.PathUserImpersonate, map[string]string{"user_id": user.GetID()}))
 
 				return hb.TR().Children([]hb.TagInterface{
 					hb.TD().
@@ -328,7 +328,7 @@ func (controller *userManagerController) tableUsers(data userManagerControllerDa
 						Child(hb.Div().
 							Style("font-size: 11px;").
 							HTML("Ref: ").
-							HTML(user.ID())),
+							HTML(user.GetID())),
 					hb.TD().
 						Child(status),
 					hb.TD().
@@ -338,11 +338,11 @@ func (controller *userManagerController) tableUsers(data userManagerControllerDa
 					hb.TD().
 						Child(hb.Div().
 							Style("font-size: 13px;white-space: nowrap;").
-							HTML(user.CreatedAtCarbon().Format("d M Y"))),
+							HTML(user.GetCreatedAtCarbon().Format("d M Y"))),
 					hb.TD().
 						Child(hb.Div().
 							Style("font-size: 13px;white-space: nowrap;").
-							HTML(user.UpdatedAtCarbon().Format("d M Y"))),
+							HTML(user.GetUpdatedAtCarbon().Format("d M Y"))),
 					hb.TD().
 						Child(buttonEdit).
 						Child(buttonImpersonate).

@@ -142,7 +142,7 @@ func TestStoreUserDelete(t *testing.T) {
 		t.Fatal("unexpected error:", err)
 	}
 
-	userFound, err := store.UserFindByID(context.Background(), user.ID())
+	userFound, err := store.UserFindByID(context.Background(), user.GetID())
 
 	if err != nil {
 		t.Fatal("unexpected error:", err)
@@ -153,7 +153,7 @@ func TestStoreUserDelete(t *testing.T) {
 	}
 
 	userFindWithDeleted, err := store.UserList(context.Background(), NewUserQuery().
-		SetID(user.ID()).
+		SetID(user.GetID()).
 		SetSoftDeletedIncluded(true))
 
 	if err != nil {
@@ -193,13 +193,13 @@ func TestStoreUserDeleteByID(t *testing.T) {
 		t.Fatal("unexpected error:", err)
 	}
 
-	err = store.UserDeleteByID(context.Background(), user.ID())
+	err = store.UserDeleteByID(context.Background(), user.GetID())
 
 	if err != nil {
 		t.Fatal("unexpected error:", err)
 	}
 
-	userFound, err := store.UserFindByID(context.Background(), user.ID())
+	userFound, err := store.UserFindByID(context.Background(), user.GetID())
 
 	if err != nil {
 		t.Fatal("unexpected error:", err)
@@ -210,7 +210,7 @@ func TestStoreUserDeleteByID(t *testing.T) {
 	}
 
 	userFindWithDeleted, err := store.UserList(context.Background(), NewUserQuery().
-		SetID(user.ID()).
+		SetID(user.GetID()).
 		SetSoftDeletedIncluded(true))
 
 	if err != nil {
@@ -259,7 +259,7 @@ func TestStoreUserFindByEmail(t *testing.T) {
 		t.Error("unexpected error:", err)
 	}
 
-	userFound, errFind := store.UserFindByEmail(database.Context(context.Background(), store.DB()), user.Email())
+	userFound, errFind := store.UserFindByEmail(database.Context(context.Background(), store.DB()), user.GetEmail())
 
 	if errFind != nil {
 		t.Fatal("unexpected error:", errFind)
@@ -269,51 +269,51 @@ func TestStoreUserFindByEmail(t *testing.T) {
 		t.Fatal("User MUST NOT be nil")
 	}
 
-	if userFound.ID() != user.ID() {
+	if userFound.GetID() != user.GetID() {
 		t.Fatal("IDs do not match")
 	}
 
-	if userFound.Email() != user.Email() {
+	if userFound.GetEmail() != user.GetEmail() {
 		t.Fatal("Emails do not match")
 	}
 
-	if userFound.FirstName() != user.FirstName() {
+	if userFound.GetFirstName() != user.GetFirstName() {
 		t.Fatal("First names do not match")
 	}
 
-	if userFound.MiddleNames() != user.MiddleNames() {
+	if userFound.GetMiddleNames() != user.GetMiddleNames() {
 		t.Fatal("Middle names do not match")
 	}
 
-	if userFound.LastName() != user.LastName() {
+	if userFound.GetLastName() != user.GetLastName() {
 		t.Fatal("Last names do not match")
 	}
 
-	if userFound.ProfileImageUrl() != user.ProfileImageUrl() {
+	if userFound.GetProfileImageUrl() != user.GetProfileImageUrl() {
 		t.Fatal("Profile image URLs do not match")
 	}
 
-	if userFound.Status() != user.Status() {
+	if userFound.GetStatus() != user.GetStatus() {
 		t.Fatal("Statuses do not match")
 	}
 
-	if userFound.Role() != user.Role() {
+	if userFound.GetRole() != user.GetRole() {
 		t.Fatal("Roles do not match")
 	}
 
-	if userFound.Role() != USER_ROLE_USER {
-		t.Fatal("Roles MUST be:", USER_ROLE_USER, `found:`, userFound.Role())
+	if userFound.GetRole() != USER_ROLE_USER {
+		t.Fatal("Roles MUST be:", USER_ROLE_USER, `found:`, userFound.GetRole())
 	}
 
-	if userFound.Meta("education_1") != user.Meta("education_1") {
+	if userFound.GetMeta("education_1") != user.GetMeta("education_1") {
 		t.Fatal("Metas do not match")
 	}
 
-	if userFound.Meta("education_2") != user.Meta("education_2") {
+	if userFound.GetMeta("education_2") != user.GetMeta("education_2") {
 		t.Fatal("Metas do not match")
 	}
 
-	if userFound.Meta("education_3") != user.Meta("education_3") {
+	if userFound.GetMeta("education_3") != user.GetMeta("education_3") {
 		t.Fatal("Metas do not match")
 	}
 }
@@ -356,7 +356,7 @@ func TestStoreUserFindByID(t *testing.T) {
 		t.Error("unexpected error:", err)
 	}
 
-	userFound, errFind := store.UserFindByID(ctx, user.ID())
+	userFound, errFind := store.UserFindByID(ctx, user.GetID())
 
 	if errFind != nil {
 		t.Fatal("unexpected error:", errFind)
@@ -366,51 +366,51 @@ func TestStoreUserFindByID(t *testing.T) {
 		t.Fatal("User MUST NOT be nil")
 	}
 
-	if userFound.ID() != user.ID() {
+	if userFound.GetID() != user.GetID() {
 		t.Fatal("IDs do not match")
 	}
 
-	if userFound.Email() != user.Email() {
+	if userFound.GetEmail() != user.GetEmail() {
 		t.Fatal("Emails do not match")
 	}
 
-	if userFound.FirstName() != user.FirstName() {
+	if userFound.GetFirstName() != user.GetFirstName() {
 		t.Fatal("First names do not match")
 	}
 
-	if userFound.MiddleNames() != user.MiddleNames() {
+	if userFound.GetMiddleNames() != user.GetMiddleNames() {
 		t.Fatal("Middle names do not match")
 	}
 
-	if userFound.LastName() != user.LastName() {
+	if userFound.GetLastName() != user.GetLastName() {
 		t.Fatal("Last names do not match")
 	}
 
-	if userFound.ProfileImageUrl() != user.ProfileImageUrl() {
+	if userFound.GetProfileImageUrl() != user.GetProfileImageUrl() {
 		t.Fatal("Profile image URLs do not match")
 	}
 
-	if userFound.Status() != user.Status() {
+	if userFound.GetStatus() != user.GetStatus() {
 		t.Fatal("Statuses do not match")
 	}
 
-	if userFound.Role() != user.Role() {
+	if userFound.GetRole() != user.GetRole() {
 		t.Fatal("Roles do not match")
 	}
 
-	if userFound.Role() != USER_ROLE_USER {
-		t.Fatal("Roles MUST be:", USER_ROLE_USER, `found:`, userFound.Role())
+	if userFound.GetRole() != USER_ROLE_USER {
+		t.Fatal("Roles MUST be:", USER_ROLE_USER, `found:`, userFound.GetRole())
 	}
 
-	if userFound.Meta("education_1") != user.Meta("education_1") {
+	if userFound.GetMeta("education_1") != user.GetMeta("education_1") {
 		t.Fatal("Metas do not match")
 	}
 
-	if userFound.Meta("education_2") != user.Meta("education_2") {
+	if userFound.GetMeta("education_2") != user.GetMeta("education_2") {
 		t.Fatal("Metas do not match")
 	}
 
-	if userFound.Meta("education_3") != user.Meta("education_3") {
+	if userFound.GetMeta("education_3") != user.GetMeta("education_3") {
 		t.Fatal("Metas do not match")
 	}
 }
@@ -509,11 +509,11 @@ func TestStoreUserSoftDelete(t *testing.T) {
 		t.Fatal("unexpected error:", err)
 	}
 
-	if user.SoftDeletedAt() == sb.MAX_DATETIME {
+	if user.GetSoftDeletedAt() == sb.MAX_DATETIME {
 		t.Fatal("User MUST be soft deleted")
 	}
 
-	userFound, errFind := store.UserFindByID(context.Background(), user.ID())
+	userFound, errFind := store.UserFindByID(context.Background(), user.GetID())
 
 	if errFind != nil {
 		t.Fatal("unexpected error:", errFind)
@@ -525,7 +525,7 @@ func TestStoreUserSoftDelete(t *testing.T) {
 
 	userFindWithDeleted, err := store.UserList(context.Background(), NewUserQuery().
 		SetSoftDeletedIncluded(true).
-		SetID(user.ID()).
+		SetID(user.GetID()).
 		SetLimit(1))
 
 	if err != nil {
@@ -536,8 +536,8 @@ func TestStoreUserSoftDelete(t *testing.T) {
 		t.Fatal("User MUST be soft deleted")
 	}
 
-	if strings.Contains(userFindWithDeleted[0].SoftDeletedAt(), sb.MAX_DATETIME) {
-		t.Fatal("User MUST be soft deleted", user.SoftDeletedAt())
+	if strings.Contains(userFindWithDeleted[0].GetSoftDeletedAt(), sb.MAX_DATETIME) {
+		t.Fatal("User MUST be soft deleted", user.GetSoftDeletedAt())
 	}
 
 	if !userFindWithDeleted[0].IsSoftDeleted() {
@@ -573,17 +573,17 @@ func TestStoreUserSoftDeleteByID(t *testing.T) {
 		t.Fatal("unexpected error:", err)
 	}
 
-	err = store.UserSoftDeleteByID(context.Background(), user.ID())
+	err = store.UserSoftDeleteByID(context.Background(), user.GetID())
 
 	if err != nil {
 		t.Fatal("unexpected error:", err)
 	}
 
-	if user.SoftDeletedAt() != sb.MAX_DATETIME {
+	if user.GetSoftDeletedAt() != sb.MAX_DATETIME {
 		t.Fatal("User MUST NOT be soft deleted, as it was soft deleted by ID")
 	}
 
-	userFound, errFind := store.UserFindByID(context.Background(), user.ID())
+	userFound, errFind := store.UserFindByID(context.Background(), user.GetID())
 
 	if errFind != nil {
 		t.Fatal("unexpected error:", errFind)
@@ -594,7 +594,7 @@ func TestStoreUserSoftDeleteByID(t *testing.T) {
 	}
 	query := NewUserQuery().
 		SetSoftDeletedIncluded(true).
-		SetID(user.ID()).
+		SetID(user.GetID()).
 		SetLimit(1)
 
 	userFindWithDeleted, err := store.UserList(context.Background(), query)
@@ -607,8 +607,8 @@ func TestStoreUserSoftDeleteByID(t *testing.T) {
 		t.Fatal("User MUST be soft deleted")
 	}
 
-	if strings.Contains(userFindWithDeleted[0].SoftDeletedAt(), sb.MAX_DATETIME) {
-		t.Fatal("User MUST be soft deleted", user.SoftDeletedAt())
+	if strings.Contains(userFindWithDeleted[0].GetSoftDeletedAt(), sb.MAX_DATETIME) {
+		t.Fatal("User MUST be soft deleted", user.GetSoftDeletedAt())
 	}
 
 	if !userFindWithDeleted[0].IsSoftDeleted() {
@@ -664,7 +664,7 @@ func TestStoreUserMetaLike(t *testing.T) {
 	if len(users) != 1 {
 		t.Errorf("Expected one user to be found, but got %d", len(users))
 	}
-	if users[0].ID() != user.ID() {
-		t.Errorf("Incorrect user returned, expected ID %s, but got %s", user.ID(), users[0].ID())
+	if users[0].GetID() != user.GetID() {
+		t.Errorf("Incorrect user returned, expected ID %s, but got %s", user.GetID(), users[0].GetID())
 	}
 }
