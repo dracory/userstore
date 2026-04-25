@@ -3,17 +3,23 @@ package userstore
 import (
 	"strings"
 	"testing"
-
-	"github.com/stretchr/testify/assert"
 )
 
 func TestGenerateShortID(t *testing.T) {
 	id := GenerateShortID()
 
-	assert.NotEmpty(t, id)
-	assert.LessOrEqual(t, len(id), 11)
-	assert.GreaterOrEqual(t, len(id), 9)
-	assert.Equal(t, id, strings.ToLower(id), "ID should be lowercase")
+	if id == "" {
+		t.Error("ID should not be empty")
+	}
+	if len(id) > 11 {
+		t.Errorf("ID length should be <= 11, got %d", len(id))
+	}
+	if len(id) < 9 {
+		t.Errorf("ID length should be >= 9, got %d", len(id))
+	}
+	if id != strings.ToLower(id) {
+		t.Error("ID should be lowercase")
+	}
 }
 
 func TestGenerateShortID_Uniqueness(t *testing.T) {
@@ -21,17 +27,19 @@ func TestGenerateShortID_Uniqueness(t *testing.T) {
 
 	for i := 0; i < 100; i++ {
 		id := GenerateShortID()
-		assert.False(t, ids[id], "Generated duplicate ID: %s", id)
+		if ids[id] {
+			t.Errorf("Generated duplicate ID: %s", id)
+		}
 		ids[id] = true
 	}
 }
 
 func TestShortenID(t *testing.T) {
 	tests := []struct {
-		name     string
-		input    string
-		maxLen   int
-		minLen   int
+		name   string
+		input  string
+		maxLen int
+		minLen int
 	}{
 		{"Empty", "", 0, 0},
 		{"Short ID already", "abc123def", 11, 9},
@@ -44,13 +52,19 @@ func TestShortenID(t *testing.T) {
 			result := ShortenID(tt.input)
 
 			if tt.input == "" {
-				assert.Empty(t, result)
-			} else {
-				assert.LessOrEqual(t, len(result), tt.maxLen)
-				if tt.minLen > 0 {
-					assert.GreaterOrEqual(t, len(result), tt.minLen)
+				if result != "" {
+					t.Error("Result should be empty for empty input")
 				}
-				assert.Equal(t, result, strings.ToLower(result), "Result should be lowercase")
+			} else {
+				if len(result) > tt.maxLen {
+					t.Errorf("Result length should be <= %d, got %d", tt.maxLen, len(result))
+				}
+				if tt.minLen > 0 && len(result) < tt.minLen {
+					t.Errorf("Result length should be >= %d, got %d", tt.minLen, len(result))
+				}
+				if result != strings.ToLower(result) {
+					t.Error("Result should be lowercase")
+				}
 			}
 		})
 	}
@@ -61,7 +75,9 @@ func TestShortenID_Idempotent(t *testing.T) {
 	shortened1 := ShortenID(longID)
 	shortened2 := ShortenID(shortened1)
 
-	assert.Equal(t, shortened1, shortened2, "Shortening an already short ID should return the same ID")
+	if shortened1 != shortened2 {
+		t.Error("Shortening an already short ID should return the same ID")
+	}
 }
 
 func TestUnshortenID(t *testing.T) {
@@ -81,10 +97,16 @@ func TestUnshortenID(t *testing.T) {
 			result, err := UnshortenID(tt.input)
 
 			if tt.shouldErr {
-				assert.Error(t, err)
+				if err == nil {
+					t.Error("Expected error but got none")
+				}
 			} else {
-				assert.NoError(t, err)
-				assert.NotEmpty(t, result)
+				if err != nil {
+					t.Errorf("Unexpected error: %v", err)
+				}
+				if result == "" {
+					t.Error("Result should not be empty")
+				}
 			}
 		})
 	}
@@ -110,7 +132,9 @@ func TestIsShortID(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			result := IsShortID(tt.input)
-			assert.Equal(t, tt.expected, result)
+			if result != tt.expected {
+				t.Errorf("Expected %v, got %v for input %s", tt.expected, result, tt.input)
+			}
 		})
 	}
 }
@@ -133,7 +157,9 @@ func TestNormalizeID(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			result := NormalizeID(tt.input)
-			assert.Equal(t, tt.expected, result)
+			if result != tt.expected {
+				t.Errorf("Expected %q, got %q for input %q", tt.expected, result, tt.input)
+			}
 		})
 	}
 }
@@ -147,12 +173,20 @@ func TestShortenAndUnshortenRoundTrip(t *testing.T) {
 	for _, original := range originalIDs {
 		t.Run(original, func(t *testing.T) {
 			shortened := ShortenID(original)
-			assert.NotEqual(t, original, shortened, "ID should be shortened")
-			assert.Less(t, len(shortened), len(original), "Shortened ID should be shorter")
+			if original == shortened {
+				t.Error("ID should be shortened")
+			}
+			if len(shortened) >= len(original) {
+				t.Error("Shortened ID should be shorter")
+			}
 
 			unshortened, err := UnshortenID(shortened)
-			assert.NoError(t, err)
-			assert.Equal(t, original, unshortened, "Unshortened ID should match original")
+			if err != nil {
+				t.Errorf("Unexpected error: %v", err)
+			}
+			if original != unshortened {
+				t.Error("Unshortened ID should match original")
+			}
 		})
 	}
 }
