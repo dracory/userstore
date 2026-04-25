@@ -30,7 +30,7 @@ func NewStore(opts NewStoreOptions) (StoreInterface, error) {
 		opts.DbDriverName = sb.DatabaseDriverName(opts.DB)
 	}
 
-	store := &store{
+	store := &storeImplementation{
 		userTableName:      opts.UserTableName,
 		automigrateEnabled: opts.AutomigrateEnabled,
 		db:                 opts.DB,

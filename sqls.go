@@ -5,7 +5,7 @@ import (
 )
 
 // sqlRoleTableCreate returns a SQL string for creating the role table
-// func (st *store) sqlRoleTableCreate() string {
+// func (st *storeImplementation) sqlRoleTableCreate() string {
 // 	sql := sb.NewBuilder(sb.DatabaseDriverName(st.db)).
 // 		Table(st.roleTableName).
 // 		Column(sb.Column{
@@ -45,7 +45,7 @@ import (
 // }
 
 // sqlUserTableCreate returns a SQL string for creating the user table
-func (st *store) sqlUserTableCreate() (string, error) {
+func (st *storeImplementation) sqlUserTableCreate() (string, error) {
 	sql, err := sb.NewBuilder(sb.DatabaseDriverName(st.db)).
 		Table(st.userTableName).
 		Column(sb.Column{

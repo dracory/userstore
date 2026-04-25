@@ -10,7 +10,7 @@ import (
 
 // == TYPE ====================================================================
 
-type store struct {
+type storeImplementation struct {
 	// roleTableName      string
 	userTableName      string
 	db                 *sql.DB
@@ -21,12 +21,12 @@ type store struct {
 
 // == INTERFACE ===============================================================
 
-var _ StoreInterface = (*store)(nil) // verify it extends the interface
+var _ StoreInterface = (*storeImplementation)(nil) // verify it extends the interface
 
 // PUBLIC METHODS ============================================================
 
 // AutoMigrate auto migrate
-func (store *store) AutoMigrate() error {
+func (store *storeImplementation) AutoMigrate() error {
 	sqlStr, err := store.sqlUserTableCreate()
 	if err != nil {
 		return err
@@ -50,16 +50,16 @@ func (store *store) AutoMigrate() error {
 }
 
 // DB - returns the database
-func (store *store) DB() *sql.DB {
+func (store *storeImplementation) DB() *sql.DB {
 	return store.db
 }
 
 // EnableDebug - enables the debug option
-func (st *store) EnableDebug(debug bool) {
+func (st *storeImplementation) EnableDebug(debug bool) {
 	st.debugEnabled = debug
 }
 
-func (store *store) toQuerableContext(ctx context.Context) database.QueryableContext {
+func (store *storeImplementation) toQuerableContext(ctx context.Context) database.QueryableContext {
 	if database.IsQueryableContext(ctx) {
 		return ctx.(database.QueryableContext)
 	}

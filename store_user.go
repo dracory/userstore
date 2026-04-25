@@ -15,7 +15,7 @@ import (
 	"github.com/spf13/cast"
 )
 
-func (store *store) UserCount(ctx context.Context, options UserQueryInterface) (int64, error) {
+func (store *storeImplementation) UserCount(ctx context.Context, options UserQueryInterface) (int64, error) {
 	options.SetCountOnly(true)
 
 	q, _, err := store.userSelectQuery(options)
@@ -58,7 +58,7 @@ func (store *store) UserCount(ctx context.Context, options UserQueryInterface) (
 	return i, nil
 }
 
-func (store *store) UserCreate(ctx context.Context, user UserInterface) error {
+func (store *storeImplementation) UserCreate(ctx context.Context, user UserInterface) error {
 	if user == nil {
 		return errors.New("user is nil")
 	}
@@ -97,7 +97,7 @@ func (store *store) UserCreate(ctx context.Context, user UserInterface) error {
 	return nil
 }
 
-func (store *store) UserDelete(ctx context.Context, user UserInterface) error {
+func (store *storeImplementation) UserDelete(ctx context.Context, user UserInterface) error {
 	if user == nil {
 		return errors.New("user is nil")
 	}
@@ -105,7 +105,7 @@ func (store *store) UserDelete(ctx context.Context, user UserInterface) error {
 	return store.UserDeleteByID(ctx, user.ID())
 }
 
-func (store *store) UserDeleteByID(ctx context.Context, id string) error {
+func (store *storeImplementation) UserDeleteByID(ctx context.Context, id string) error {
 	if id == "" {
 		return errors.New("user id is empty")
 	}
@@ -129,7 +129,7 @@ func (store *store) UserDeleteByID(ctx context.Context, id string) error {
 	return err
 }
 
-func (store *store) UserFindByEmail(ctx context.Context, email string) (user UserInterface, err error) {
+func (store *storeImplementation) UserFindByEmail(ctx context.Context, email string) (user UserInterface, err error) {
 	if email == "" {
 		return nil, errors.New("user email is empty")
 	}
@@ -150,7 +150,7 @@ func (store *store) UserFindByEmail(ctx context.Context, email string) (user Use
 }
 
 // UserFindByEmailOrCreate - finds by email or creates a user (with active status)
-func (store *store) UserFindByEmailOrCreate(ctx context.Context, email, createStatus string) (UserInterface, error) {
+func (store *storeImplementation) UserFindByEmailOrCreate(ctx context.Context, email, createStatus string) (UserInterface, error) {
 	existingUser, errUser := store.UserFindByEmail(ctx, email)
 
 	if errUser != nil {
@@ -174,7 +174,7 @@ func (store *store) UserFindByEmailOrCreate(ctx context.Context, email, createSt
 	return newUser, nil
 }
 
-func (store *store) UserFindByID(ctx context.Context, id string) (user UserInterface, err error) {
+func (store *storeImplementation) UserFindByID(ctx context.Context, id string) (user UserInterface, err error) {
 	if id == "" {
 		return nil, errors.New("user id is empty")
 	}
@@ -194,7 +194,7 @@ func (store *store) UserFindByID(ctx context.Context, id string) (user UserInter
 	return nil, nil
 }
 
-func (store *store) UserList(ctx context.Context, query UserQueryInterface) ([]UserInterface, error) {
+func (store *storeImplementation) UserList(ctx context.Context, query UserQueryInterface) ([]UserInterface, error) {
 	if query == nil {
 		return []UserInterface{}, errors.New("at user list > user query is nil")
 	}
@@ -241,7 +241,7 @@ func (store *store) UserList(ctx context.Context, query UserQueryInterface) ([]U
 	return list, nil
 }
 
-func (store *store) UserSoftDelete(ctx context.Context, user UserInterface) error {
+func (store *storeImplementation) UserSoftDelete(ctx context.Context, user UserInterface) error {
 	if user == nil {
 		return errors.New("at user soft delete > user is nil")
 	}
@@ -251,7 +251,7 @@ func (store *store) UserSoftDelete(ctx context.Context, user UserInterface) erro
 	return store.UserUpdate(ctx, user)
 }
 
-func (store *store) UserSoftDeleteByID(ctx context.Context, id string) error {
+func (store *storeImplementation) UserSoftDeleteByID(ctx context.Context, id string) error {
 	user, err := store.UserFindByID(ctx, id)
 
 	if err != nil {
@@ -261,7 +261,7 @@ func (store *store) UserSoftDeleteByID(ctx context.Context, id string) error {
 	return store.UserSoftDelete(ctx, user)
 }
 
-func (store *store) UserUpdate(ctx context.Context, user UserInterface) error {
+func (store *storeImplementation) UserUpdate(ctx context.Context, user UserInterface) error {
 	if user == nil {
 		return errors.New("at user update > user is nil")
 	}
@@ -302,7 +302,7 @@ func (store *store) UserUpdate(ctx context.Context, user UserInterface) error {
 	return err
 }
 
-func (store *store) userSelectQuery(options UserQueryInterface) (selectDataset *goqu.SelectDataset, columns []any, err error) {
+func (store *storeImplementation) userSelectQuery(options UserQueryInterface) (selectDataset *goqu.SelectDataset, columns []any, err error) {
 	if options == nil {
 		return nil, nil, errors.New("user options is nil")
 	}
