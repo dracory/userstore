@@ -369,3 +369,7 @@ func (o *userImplementation) SetUpdatedAt(updatedAt string) UserInterface {
 	o.Set(COLUMN_UPDATED_AT, updatedAt)
 	return o
 }
+
+func (o *userImplementation) MarkAsNotDirty() {
+	o.DataObject.MarkAsNotDirty()
+}

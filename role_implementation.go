@@ -204,3 +204,7 @@ func (o *roleImplementation) SetUpdatedAt(updatedAt string) RoleInterface {
 	o.Set(COLUMN_UPDATED_AT, updatedAt)
 	return o
 }
+
+func (o *roleImplementation) MarkAsNotDirty() {
+	o.DataObject.MarkAsNotDirty()
+}
