@@ -138,3 +138,11 @@ func (st *storeImplementation) sqlUserTableCreate() (string, error) {
 
 	return sql, err
 }
+
+// sqlUserTableDrop returns a SQL string for dropping the user table
+func (st *storeImplementation) sqlUserTableDrop() (string, error) {
+	sql, err := sb.NewBuilder(sb.DatabaseDriverName(st.db)).
+		Table(st.userTableName).
+		Drop()
+	return sql, err
+}

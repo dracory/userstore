@@ -17,7 +17,7 @@ func TestStoreUserCount(t *testing.T) {
 	}
 
 	defer func() {
-		if err := store.DB().Close(); err != nil {
+		if err := store.GetDB().Close(); err != nil {
 			t.Fatal(err)
 		}
 	}()
@@ -87,7 +87,7 @@ func TestStoreUserCreate(t *testing.T) {
 	}
 
 	defer func() {
-		if err := store.DB().Close(); err != nil {
+		if err := store.GetDB().Close(); err != nil {
 			t.Fatal(err)
 		}
 	}()
@@ -116,7 +116,7 @@ func TestStoreUserDelete(t *testing.T) {
 	}
 
 	defer func() {
-		if err := store.DB().Close(); err != nil {
+		if err := store.GetDB().Close(); err != nil {
 			t.Fatal(err)
 		}
 	}()
@@ -173,7 +173,7 @@ func TestStoreUserDeleteByID(t *testing.T) {
 	}
 
 	defer func() {
-		if err := store.DB().Close(); err != nil {
+		if err := store.GetDB().Close(); err != nil {
 			t.Fatal(err)
 		}
 	}()
@@ -230,7 +230,7 @@ func TestStoreUserFindByEmail(t *testing.T) {
 	}
 
 	defer func() {
-		if err := store.DB().Close(); err != nil {
+		if err := store.GetDB().Close(); err != nil {
 			t.Fatal(err)
 		}
 	}()
@@ -254,12 +254,12 @@ func TestStoreUserFindByEmail(t *testing.T) {
 		t.Fatal("unexpected error:", err)
 	}
 
-	err = store.UserCreate(database.Context(context.Background(), store.DB()), user)
+	err = store.UserCreate(database.Context(context.Background(), store.GetDB()), user)
 	if err != nil {
 		t.Error("unexpected error:", err)
 	}
 
-	userFound, errFind := store.UserFindByEmail(database.Context(context.Background(), store.DB()), user.GetEmail())
+	userFound, errFind := store.UserFindByEmail(database.Context(context.Background(), store.GetDB()), user.GetEmail())
 
 	if errFind != nil {
 		t.Fatal("unexpected error:", errFind)
@@ -326,7 +326,7 @@ func TestStoreUserFindByID(t *testing.T) {
 	}
 
 	defer func() {
-		if err := store.DB().Close(); err != nil {
+		if err := store.GetDB().Close(); err != nil {
 			t.Fatal(err)
 		}
 	}()
@@ -350,7 +350,7 @@ func TestStoreUserFindByID(t *testing.T) {
 		t.Fatal("unexpected error:", err)
 	}
 
-	ctx := database.Context(context.Background(), store.DB())
+	ctx := database.Context(context.Background(), store.GetDB())
 	err = store.UserCreate(ctx, user)
 	if err != nil {
 		t.Error("unexpected error:", err)
@@ -423,7 +423,7 @@ func TestStoreUserList(t *testing.T) {
 	}
 
 	defer func() {
-		if err := store.DB().Close(); err != nil {
+		if err := store.GetDB().Close(); err != nil {
 			t.Fatal(err)
 		}
 	}()
@@ -483,7 +483,7 @@ func TestStoreUserSoftDelete(t *testing.T) {
 	}
 
 	defer func() {
-		if err := store.DB().Close(); err != nil {
+		if err := store.GetDB().Close(); err != nil {
 			t.Fatal(err)
 		}
 	}()
@@ -553,7 +553,7 @@ func TestStoreUserSoftDeleteByID(t *testing.T) {
 	}
 
 	defer func() {
-		if err := store.DB().Close(); err != nil {
+		if err := store.GetDB().Close(); err != nil {
 			t.Fatal(err)
 		}
 	}()
@@ -622,7 +622,7 @@ func TestStoreUserMetaLike(t *testing.T) {
 		t.Fatal("unexpected error:", err)
 	}
 	defer func() {
-		if err := store.DB().Close(); err != nil {
+		if err := store.GetDB().Close(); err != nil {
 			t.Fatal(err)
 		}
 	}()

@@ -65,7 +65,7 @@ func TestStoreWithTx(t *testing.T) {
 		t.Fatal("unexpected nil store")
 	}
 
-	db := store.DB()
+	db := store.GetDB()
 
 	if db == nil {
 		t.Fatal("unexpected nil db")

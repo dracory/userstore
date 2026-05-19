@@ -8,9 +8,18 @@ import (
 )
 
 type StoreInterface interface {
-	AutoMigrate() error
+	// GetUserTableName returns the user table name
+	GetUserTableName() string
+	// SetUserTableName sets the user table name
+	SetUserTableName(tableName string)
+
+	// MigrateDown drops the user table
+	MigrateDown(tx ...*sql.Tx) error
+	// MigrateUp creates the user table
+	MigrateUp(tx ...*sql.Tx) error
+
 	EnableDebug(debug bool)
-	DB() *sql.DB
+	GetDB() *sql.DB
 
 	// RoleCreate(ctx context.Context, role RoleInterface) error
 	// RoleDelete(ctx context.Context, role RoleInterface) error
