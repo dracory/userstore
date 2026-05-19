@@ -14,9 +14,9 @@ type StoreInterface interface {
 	SetUserTableName(tableName string)
 
 	// MigrateDown drops the user table
-	MigrateDown(tx ...*sql.Tx) error
+	MigrateDown(ctx context.Context, tx ...*sql.Tx) error
 	// MigrateUp creates the user table
-	MigrateUp(tx ...*sql.Tx) error
+	MigrateUp(ctx context.Context, tx ...*sql.Tx) error
 
 	EnableDebug(debug bool)
 	GetDB() *sql.DB

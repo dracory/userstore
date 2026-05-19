@@ -27,11 +27,11 @@ var _ StoreInterface = (*storeImplementation)(nil) // verify it extends the inte
 
 // AutoMigrate auto migrate (deprecated - use MigrateUp)
 func (store *storeImplementation) AutoMigrate() error {
-	return store.MigrateUp()
+	return store.MigrateUp(context.Background())
 }
 
 // MigrateUp creates the user table
-func (store *storeImplementation) MigrateUp(tx ...*sql.Tx) error {
+func (store *storeImplementation) MigrateUp(ctx context.Context, tx ...*sql.Tx) error {
 	var txToUse *sql.Tx
 	if len(tx) > 0 {
 		txToUse = tx[0]
@@ -52,9 +52,9 @@ func (store *storeImplementation) MigrateUp(tx ...*sql.Tx) error {
 
 	var errExec error
 	if txToUse != nil {
-		_, errExec = txToUse.Exec(sqlStr)
+		_, errExec = txToUse.ExecContext(ctx, sqlStr)
 	} else {
-		_, errExec = store.db.Exec(sqlStr)
+		_, errExec = store.db.ExecContext(ctx, sqlStr)
 	}
 
 	if errExec != nil {
@@ -65,7 +65,7 @@ func (store *storeImplementation) MigrateUp(tx ...*sql.Tx) error {
 }
 
 // MigrateDown drops the user table
-func (store *storeImplementation) MigrateDown(tx ...*sql.Tx) error {
+func (store *storeImplementation) MigrateDown(ctx context.Context, tx ...*sql.Tx) error {
 	var txToUse *sql.Tx
 	if len(tx) > 0 {
 		txToUse = tx[0]
@@ -86,9 +86,9 @@ func (store *storeImplementation) MigrateDown(tx ...*sql.Tx) error {
 
 	var errExec error
 	if txToUse != nil {
-		_, errExec = txToUse.Exec(sqlStr)
+		_, errExec = txToUse.ExecContext(ctx, sqlStr)
 	} else {
-		_, errExec = store.db.Exec(sqlStr)
+		_, errExec = store.db.ExecContext(ctx, sqlStr)
 	}
 
 	if errExec != nil {
