@@ -19,6 +19,10 @@ Supports multiple database storages (SQLite, MySQL, or PostgreSQL)
 - Transaction support
 - Query builder for complex searches
 
+## Documentation
+
+View the complete documentation at: https://htmlpreview.github.io/?https://raw.githubusercontent.com/dracory/userstore/main/docs/livewiki-html/index.html
+
 ## License
 
 This project is licensed under the GNU General Public License version 3 (GPL-3.0). You can find a copy of the license at https://www.gnu.org/licenses/gpl-3.0.en.html
