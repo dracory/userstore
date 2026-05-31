@@ -333,6 +333,22 @@ func (store *storeImplementation) userSelectQuery(options UserQueryInterface) (s
 		q = q.Where(goqu.C(COLUMN_EMAIL).Eq(options.Email()))
 	}
 
+	if options.HasFirstName() {
+		q = q.Where(goqu.C(COLUMN_FIRST_NAME).Eq(options.FirstName()))
+	}
+
+	if options.HasFirstNameLike() {
+		q = q.Where(goqu.C(COLUMN_FIRST_NAME).Like(`%` + options.FirstNameLike() + `%`))
+	}
+
+	if options.HasLastName() {
+		q = q.Where(goqu.C(COLUMN_LAST_NAME).Eq(options.LastName()))
+	}
+
+	if options.HasLastNameLike() {
+		q = q.Where(goqu.C(COLUMN_LAST_NAME).Like(`%` + options.LastNameLike() + `%`))
+	}
+
 	if options.HasMetaLike() {
 		q = q.Where(goqu.C(COLUMN_METAS).Like(`%` + options.MetaLike() + `%`))
 	}

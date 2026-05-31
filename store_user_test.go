@@ -668,3 +668,227 @@ func TestStoreUserMetaLike(t *testing.T) {
 		t.Errorf("Incorrect user returned, expected ID %s, but got %s", user.GetID(), users[0].GetID())
 	}
 }
+
+func TestStoreUserQueryFirstName(t *testing.T) {
+	store, err := initStore(":memory:")
+	if err != nil {
+		t.Fatal("unexpected error:", err)
+	}
+	defer func() {
+		if err := store.GetDB().Close(); err != nil {
+			t.Fatal(err)
+		}
+	}()
+
+	users := []UserInterface{
+		NewUser().
+			SetStatus(USER_STATUS_ACTIVE).
+			SetFirstName("John").
+			SetLastName("Doe").
+			SetEmail("john@test.com").
+			SetPassword(""),
+		NewUser().
+			SetStatus(USER_STATUS_ACTIVE).
+			SetFirstName("Jane").
+			SetLastName("Smith").
+			SetEmail("jane@test.com").
+			SetPassword(""),
+		NewUser().
+			SetStatus(USER_STATUS_ACTIVE).
+			SetFirstName("John").
+			SetLastName("Smith").
+			SetEmail("john2@test.com").
+			SetPassword(""),
+	}
+
+	for _, user := range users {
+		err = store.UserCreate(context.Background(), user)
+		if err != nil {
+			t.Fatal("unexpected error:", err)
+		}
+	}
+
+	// Test exact match on first name
+	list, err := store.UserList(context.Background(), NewUserQuery().SetFirstName("John"))
+	if err != nil {
+		t.Fatal("unexpected error:", err)
+	}
+
+	if len(list) != 2 {
+		t.Fatalf("Expected 2 users with first name 'John', got %d", len(list))
+	}
+
+	for _, user := range list {
+		if user.GetFirstName() != "John" {
+			t.Fatalf("Expected first name 'John', got '%s'", user.GetFirstName())
+		}
+	}
+}
+
+func TestStoreUserQueryLastName(t *testing.T) {
+	store, err := initStore(":memory:")
+	if err != nil {
+		t.Fatal("unexpected error:", err)
+	}
+	defer func() {
+		if err := store.GetDB().Close(); err != nil {
+			t.Fatal(err)
+		}
+	}()
+
+	users := []UserInterface{
+		NewUser().
+			SetStatus(USER_STATUS_ACTIVE).
+			SetFirstName("John").
+			SetLastName("Doe").
+			SetEmail("john@test.com").
+			SetPassword(""),
+		NewUser().
+			SetStatus(USER_STATUS_ACTIVE).
+			SetFirstName("Jane").
+			SetLastName("Smith").
+			SetEmail("jane@test.com").
+			SetPassword(""),
+		NewUser().
+			SetStatus(USER_STATUS_ACTIVE).
+			SetFirstName("Bob").
+			SetLastName("Doe").
+			SetEmail("bob@test.com").
+			SetPassword(""),
+	}
+
+	for _, user := range users {
+		err = store.UserCreate(context.Background(), user)
+		if err != nil {
+			t.Fatal("unexpected error:", err)
+		}
+	}
+
+	// Test exact match on last name
+	list, err := store.UserList(context.Background(), NewUserQuery().SetLastName("Doe"))
+	if err != nil {
+		t.Fatal("unexpected error:", err)
+	}
+
+	if len(list) != 2 {
+		t.Fatalf("Expected 2 users with last name 'Doe', got %d", len(list))
+	}
+
+	for _, user := range list {
+		if user.GetLastName() != "Doe" {
+			t.Fatalf("Expected last name 'Doe', got '%s'", user.GetLastName())
+		}
+	}
+}
+
+func TestStoreUserQueryFirstNameLike(t *testing.T) {
+	store, err := initStore(":memory:")
+	if err != nil {
+		t.Fatal("unexpected error:", err)
+	}
+	defer func() {
+		if err := store.GetDB().Close(); err != nil {
+			t.Fatal(err)
+		}
+	}()
+
+	users := []UserInterface{
+		NewUser().
+			SetStatus(USER_STATUS_ACTIVE).
+			SetFirstName("Emily").
+			SetLastName("Doe").
+			SetEmail("emily@test.com").
+			SetPassword(""),
+		NewUser().
+			SetStatus(USER_STATUS_ACTIVE).
+			SetFirstName("Milan").
+			SetLastName("Smith").
+			SetEmail("milan@test.com").
+			SetPassword(""),
+		NewUser().
+			SetStatus(USER_STATUS_ACTIVE).
+			SetFirstName("John").
+			SetLastName("Brown").
+			SetEmail("john@test.com").
+			SetPassword(""),
+	}
+
+	for _, user := range users {
+		err = store.UserCreate(context.Background(), user)
+		if err != nil {
+			t.Fatal("unexpected error:", err)
+		}
+	}
+
+	// Test partial match on first name (search "mil" should find "Emily" and "Milan")
+	list, err := store.UserList(context.Background(), NewUserQuery().SetFirstNameLike("mil"))
+	if err != nil {
+		t.Fatal("unexpected error:", err)
+	}
+
+	if len(list) != 2 {
+		t.Fatalf("Expected 2 users with first name containing 'mil', got %d", len(list))
+	}
+
+	for _, user := range list {
+		if !strings.Contains(strings.ToLower(user.GetFirstName()), "mil") {
+			t.Fatalf("Expected first name containing 'mil', got '%s'", user.GetFirstName())
+		}
+	}
+}
+
+func TestStoreUserQueryLastNameLike(t *testing.T) {
+	store, err := initStore(":memory:")
+	if err != nil {
+		t.Fatal("unexpected error:", err)
+	}
+	defer func() {
+		if err := store.GetDB().Close(); err != nil {
+			t.Fatal(err)
+		}
+	}()
+
+	users := []UserInterface{
+		NewUser().
+			SetStatus(USER_STATUS_ACTIVE).
+			SetFirstName("John").
+			SetLastName("Smith").
+			SetEmail("john@test.com").
+			SetPassword(""),
+		NewUser().
+			SetStatus(USER_STATUS_ACTIVE).
+			SetFirstName("Jane").
+			SetLastName("Smyth").
+			SetEmail("jane@test.com").
+			SetPassword(""),
+		NewUser().
+			SetStatus(USER_STATUS_ACTIVE).
+			SetFirstName("Bob").
+			SetLastName("Brown").
+			SetEmail("bob@test.com").
+			SetPassword(""),
+	}
+
+	for _, user := range users {
+		err = store.UserCreate(context.Background(), user)
+		if err != nil {
+			t.Fatal("unexpected error:", err)
+		}
+	}
+
+	// Test partial match on last name (search "sm" should find "Smith" and "Smyth")
+	list, err := store.UserList(context.Background(), NewUserQuery().SetLastNameLike("sm"))
+	if err != nil {
+		t.Fatal("unexpected error:", err)
+	}
+
+	if len(list) != 2 {
+		t.Fatalf("Expected 2 users with last name containing 'sm', got %d", len(list))
+	}
+
+	for _, user := range list {
+		if !strings.Contains(strings.ToLower(user.GetLastName()), "sm") {
+			t.Fatalf("Expected last name containing 'sm', got '%s'", user.GetLastName())
+		}
+	}
+}

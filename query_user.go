@@ -24,6 +24,22 @@ type UserQueryInterface interface {
 	Email() string
 	SetEmail(email string) UserQueryInterface
 
+	HasFirstName() bool
+	FirstName() string
+	SetFirstName(firstName string) UserQueryInterface
+
+	HasFirstNameLike() bool
+	FirstNameLike() string
+	SetFirstNameLike(firstNameLike string) UserQueryInterface
+
+	HasLastName() bool
+	LastName() string
+	SetLastName(lastName string) UserQueryInterface
+
+	HasLastNameLike() bool
+	LastNameLike() string
+	SetLastNameLike(lastNameLike string) UserQueryInterface
+
 	HasID() bool
 	GetID() string
 	SetID(id string) UserQueryInterface
@@ -88,6 +104,22 @@ func (c *userQueryImplementation) Validate() error {
 
 	if c.HasEmail() && c.Email() == "" {
 		return errors.New("user query. email cannot be empty")
+	}
+
+	if c.HasFirstName() && c.FirstName() == "" {
+		return errors.New("user query. first_name cannot be empty")
+	}
+
+	if c.HasFirstNameLike() && c.FirstNameLike() == "" {
+		return errors.New("user query. first_name_like cannot be empty")
+	}
+
+	if c.HasLastName() && c.LastName() == "" {
+		return errors.New("user query. last_name cannot be empty")
+	}
+
+	if c.HasLastNameLike() && c.LastNameLike() == "" {
+		return errors.New("user query. last_name_like cannot be empty")
 	}
 
 	if c.HasID() && c.GetID() == "" {
@@ -215,6 +247,78 @@ func (c *userQueryImplementation) Email() string {
 
 func (c *userQueryImplementation) SetEmail(email string) UserQueryInterface {
 	c.properties["email"] = email
+
+	return c
+}
+
+func (c *userQueryImplementation) HasFirstName() bool {
+	return c.hasProperty("first_name")
+}
+
+func (c *userQueryImplementation) FirstName() string {
+	if !c.HasFirstName() {
+		return ""
+	}
+
+	return c.properties["first_name"].(string)
+}
+
+func (c *userQueryImplementation) SetFirstName(firstName string) UserQueryInterface {
+	c.properties["first_name"] = firstName
+
+	return c
+}
+
+func (c *userQueryImplementation) HasFirstNameLike() bool {
+	return c.hasProperty("first_name_like")
+}
+
+func (c *userQueryImplementation) FirstNameLike() string {
+	if !c.HasFirstNameLike() {
+		return ""
+	}
+
+	return c.properties["first_name_like"].(string)
+}
+
+func (c *userQueryImplementation) SetFirstNameLike(firstNameLike string) UserQueryInterface {
+	c.properties["first_name_like"] = firstNameLike
+
+	return c
+}
+
+func (c *userQueryImplementation) HasLastName() bool {
+	return c.hasProperty("last_name")
+}
+
+func (c *userQueryImplementation) LastName() string {
+	if !c.HasLastName() {
+		return ""
+	}
+
+	return c.properties["last_name"].(string)
+}
+
+func (c *userQueryImplementation) SetLastName(lastName string) UserQueryInterface {
+	c.properties["last_name"] = lastName
+
+	return c
+}
+
+func (c *userQueryImplementation) HasLastNameLike() bool {
+	return c.hasProperty("last_name_like")
+}
+
+func (c *userQueryImplementation) LastNameLike() string {
+	if !c.HasLastNameLike() {
+		return ""
+	}
+
+	return c.properties["last_name_like"].(string)
+}
+
+func (c *userQueryImplementation) SetLastNameLike(lastNameLike string) UserQueryInterface {
+	c.properties["last_name_like"] = lastNameLike
 
 	return c
 }
