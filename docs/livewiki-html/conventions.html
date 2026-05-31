@@ -1,0 +1,359 @@
+<!--
+path: conventions.html
+page-type: reference
+summary: Coding and documentation conventions for UserStore contributors.
+tags: [conventions, standards, guidelines]
+created: 2026-05-31
+updated: 2026-05-31
+version: 1.0.0
+-->
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Conventions - UserStore LiveWiki</title>
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+    <!-- Custom Styles -->
+    <style>
+        body {
+            padding-top: 20px;
+            padding-bottom: 20px;
+        }
+        .sidebar {
+            position: sticky;
+            top: 20px;
+        }
+        pre {
+            background-color: #f8f9fa;
+            padding: 15px;
+            border-radius: 5px;
+            border: 1px solid #dee2e6;
+        }
+        code {
+            background-color: #e9ecef;
+            padding: 2px 5px;
+            border-radius: 3px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container-fluid">
+        <div class="row">
+            <!-- Sidebar Navigation -->
+            <div class="col-md-3">
+                <div class="sidebar">
+                    <nav class="nav flex-column">
+                        <a class="nav-link" href="index.html"><i class="bi bi-house"></i> Home</a>
+                        <a class="nav-link" href="overview.html"><i class="bi bi-info-circle"></i> Overview</a>
+                        <a class="nav-link" href="getting_started.html"><i class="bi bi-play-circle"></i> Getting Started</a>
+                        <a class="nav-link" href="architecture.html"><i class="bi bi-diagram-3"></i> Architecture</a>
+                        <a class="nav-link" href="api_reference.html"><i class="bi bi-code-slash"></i> API Reference</a>
+                        <a class="nav-link" href="data_flow.html"><i class="bi bi-arrow-left-right"></i> Data Flow</a>
+                        <a class="nav-link" href="configuration.html"><i class="bi bi-gear"></i> Configuration</a>
+                        <a class="nav-link" href="development.html"><i class="bi bi-tools"></i> Development</a>
+                        <a class="nav-link" href="troubleshooting.html"><i class="bi bi-bug"></i> Troubleshooting</a>
+                        <a class="nav-link" href="llm-context.html"><i class="bi bi-robot"></i> LLM Context</a>
+                        <a class="nav-link" href="cheatsheet.html"><i class="bi bi-lightning"></i> Cheatsheet</a>
+                        <a class="nav-link active" href="conventions.html"><i class="bi bi-book"></i> Conventions</a>
+                        <a class="nav-link" href="table_of_contents.html"><i class="bi bi-list"></i> Table of Contents</a>
+                    </nav>
+                </div>
+            </div>
+            <!-- Main Content -->
+            <div class="col-md-9">
+                <h1>Conventions</h1>
+                <p class="lead">Coding and documentation conventions for UserStore contributors</p>
+                <hr>
+
+                <h2>Naming Conventions</h2>
+
+                <h3>Method Naming</h3>
+                <div class="alert alert-info">
+                    <strong>Rule:</strong> Use consistent prefixes for different types of methods
+                </div>
+
+                <h4>Getters</h4>
+                <ul>
+                    <li>Use <code>Get</code> prefix for getter methods</li>
+                    <li>Examples: <code>GetID()</code>, <code>GetName()</code>, <code>GetEmail()</code>, <code>GetStatus()</code></li>
+                </ul>
+
+                <h4>Setters</h4>
+                <ul>
+                    <li>Use <code>Set</code> prefix for setter methods</li>
+                    <li>Examples: <code>SetID()</code>, <code>SetName()</code>, <code>SetEmail()</code>, <code>SetStatus()</code></li>
+                    <li>Setters should return the interface for method chaining</li>
+                </ul>
+
+                <h4>Boolean Checks</h4>
+                <ul>
+                    <li>Use <code>Is</code> prefix for boolean check methods</li>
+                    <li>Examples: <code>IsActive()</code>, <code>IsInactive()</code>, <code>IsAdministrator()</code></li>
+                </ul>
+
+                <h4>Has Methods</h4>
+                <ul>
+                    <li>Use <code>Has</code> prefix for methods checking if a property is set</li>
+                    <li>Examples: <code>HasEmail()</code>, <code>HasLimit()</code>, <code>HasStatus()</code></li>
+                </ul>
+
+                <h3>Variable Naming</h3>
+                <ul>
+                    <li>Use <code>camelCase</code> for local variables and function parameters</li>
+                    <li>Use <code>PascalCase</code> for exported types and functions</li>
+                    <li>Use <code>camelCase</code> for private types and functions</li>
+                </ul>
+
+                <h3>Constant Naming</h3>
+                <ul>
+                    <li>Use <code>UPPER_SNAKE_CASE</code> for constants</li>
+                    <li>Group related constants with common prefixes</li>
+                    <li>Examples: <code>USER_STATUS_ACTIVE</code>, <code>COLUMN_EMAIL</code>, <code>ERROR_EMPTY_STRING</code></li>
+                </ul>
+
+                <h3>Interface Naming</h3>
+                <ul>
+                    <li>Use <code>PascalCase</code> with <code>Interface</code> suffix</li>
+                    <li>Examples: <code>StoreInterface</code>, <code>UserInterface</code>, <code>RoleInterface</code></li>
+                </ul>
+
+                <h3>Implementation Naming</h3>
+                <ul>
+                    <li>Use <code>camelCase</code> with <code>Implementation</code> suffix</li>
+                    <li>Examples: <code>storeImplementation</code>, <code>userImplementation</code>, <code>roleImplementation</code></li>
+                </ul>
+
+                <h2>Code Structure</h2>
+
+                <h3>File Organization</h3>
+                <ul>
+                    <li>One major component per file</li>
+                    <li>Test files should be named <code>*_test.go</code></li>
+                    <li>Group related constants in <code>consts.go</code></li>
+                    <li>Group utility functions in <code>functions.go</code></li>
+                </ul>
+
+                <h3>Interface Definition</h3>
+                <ul>
+                    <li>Define interfaces in <code>interfaces.go</code></li>
+                    <li>Include all public methods in the interface</li>
+                    <li>Use descriptive method names</li>
+                    <li>Include comments for complex methods</li>
+                </ul>
+
+                <h3>Implementation</h3>
+                <ul>
+                    <li>Implement interfaces in separate files</li>
+                    <li>Use struct embedding for base functionality</li>
+                    <li>Include compile-time interface verification</li>
+                </ul>
+
+                <h2>Method Chaining</h2>
+
+                <h3>Setter Return Values</h3>
+                <ul>
+                    <li>Setters should return the interface type</li>
+                    <li>This enables fluent method chaining</li>
+                </ul>
+
+                <pre><code>// Correct
+func (o *userImplementation) SetEmail(email string) UserInterface {
+    o.Set(COLUMN_EMAIL, email)
+    return o
+}
+
+// Incorrect
+func (o *userImplementation) SetEmail(email string) {
+    o.Set(COLUMN_EMAIL, email)
+}</code></pre>
+
+                <h2>Error Handling</h2>
+
+                <h3>Error Returns</h3>
+                <ul>
+                    <li>Always return errors from functions that can fail</li>
+                    <li>Return errors as the last return value</li>
+                    <li>Use descriptive error messages</li>
+                </ul>
+
+                <h3>Error Wrapping</h3>
+                <ul>
+                    <li>Wrap errors with context when appropriate</li>
+                    <li>Use <code>errors.Join()</code> for combining errors</li>
+                    <li>Include context about what operation failed</li>
+                </ul>
+
+                <pre><code>return errors.Join(errors.New("userstore.NewStore"), err)</code></pre>
+
+                <h2>Documentation</h2>
+
+                <h3>Code Comments</h3>
+                <ul>
+                    <li>Add comments for exported functions</li>
+                    <li>Document complex logic</li>
+                    <li>Keep comments up to date</li>
+                    <li>Use proper Go documentation format</li>
+                </ul>
+
+                <h3>Function Documentation</h3>
+                <pre><code>// FunctionName does something useful.
+//
+// Parameters:
+//   - param1: Description of parameter 1
+//   - param2: Description of parameter 2
+//
+// Returns:
+//   - Type1: Description of return value 1
+//   - error: Error if operation fails
+func FunctionName(param1 Type1, param2 Type2) (Type1, error) {
+    // Implementation
+}</code></pre>
+
+                <h3>LiveWiki Documentation</h3>
+                <ul>
+                    <li>Update LiveWiki for new features</li>
+                    <li>Add examples to getting started guide</li>
+                    <li>Update API reference for new methods</li>
+                    <li>Include metadata header in all pages</li>
+                </ul>
+
+                <h2>Testing</h2>
+
+                <h3>Test Structure</h3>
+                <ul>
+                    <li>Write tests for all public functions</li>
+                    <li>Use table-driven tests for multiple test cases</li>
+                    <li>Test both success and error paths</li>
+                    <li>Aim for high code coverage</li>
+                </ul>
+
+                <h3>Test Naming</h3>
+                <ul>
+                    <li>Use <code>TestFunctionName</code> format</li>
+                    <li>Use descriptive test case names in table-driven tests</li>
+                </ul>
+
+                <h3>Mocking</h3>
+                <ul>
+                    <li>Mock external dependencies (database, etc.)</li>
+                    <li>Use interfaces for easy mocking</li>
+                    <li>Keep tests fast and isolated</li>
+                </ul>
+
+                <h2>Database Operations</h2>
+
+                <h3>SQL Generation</h3>
+                <ul>
+                    <li>Use SQL builder for database-agnostic queries</li>
+                    <li>Don't write raw SQL strings</li>
+                    <li>Let the builder handle database-specific syntax</li>
+                </ul>
+
+                <h3>Transaction Support</h3>
+                <ul>
+                    <li>Support optional transaction parameter</li>
+                    <li>Use variadic parameter for transaction</li>
+                    <li>Example: <code>func (ctx context.Context, tx ...*sql.Tx) error</code></li>
+                </ul>
+
+                <h2>Security</h2>
+
+                <h3>Password Handling</h3>
+                <ul>
+                    <li>Never store plain-text passwords</li>
+                    <li>Always use bcrypt for hashing</li>
+                    <li>Provide <code>SetPasswordAndHash()</code> for automatic hashing</li>
+                    <li>Provide <code>PasswordCompare()</code> for secure comparison</li>
+                </ul>
+
+                <h3>Input Validation</h3>
+                <ul>
+                    <li>Validate all user inputs</li>
+                    <li>Use query builder to prevent SQL injection</li>
+                    <li>Sanitize data before storage</li>
+                </ul>
+
+                <h2>Performance</h2>
+
+                <h3>Database Queries</h3>
+                <ul>
+                    <li>Use pagination for large result sets</li>
+                    <li>Select only needed columns</li>
+                    <li>Use indexes on frequently queried columns</li>
+                    <li>Avoid N+1 query problems</li>
+                </ul>
+
+                <h3>Memory Management</h3>
+                <ul>
+                    <li>Close database connections when done</li>
+                    <li>Limit result sets with pagination</li>
+                    <li>Reuse objects where possible</li>
+                </ul>
+
+                <h2>Git Conventions</h2>
+
+                <h3>Commit Messages</h3>
+                <ul>
+                    <li>Use clear, descriptive commit messages</li>
+                    <li>Use imperative mood: "Add feature" not "Added feature"</li>
+                    <li>Keep commits focused on a single change</li>
+                </ul>
+
+                <h3>Branch Naming</h3>
+                <ul>
+                    <li>Use <code>feature/feature-name</code> for features</li>
+                    <li>Use <code>fix/bug-description</code> for bug fixes</li>
+                    <li>Use <code>docs/documentation-update</code> for documentation</li>
+                </ul>
+
+                <h2>Code Review</h2>
+
+                <h3>Review Checklist</h3>
+                <ul>
+                    <li>Code follows naming conventions</li>
+                    <li>Code is properly documented</li>
+                    <li>Tests are included and passing</li>
+                    <li>Error handling is correct</li>
+                    <li>Security best practices are followed</li>
+                    <li>Performance considerations are addressed</li>
+                </ul>
+
+                <h2>Best Practices</h2>
+
+                <h3>General</h3>
+                <ul>
+                    <li>Keep functions small and focused</li>
+                    <li>Use meaningful variable names</li>
+                    <li>Avoid code duplication</li>
+                    <li>Write self-documenting code</li>
+                    <li>Keep the codebase clean and organized</li>
+                </ul>
+
+                <h3>Go Specific</h3>
+                <ul>
+                    <li>Use <code>gofmt</code> for code formatting</li>
+                    <li>Use <code>golint</code> for linting</li>
+                    <li>Follow Go best practices</li>
+                    <li>Use idiomatic Go code</li>
+                </ul>
+
+                <hr>
+                <h4>See Also</h4>
+                <ul>
+                    <li><a href="development.html">Development</a> - Development workflow and testing</li>
+                    <li><a href="api_reference.html">API Reference</a> - Complete API documentation</li>
+                    <li><a href="architecture.html">Architecture</a> - System architecture and design patterns</li>
+                    <li><a href="overview.html">Overview</a> - High-level project overview</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    <!-- Bootstrap 5 JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

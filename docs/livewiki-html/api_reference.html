@@ -1,0 +1,510 @@
+<!--
+path: api_reference.html
+page-type: reference
+summary: Complete API documentation for UserStore interfaces and methods.
+tags: [api, reference, documentation]
+created: 2026-05-31
+updated: 2026-05-31
+version: 1.0.0
+-->
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>API Reference - UserStore LiveWiki</title>
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+    <!-- Custom Styles -->
+    <style>
+        body {
+            padding-top: 20px;
+            padding-bottom: 20px;
+        }
+        .sidebar {
+            position: sticky;
+            top: 20px;
+        }
+        pre {
+            background-color: #f8f9fa;
+            padding: 15px;
+            border-radius: 5px;
+            border: 1px solid #dee2e6;
+        }
+        code {
+            background-color: #e9ecef;
+            padding: 2px 5px;
+            border-radius: 3px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container-fluid">
+        <div class="row">
+            <!-- Sidebar Navigation -->
+            <div class="col-md-3">
+                <div class="sidebar">
+                    <nav class="nav flex-column">
+                        <a class="nav-link" href="index.html"><i class="bi bi-house"></i> Home</a>
+                        <a class="nav-link" href="overview.html"><i class="bi bi-info-circle"></i> Overview</a>
+                        <a class="nav-link" href="getting_started.html"><i class="bi bi-play-circle"></i> Getting Started</a>
+                        <a class="nav-link" href="architecture.html"><i class="bi bi-diagram-3"></i> Architecture</a>
+                        <a class="nav-link active" href="api_reference.html"><i class="bi bi-code-slash"></i> API Reference</a>
+                        <a class="nav-link" href="data_flow.html"><i class="bi bi-arrow-left-right"></i> Data Flow</a>
+                        <a class="nav-link" href="configuration.html"><i class="bi bi-gear"></i> Configuration</a>
+                        <a class="nav-link" href="development.html"><i class="bi bi-tools"></i> Development</a>
+                        <a class="nav-link" href="troubleshooting.html"><i class="bi bi-bug"></i> Troubleshooting</a>
+                        <a class="nav-link" href="llm-context.html"><i class="bi bi-robot"></i> LLM Context</a>
+                        <a class="nav-link" href="cheatsheet.html"><i class="bi bi-lightning"></i> Cheatsheet</a>
+                        <a class="nav-link" href="conventions.html"><i class="bi bi-book"></i> Conventions</a>
+                        <a class="nav-link" href="table_of_contents.html"><i class="bi bi-list"></i> Table of Contents</a>
+                    </nav>
+                </div>
+            </div>
+            <!-- Main Content -->
+            <div class="col-md-9">
+                <h1>API Reference</h1>
+                <p class="lead">Complete API documentation for UserStore interfaces and methods</p>
+                <hr>
+
+                <h2>Store Interface</h2>
+                <p>The <code>StoreInterface</code> defines the contract for database operations.</p>
+
+                <h3>Methods</h3>
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>Method</th>
+                            <th>Signature</th>
+                            <th>Description</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><code>GetUserTableName</code></td>
+                            <td><code>() string</code></td>
+                            <td>Returns the user table name</td>
+                        </tr>
+                        <tr>
+                            <td><code>SetUserTableName</code></td>
+                            <td><code>(tableName string)</code></td>
+                            <td>Sets the user table name</td>
+                        </tr>
+                        <tr>
+                            <td><code>MigrateUp</code></td>
+                            <td><code>(ctx context.Context, tx ...*sql.Tx) error</code></td>
+                            <td>Creates the user table</td>
+                        </tr>
+                        <tr>
+                            <td><code>MigrateDown</code></td>
+                            <td><code>(ctx context.Context, tx ...*sql.Tx) error</code></td>
+                            <td>Drops the user table</td>
+                        </tr>
+                        <tr>
+                            <td><code>EnableDebug</code></td>
+                            <td><code>(debug bool)</code></td>
+                            <td>Enables debug logging</td>
+                        </tr>
+                        <tr>
+                            <td><code>GetDB</code></td>
+                            <td><code>() *sql.DB</code></td>
+                            <td>Returns the database instance</td>
+                        </tr>
+                        <tr>
+                            <td><code>UserCreate</code></td>
+                            <td><code>(ctx context.Context, user UserInterface) error</code></td>
+                            <td>Creates a new user</td>
+                        </tr>
+                        <tr>
+                            <td><code>UserCount</code></td>
+                            <td><code>(ctx context.Context, options UserQueryInterface) (int64, error)</code></td>
+                            <td>Counts users matching query</td>
+                        </tr>
+                        <tr>
+                            <td><code>UserDelete</code></td>
+                            <td><code>(ctx context.Context, user UserInterface) error</code></td>
+                            <td>Hard deletes a user</td>
+                        </tr>
+                        <tr>
+                            <td><code>UserDeleteByID</code></td>
+                            <td><code>(ctx context.Context, id string) error</code></td>
+                            <td>Hard deletes a user by ID</td>
+                        </tr>
+                        <tr>
+                            <td><code>UserFindByEmail</code></td>
+                            <td><code>(ctx context.Context, email string) (UserInterface, error)</code></td>
+                            <td>Finds a user by email</td>
+                        </tr>
+                        <tr>
+                            <td><code>UserFindByID</code></td>
+                            <td><code>(ctx context.Context, userID string) (UserInterface, error)</code></td>
+                            <td>Finds a user by ID</td>
+                        </tr>
+                        <tr>
+                            <td><code>UserList</code></td>
+                            <td><code>(ctx context.Context, query UserQueryInterface) ([]UserInterface, error)</code></td>
+                            <td>Lists users matching query</td>
+                        </tr>
+                        <tr>
+                            <td><code>UserSoftDelete</code></td>
+                            <td><code>(ctx context.Context, user UserInterface) error</code></td>
+                            <td>Soft deletes a user</td>
+                        </tr>
+                        <tr>
+                            <td><code>UserSoftDeleteByID</code></td>
+                            <td><code>(ctx context.Context, id string) error</code></td>
+                            <td>Soft deletes a user by ID</td>
+                        </tr>
+                        <tr>
+                            <td><code>UserUpdate</code></td>
+                            <td><code>(ctx context.Context, user UserInterface) error</code></td>
+                            <td>Updates a user</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <h2>User Interface</h2>
+                <p>The <code>UserInterface</code> defines the user entity contract.</p>
+
+                <h3>Status Methods</h3>
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>Method</th>
+                            <th>Signature</th>
+                            <th>Description</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><code>IsActive</code></td>
+                            <td><code>() bool</code></td>
+                            <td>Returns true if user status is active</td>
+                        </tr>
+                        <tr>
+                            <td><code>IsInactive</code></td>
+                            <td><code>() bool</code></td>
+                            <td>Returns true if user status is inactive</td>
+                        </tr>
+                        <tr>
+                            <td><code>IsSoftDeleted</code></td>
+                            <td><code>() bool</code></td>
+                            <td>Returns true if user is soft deleted</td>
+                        </tr>
+                        <tr>
+                            <td><code>IsUnverified</code></td>
+                            <td><code>() bool</code></td>
+                            <td>Returns true if user status is unverified</td>
+                        </tr>
+                        <tr>
+                            <td><code>IsAdministrator</code></td>
+                            <td><code>() bool</code></td>
+                            <td>Returns true if user role is administrator</td>
+                        </tr>
+                        <tr>
+                            <td><code>IsManager</code></td>
+                            <td><code>() bool</code></td>
+                            <td>Returns true if user role is manager</td>
+                        </tr>
+                        <tr>
+                            <td><code>IsSuperuser</code></td>
+                            <td><code>() bool</code></td>
+                            <td>Returns true if user role is superuser</td>
+                        </tr>
+                        <tr>
+                            <td><code>IsRegistrationCompleted</code></td>
+                            <td><code>() bool</code></td>
+                            <td>Returns true if first and last name are set</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <h3>Property Getters</h3>
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>Method</th>
+                            <th>Signature</th>
+                            <th>Description</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr><td><code>GetID</code></td><td><code>() string</code></td><td>Returns user ID</td></tr>
+                        <tr><td><code>GetEmail</code></td><td><code>() string</code></td><td>Returns email address</td></tr>
+                        <tr><td><code>GetFirstName</code></td><td><code>() string</code></td><td>Returns first name</td></tr>
+                        <tr><td><code>GetLastName</code></td><td><code>() string</code></td><td>Returns last name</td></tr>
+                        <tr><td><code>GetMiddleNames</code></td><td><code>() string</code></td><td>Returns middle names</td></tr>
+                        <tr><td><code>GetBusinessName</code></td><td><code>() string</code></td><td>Returns business name</td></tr>
+                        <tr><td><code>GetPhone</code></td><td><code>() string</code></td><td>Returns phone number</td></tr>
+                        <tr><td><code>GetPassword</code></td><td><code>() string</code></td><td>Returns hashed password</td></tr>
+                        <tr><td><code>GetRole</code></td><td><code>() string</code></td><td>Returns user role</td></tr>
+                        <tr><td><code>GetStatus</code></td><td><code>() string</code></td><td>Returns user status</td></tr>
+                        <tr><td><code>GetCountry</code></td><td><code>() string</code></td><td>Returns country code</td></tr>
+                        <tr><td><code>GetTimezone</code></td><td><code>() string</code></td><td>Returns timezone</td></tr>
+                        <tr><td><code>GetProfileImageUrl</code></td><td><code>() string</code></td><td>Returns profile image URL</td></tr>
+                        <tr><td><code>GetMemo</code></td><td><code>() string</code></td><td>Returns memo</td></tr>
+                        <tr><td><code>GetCreatedAt</code></td><td><code>() string</code></td><td>Returns creation timestamp</td></tr>
+                        <tr><td><code>GetUpdatedAt</code></td><td><code>() string</code></td><td>Returns update timestamp</td></tr>
+                        <tr><td><code>GetSoftDeletedAt</code></td><td><code>() string</code></td><td>Returns soft delete timestamp</td></tr>
+                        <tr><td><code>GetCreatedAtCarbon</code></td><td><code>() *carbon.Carbon</code></td><td>Returns creation timestamp as Carbon</td></tr>
+                        <tr><td><code>GetUpdatedAtCarbon</code></td><td><code>() *carbon.Carbon</code></td><td>Returns update timestamp as Carbon</td></tr>
+                        <tr><td><code>GetSoftDeletedAtCarbon</code></td><td><code>() *carbon.Carbon</code></td><td>Returns soft delete timestamp as Carbon</td></tr>
+                    </tbody>
+                </table>
+
+                <h3>Property Setters</h3>
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>Method</th>
+                            <th>Signature</th>
+                            <th>Description</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr><td><code>SetID</code></td><td><code>(id string) UserInterface</code></td><td>Sets user ID</td></tr>
+                        <tr><td><code>SetEmail</code></td><td><code>(email string) UserInterface</code></td><td>Sets email address</td></tr>
+                        <tr><td><code>SetFirstName</code></td><td><code>(firstName string) UserInterface</code></td><td>Sets first name</td></tr>
+                        <tr><td><code>SetLastName</code></td><td><code>(lastName string) UserInterface</code></td><td>Sets last name</td></tr>
+                        <tr><td><code>SetMiddleNames</code></td><td><code>(middleNames string) UserInterface</code></td><td>Sets middle names</td></tr>
+                        <tr><td><code>SetBusinessName</code></td><td><code>(businessName string) UserInterface</code></td><td>Sets business name</td></tr>
+                        <tr><td><code>SetPhone</code></td><td><code>(phone string) UserInterface</code></td><td>Sets phone number</td></tr>
+                        <tr><td><code>SetPassword</code></td><td><code>(password string) UserInterface</code></td><td>Sets password (plain)</td></tr>
+                        <tr><td><code>SetRole</code></td><td><code>(role string) UserInterface</code></td><td>Sets user role</td></tr>
+                        <tr><td><code>SetStatus</code></td><td><code>(status string) UserInterface</code></td><td>Sets user status</td></tr>
+                        <tr><td><code>SetCountry</code></td><td><code>(country string) UserInterface</code></td><td>Sets country code</td></tr>
+                        <tr><td><code>SetTimezone</code></td><td><code>(timezone string) UserInterface</code></td><td>Sets timezone</td></tr>
+                        <tr><td><code>SetProfileImageUrl</code></td><td><code>(imageUrl string) UserInterface</code></td><td>Sets profile image URL</td></tr>
+                        <tr><td><code>SetMemo</code></td><td><code>(memo string) UserInterface</code></td><td>Sets memo</td></tr>
+                        <tr><td><code>SetCreatedAt</code></td><td><code>(createdAt string) UserInterface</code></td><td>Sets creation timestamp</td></tr>
+                        <tr><td><code>SetUpdatedAt</code></td><td><code>(updatedAt string) UserInterface</code></td><td>Sets update timestamp</td></tr>
+                        <tr><td><code>SetSoftDeletedAt</code></td><td><code>(deletedAt string) UserInterface</code></td><td>Sets soft delete timestamp</td></tr>
+                    </tbody>
+                </table>
+
+                <h3>Password Methods</h3>
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>Method</th>
+                            <th>Signature</th>
+                            <th>Description</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><code>SetPasswordAndHash</code></td>
+                            <td><code>(password string) error</code></td>
+                            <td>Hashes and sets password</td>
+                        </tr>
+                        <tr>
+                            <td><code>PasswordCompare</code></td>
+                            <td><code>(password string) bool</code></td>
+                            <td>Compares password with hash</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <h3>Metadata Methods</h3>
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>Method</th>
+                            <th>Signature</th>
+                            <th>Description</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><code>GetMeta</code></td>
+                            <td><code>(name string) string</code></td>
+                            <td>Gets a metadata value</td>
+                        </tr>
+                        <tr>
+                            <td><code>SetMeta</code></td>
+                            <td><code>(name string, value string) error</code></td>
+                            <td>Sets a metadata value</td>
+                        </tr>
+                        <tr>
+                            <td><code>GetMetas</code></td>
+                            <td><code>() (map[string]string, error)</code></td>
+                            <td>Gets all metadata</td>
+                        </tr>
+                        <tr>
+                            <td><code>SetMetas</code></td>
+                            <td><code>(metas map[string]string) error</code></td>
+                            <td>Sets all metadata (overwrites)</td>
+                        </tr>
+                        <tr>
+                            <td><code>UpsertMetas</code></td>
+                            <td><code>(metas map[string]string) error</code></td>
+                            <td>Updates/inserts metadata</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <h2>Role Interface</h2>
+                <p>The <code>RoleInterface</code> defines the role entity contract.</p>
+
+                <h3>Property Getters</h3>
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>Method</th>
+                            <th>Signature</th>
+                            <th>Description</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr><td><code>GetID</code></td><td><code>() string</code></td><td>Returns role ID</td></tr>
+                        <tr><td><code>GetName</code></td><td><code>() string</code></td><td>Returns role name</td></tr>
+                        <tr><td><code>GetHandle</code></td><td><code>() string</code></td><td>Returns role handle</td></tr>
+                        <tr><td><code>GetStatus</code></td><td><code>() string</code></td><td>Returns role status</td></tr>
+                        <tr><td><code>GetMemo</code></td><td><code>() string</code></td><td>Returns memo</td></tr>
+                        <tr><td><code>GetCreatedAt</code></td><td><code>() string</code></td><td>Returns creation timestamp</td></tr>
+                        <tr><td><code>GetUpdatedAt</code></td><td><code>() string</code></td><td>Returns update timestamp</td></tr>
+                        <tr><td><code>GetSoftDeletedAt</code></td><td><code>() string</code></td><td>Returns soft delete timestamp</td></tr>
+                    </tbody>
+                </table>
+
+                <h3>Property Setters</h3>
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>Method</th>
+                            <th>Signature</th>
+                            <th>Description</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr><td><code>SetID</code></td><td><code>(id string) RoleInterface</code></td><td>Sets role ID</td></tr>
+                        <tr><td><code>SetName</code></td><td><code>(name string) RoleInterface</code></td><td>Sets role name</td></tr>
+                        <tr><td><code>SetHandle</code></td><td><code>(handle string) RoleInterface</code></td><td>Sets role handle</td></tr>
+                        <tr><td><code>SetStatus</code></td><td><code>(status string) RoleInterface</code></td><td>Sets role status</td></tr>
+                        <tr><td><code>SetMemo</code></td><td><code>(memo string) RoleInterface</code></td><td>Sets memo</td></tr>
+                        <tr><td><code>SetCreatedAt</code></td><td><code>(createdAt string) RoleInterface</code></td><td>Sets creation timestamp</td></tr>
+                        <tr><td><code>SetUpdatedAt</code></td><td><code>(updatedAt string) RoleInterface</code></td><td>Sets update timestamp</td></tr>
+                        <tr><td><code>SetSoftDeletedAt</code></td><td><code>(deletedAt string) RoleInterface</code></td><td>Sets soft delete timestamp</td></tr>
+                    </tbody>
+                </table>
+
+                <h2>User Query Interface</h2>
+                <p>The <code>UserQueryInterface</code> provides a fluent query builder.</p>
+
+                <h3>Filter Methods</h3>
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>Method</th>
+                            <th>Signature</th>
+                            <th>Description</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr><td><code>SetID</code></td><td><code>(id string) UserQueryInterface</code></td><td>Filter by ID</td></tr>
+                        <tr><td><code>SetIDIn</code></td><td><code>(idIn []string) UserQueryInterface</code></td><td>Filter by ID list</td></tr>
+                        <tr><td><code>SetEmail</code></td><td><code>(email string) UserQueryInterface</code></td><td>Filter by email</td></tr>
+                        <tr><td><code>SetEmailLike</code></td><td><code>(emailLike string) UserQueryInterface</code></td><td>Filter by email pattern</td></tr>
+                        <tr><td><code>SetFirstName</code></td><td><code>(firstName string) UserQueryInterface</code></td><td>Filter by first name</td></tr>
+                        <tr><td><code>SetFirstNameLike</code></td><td><code>(firstNameLike string) UserQueryInterface</code></td><td>Filter by first name pattern</td></tr>
+                        <tr><td><code>SetLastName</code></td><td><code>(lastName string) UserQueryInterface</code></td><td>Filter by last name</td></tr>
+                        <tr><td><code>SetLastNameLike</code></td><td><code>(lastNameLike string) UserQueryInterface</code></td><td>Filter by last name pattern</td></tr>
+                        <tr><td><code>SetStatus</code></td><td><code>(status string) UserQueryInterface</code></td><td>Filter by status</td></tr>
+                        <tr><td><code>SetStatusIn</code></td><td><code>(statusIn []string) UserQueryInterface</code></td><td>Filter by status list</td></tr>
+                        <tr><td><code>SetCreatedAtGte</code></td><td><code>(createdAtGte string) UserQueryInterface</code></td><td>Filter by created date >=</td></tr>
+                        <tr><td><code>SetCreatedAtLte</code></td><td><code>(createdAtLte string) UserQueryInterface</code></td><td>Filter by created date <=</td></tr>
+                        <tr><td><code>SetMetaLike</code></td><td><code>(metaLike string) UserQueryInterface</code></td><td>Filter by metadata pattern</td></tr>
+                    </tbody>
+                </table>
+
+                <h3>Pagination & Sorting</h3>
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>Method</th>
+                            <th>Signature</th>
+                            <th>Description</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr><td><code>SetLimit</code></td><td><code>(limit int) UserQueryInterface</code></td><td>Set result limit</td></tr>
+                        <tr><td><code>SetOffset</code></td><td><code>(offset int) UserQueryInterface</code></td><td>Set result offset</td></tr>
+                        <tr><td><code>SetOrderBy</code></td><td><code>(orderBy string) UserQueryInterface</code></td><td>Set order by column</td></tr>
+                        <tr><td><code>SetSortDirection</code></td><td><code>(sortDirection string) UserQueryInterface</code></td><td>Set sort direction (ASC/DESC)</td></tr>
+                    </tbody>
+                </table>
+
+                <h3>Other Options</h3>
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>Method</th>
+                            <th>Signature</th>
+                            <th>Description</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr><td><code>SetColumns</code></td><td><code>(columns []string) UserQueryInterface</code></td><td>Select specific columns</td></tr>
+                        <tr><td><code>SetCountOnly</code></td><td><code>(countOnly bool) UserQueryInterface</code></td><td>Return count only</td></tr>
+                        <tr><td><code>SetSoftDeletedIncluded</code></td><td><code>(softDeletedIncluded bool) UserQueryInterface</code></td><td>Include soft-deleted records</td></tr>
+                    </tbody>
+                </table>
+
+                <h2>Constants</h2>
+
+                <h3>User Status Constants</h3>
+                <pre><code>const USER_STATUS_ACTIVE = "active"
+const USER_STATUS_INACTIVE = "inactive"
+const USER_STATUS_DELETED = "deleted"
+const USER_STATUS_UNVERIFIED = "unverified"</code></pre>
+
+                <h3>User Role Constants</h3>
+                <pre><code>const USER_ROLE_SUPERUSER = "superuser"
+const USER_ROLE_ADMINISTRATOR = "administrator"
+const USER_ROLE_MANAGER = "manager"
+const USER_ROLE_USER = "user"</code></pre>
+
+                <h3>Column Name Constants</h3>
+                <pre><code>const COLUMN_ID = "id"
+const COLUMN_EMAIL = "email"
+const COLUMN_FIRST_NAME = "first_name"
+const COLUMN_LAST_NAME = "last_name"
+const COLUMN_PASSWORD = "password"
+const COLUMN_STATUS = "status"
+const COLUMN_ROLE = "role"
+// ... and more</code></pre>
+
+                <h2>Constructors</h2>
+
+                <h3>Store Constructor</h3>
+                <pre><code>func NewStore(opts NewStoreOptions) (StoreInterface, error)</code></pre>
+
+                <h3>User Constructor</h3>
+                <pre><code>func NewUser() UserInterface
+func NewUserFromExistingData(data map[string]string) UserInterface</code></pre>
+
+                <h3>Role Constructor</h3>
+                <pre><code>func NewRole() RoleInterface
+func NewRoleFromExistingData(data map[string]string) RoleInterface</code></pre>
+
+                <h3>Query Constructor</h3>
+                <pre><code>func NewUserQuery() UserQueryInterface</code></pre>
+
+                <hr>
+                <h4>See Also</h4>
+                <ul>
+                    <li><a href="getting_started.html">Getting Started</a> - Usage examples</li>
+                    <li><a href="cheatsheet.html">Cheatsheet</a> - Quick reference</li>
+                    <li><a href="modules/user.html">User Module</a> - User implementation details</li>
+                    <li><a href="overview.html">Overview</a> - High-level project overview</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    <!-- Bootstrap 5 JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

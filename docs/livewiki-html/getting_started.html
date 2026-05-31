@@ -1,0 +1,287 @@
+<!--
+path: getting_started.html
+page-type: tutorial
+summary: Setup, installation, and quick start guide for UserStore.
+tags: [tutorial, setup, installation, quickstart]
+created: 2026-05-31
+updated: 2026-05-31
+version: 1.0.0
+-->
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Getting Started - UserStore LiveWiki</title>
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+    <!-- Custom Styles -->
+    <style>
+        body {
+            padding-top: 20px;
+            padding-bottom: 20px;
+        }
+        .sidebar {
+            position: sticky;
+            top: 20px;
+        }
+        pre {
+            background-color: #f8f9fa;
+            padding: 15px;
+            border-radius: 5px;
+            border: 1px solid #dee2e6;
+        }
+        code {
+            background-color: #e9ecef;
+            padding: 2px 5px;
+            border-radius: 3px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container-fluid">
+        <div class="row">
+            <!-- Sidebar Navigation -->
+            <div class="col-md-3">
+                <div class="sidebar">
+                    <nav class="nav flex-column">
+                        <a class="nav-link" href="index.html"><i class="bi bi-house"></i> Home</a>
+                        <a class="nav-link" href="overview.html"><i class="bi bi-info-circle"></i> Overview</a>
+                        <a class="nav-link active" href="getting_started.html"><i class="bi bi-play-circle"></i> Getting Started</a>
+                        <a class="nav-link" href="architecture.html"><i class="bi bi-diagram-3"></i> Architecture</a>
+                        <a class="nav-link" href="api_reference.html"><i class="bi bi-code-slash"></i> API Reference</a>
+                        <a class="nav-link" href="data_flow.html"><i class="bi bi-arrow-left-right"></i> Data Flow</a>
+                        <a class="nav-link" href="configuration.html"><i class="bi bi-gear"></i> Configuration</a>
+                        <a class="nav-link" href="development.html"><i class="bi bi-tools"></i> Development</a>
+                        <a class="nav-link" href="troubleshooting.html"><i class="bi bi-bug"></i> Troubleshooting</a>
+                        <a class="nav-link" href="llm-context.html"><i class="bi bi-robot"></i> LLM Context</a>
+                        <a class="nav-link" href="cheatsheet.html"><i class="bi bi-lightning"></i> Cheatsheet</a>
+                        <a class="nav-link" href="conventions.html"><i class="bi bi-book"></i> Conventions</a>
+                        <a class="nav-link" href="table_of_contents.html"><i class="bi bi-list"></i> Table of Contents</a>
+                    </nav>
+                </div>
+            </div>
+            <!-- Main Content -->
+            <div class="col-md-9">
+                <h1>Getting Started</h1>
+                <p class="lead">Setup, installation, and quick start guide for UserStore</p>
+                <hr>
+
+                <h2>Prerequisites</h2>
+                <p>Before you begin, ensure you have the following:</p>
+                <ul>
+                    <li>Go 1.26 or higher installed</li>
+                    <li>A supported database (SQLite, MySQL, or PostgreSQL)</li>
+                    <li>Basic knowledge of Go programming</li>
+                </ul>
+
+                <h2>Installation</h2>
+                <p>Install UserStore using Go modules:</p>
+                <pre><code>go get github.com/dracory/userstore</code></pre>
+
+                <h2>Quick Start</h2>
+
+                <h3>Step 1: Initialize the Store</h3>
+                <p>Create a new UserStore instance with your database connection:</p>
+                <pre><code>userStore, err := userstore.NewStore(userstore.NewStoreOptions{
+    DB:                 databaseInstance,
+    UserTableName:      "user",
+    AutomigrateEnabled: true,
+    DebugEnabled:       false,
+})
+
+if err != nil {
+    return errors.Join(errors.New("userstore.NewStore"), err)
+}</code></pre>
+
+                <h3>Step 2: Create a User</h3>
+                <p>Create a new user with method chaining:</p>
+                <pre><code>user := userstore.NewUser().
+    SetStatus(userstore.USER_STATUS_ACTIVE).
+    SetFirstName("John").
+    SetLastName("Doe").
+    SetEmail("test@test.com")
+
+err := userStore.UserCreate(context.Background(), user)
+
+if err != nil {
+    return errors.New("user failed to create")
+}</code></pre>
+
+                <h3>Step 3: Find a User</h3>
+                <p>Find a user by ID:</p>
+                <pre><code>user, err := userStore.UserFindByID(context.Background(), userID)</code></pre>
+
+                <h3>Step 4: List Users</h3>
+                <p>List users with a query builder:</p>
+                <pre><code>query := userstore.NewUserQuery().
+    SetStatus(userstore.USER_STATUS_ACTIVE).
+    SetLimit(10)
+
+users, err := userStore.UserList(context.Background(), query)</code></pre>
+
+                <h3>Step 5: Update a User</h3>
+                <p>Update user properties:</p>
+                <pre><code>user.SetFirstName("Jane")
+user.SetEmail("jane@example.com")
+
+err := userStore.UserUpdate(context.Background(), user)</code></pre>
+
+                <h3>Step 6: Soft Delete a User</h3>
+                <p>Soft delete a user (preserves data):</p>
+                <pre><code>err := userStore.UserSoftDelete(context.Background(), user)</code></pre>
+
+                <h2>Database Setup</h2>
+
+                <h3>SQLite</h3>
+                <pre><code>import (
+    "database/sql"
+    _ "modernc.org/sqlite"
+)
+
+db, err := sql.Open("sqlite", "./userstore.db")
+if err != nil {
+    log.Fatal(err)
+}
+defer db.Close()</code></pre>
+
+                <h3>MySQL</h3>
+                <pre><code>import (
+    "database/sql"
+    _ "github.com/go-sql-driver/mysql"
+)
+
+db, err := sql.Open("mysql", "user:password@/dbname")
+if err != nil {
+    log.Fatal(err)
+}
+defer db.Close()</code></pre>
+
+                <h3>PostgreSQL</h3>
+                <pre><code>import (
+    "database/sql"
+    _ "github.com/lib/pq"
+)
+
+db, err := sql.Open("postgres", "postgres://user:password@localhost/dbname?sslmode=disable")
+if err != nil {
+    log.Fatal(err)
+}
+defer db.Close()</code></pre>
+
+                <h2>Configuration Options</h2>
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>Option</th>
+                            <th>Type</th>
+                            <th>Required</th>
+                            <th>Description</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><code>UserTableName</code></td>
+                            <td>string</td>
+                            <td>Yes</td>
+                            <td>Name of the user table in the database</td>
+                        </tr>
+                        <tr>
+                            <td><code>DB</code></td>
+                            <td>*sql.DB</td>
+                            <td>Yes</td>
+                            <td>Database connection instance</td>
+                        </tr>
+                        <tr>
+                            <td><code>DbDriverName</code></td>
+                            <td>string</td>
+                            <td>No</td>
+                            <td>Database driver name (auto-detected if not provided)</td>
+                        </tr>
+                        <tr>
+                            <td><code>AutomigrateEnabled</code></td>
+                            <td>bool</td>
+                            <td>No</td>
+                            <td>Automatically create tables on initialization</td>
+                        </tr>
+                        <tr>
+                            <td><code>DebugEnabled</code></td>
+                            <td>bool</td>
+                            <td>No</td>
+                            <td>Enable debug logging</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <h2>Common Patterns</h2>
+
+                <h3>Password Hashing</h3>
+                <p>Always hash passwords before storing:</p>
+                <pre><code>user := userstore.NewUser()
+err := user.SetPasswordAndHash("securePassword123")
+if err != nil {
+    return err
+}</code></pre>
+
+                <h3>Password Verification</h3>
+                <p>Verify passwords during authentication:</p>
+                <pre><code>if user.PasswordCompare(inputPassword) {
+    // Password is correct
+} else {
+    // Password is incorrect
+}</code></pre>
+
+                <h3>Working with Metadata</h3>
+                <p>Store custom fields using metadata:</p>
+                <pre><code>// Set metadata
+err := user.SetMeta("customField", "customValue")
+
+// Get metadata
+value := user.GetMeta("customField")
+
+// Set multiple metas
+err := user.SetMetas(map[string]string{
+    "field1": "value1",
+    "field2": "value2",
+})</code></pre>
+
+                <h3>User Status Checks</h3>
+                <p>Check user status with helper methods:</p>
+                <pre><code>if user.IsActive() {
+    // User is active
+}
+
+if user.IsSoftDeleted() {
+    // User has been soft deleted
+}
+
+if user.IsAdministrator() {
+    // User has administrator role
+}</code></pre>
+
+                <h2>Next Steps</h2>
+                <ul>
+                    <li>Read the <a href="architecture.html">Architecture</a> documentation to understand the system design</li>
+                    <li>Explore the <a href="api_reference.html">API Reference</a> for complete method documentation</li>
+                    <li>Check the <a href="cheatsheet.html">Cheatsheet</a> for quick reference</li>
+                    <li>Review <a href="conventions.html">Conventions</a> for coding standards</li>
+                </ul>
+
+                <hr>
+                <h4>See Also</h4>
+                <ul>
+                    <li><a href="overview.html">Overview</a> - High-level project overview</li>
+                    <li><a href="configuration.html">Configuration</a> - Detailed configuration options</li>
+                    <li><a href="api_reference.html">API Reference</a> - Complete API documentation</li>
+                    <li><a href="index.html">Home</a> - Return to main landing page</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    <!-- Bootstrap 5 JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
