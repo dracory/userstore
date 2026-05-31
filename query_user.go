@@ -24,6 +24,10 @@ type UserQueryInterface interface {
 	Email() string
 	SetEmail(email string) UserQueryInterface
 
+	HasEmailLike() bool
+	EmailLike() string
+	SetEmailLike(emailLike string) UserQueryInterface
+
 	HasFirstName() bool
 	FirstName() string
 	SetFirstName(firstName string) UserQueryInterface
@@ -104,6 +108,10 @@ func (c *userQueryImplementation) Validate() error {
 
 	if c.HasEmail() && c.Email() == "" {
 		return errors.New("user query. email cannot be empty")
+	}
+
+	if c.HasEmailLike() && c.EmailLike() == "" {
+		return errors.New("user query. email_like cannot be empty")
 	}
 
 	if c.HasFirstName() && c.FirstName() == "" {
@@ -247,6 +255,24 @@ func (c *userQueryImplementation) Email() string {
 
 func (c *userQueryImplementation) SetEmail(email string) UserQueryInterface {
 	c.properties["email"] = email
+
+	return c
+}
+
+func (c *userQueryImplementation) HasEmailLike() bool {
+	return c.hasProperty("email_like")
+}
+
+func (c *userQueryImplementation) EmailLike() string {
+	if !c.HasEmailLike() {
+		return ""
+	}
+
+	return c.properties["email_like"].(string)
+}
+
+func (c *userQueryImplementation) SetEmailLike(emailLike string) UserQueryInterface {
+	c.properties["email_like"] = emailLike
 
 	return c
 }

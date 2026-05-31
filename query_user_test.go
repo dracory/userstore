@@ -160,6 +160,45 @@ func TestUserQueryLastNameLike(t *testing.T) {
 	}
 }
 
+func TestUserQueryEmailLike(t *testing.T) {
+	query := NewUserQuery()
+
+	// Test HasEmailLike returns false initially
+	if query.HasEmailLike() {
+		t.Fatal("HasEmailLike should return false initially")
+	}
+
+	// Test EmailLike returns empty string initially
+	if query.EmailLike() != "" {
+		t.Fatal("EmailLike should return empty string initially")
+	}
+
+	// Test SetEmailLike
+	query = query.SetEmailLike("test")
+	if !query.HasEmailLike() {
+		t.Fatal("HasEmailLike should return true after SetEmailLike")
+	}
+	if query.EmailLike() != "test" {
+		t.Fatalf("EmailLike should return 'test', got '%s'", query.EmailLike())
+	}
+
+	// Test validation with valid value
+	err := query.Validate()
+	if err != nil {
+		t.Fatal("unexpected validation error:", err)
+	}
+
+	// Test validation with empty value
+	query = query.SetEmailLike("")
+	err = query.Validate()
+	if err == nil {
+		t.Fatal("expected validation error for empty email_like")
+	}
+	if err.Error() != "user query. email_like cannot be empty" {
+		t.Fatalf("unexpected error message: %s", err.Error())
+	}
+}
+
 func TestUserQueryChaining(t *testing.T) {
 	query := NewUserQuery()
 
@@ -168,7 +207,8 @@ func TestUserQueryChaining(t *testing.T) {
 		SetFirstName("John").
 		SetLastName("Doe").
 		SetFirstNameLike("Joh").
-		SetLastNameLike("Do")
+		SetLastNameLike("Do").
+		SetEmailLike("test")
 
 	if query.FirstName() != "John" {
 		t.Fatalf("FirstName should return 'John', got '%s'", query.FirstName())
@@ -181,5 +221,8 @@ func TestUserQueryChaining(t *testing.T) {
 	}
 	if query.LastNameLike() != "Do" {
 		t.Fatalf("LastNameLike should return 'Do', got '%s'", query.LastNameLike())
+	}
+	if query.EmailLike() != "test" {
+		t.Fatalf("EmailLike should return 'test', got '%s'", query.EmailLike())
 	}
 }
