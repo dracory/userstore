@@ -35,6 +35,7 @@ type StoreInterface interface {
 	UserDelete(ctx context.Context, user UserInterface) error
 	UserDeleteByID(ctx context.Context, id string) error
 	UserFindByEmail(ctx context.Context, email string) (UserInterface, error)
+	UserFindByEmailOrCreate(ctx context.Context, email, createStatus string) (UserInterface, error)
 	UserFindByID(ctx context.Context, userID string) (UserInterface, error)
 	UserList(ctx context.Context, query UserQueryInterface) ([]UserInterface, error)
 	UserSoftDelete(ctx context.Context, user UserInterface) error
@@ -153,6 +154,7 @@ type UserInterface interface {
 	SetPhone(phone string) UserInterface
 
 	GetProfileImageUrl() string
+	ProfileImageOrDefaultUrl() string
 	SetProfileImageUrl(profileImageUrl string) UserInterface
 
 	GetRole() string

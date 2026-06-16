@@ -889,3 +889,159 @@ func TestStoreUserQueryLastNameLike(t *testing.T) {
 		}
 	}
 }
+
+func TestStoreUserUpdate(t *testing.T) {
+	store, err := initStore(":memory:")
+	if err != nil {
+		t.Fatal("unexpected error:", err)
+	}
+	defer func() {
+		if err := store.GetDB().Close(); err != nil {
+			t.Fatal(err)
+		}
+	}()
+
+	user := NewUser().
+		SetStatus(USER_STATUS_UNVERIFIED).
+		SetFirstName("John").
+		SetLastName("Doe").
+		SetEmail("test@test.com").
+		SetPassword("").
+		SetProfileImageUrl("http://test.com/profile.png")
+
+	err = store.UserCreate(context.Background(), user)
+	if err != nil {
+		t.Fatal("unexpected error:", err)
+	}
+
+	user.SetFirstName("Jane").
+		SetLastName("Smith").
+		SetEmail("jane@test.com").
+		SetStatus(USER_STATUS_ACTIVE)
+
+	err = store.UserUpdate(context.Background(), user)
+	if err != nil {
+		t.Fatal("unexpected error:", err)
+	}
+
+	userFound, err := store.UserFindByID(context.Background(), user.GetID())
+	if err != nil {
+		t.Fatal("unexpected error:", err)
+	}
+	if userFound == nil {
+		t.Fatal("User MUST NOT be nil after update")
+	}
+	if userFound.GetFirstName() != "Jane" {
+		t.Fatalf("Expected FirstName 'Jane', got '%s'", userFound.GetFirstName())
+	}
+	if userFound.GetLastName() != "Smith" {
+		t.Fatalf("Expected LastName 'Smith', got '%s'", userFound.GetLastName())
+	}
+	if userFound.GetEmail() != "jane@test.com" {
+		t.Fatalf("Expected Email 'jane@test.com', got '%s'", userFound.GetEmail())
+	}
+	if userFound.GetStatus() != USER_STATUS_ACTIVE {
+		t.Fatalf("Expected Status '%s', got '%s'", USER_STATUS_ACTIVE, userFound.GetStatus())
+	}
+}
+
+func TestStoreUserFindByEmailOrCreateExisting(t *testing.T) {
+	store, err := initStore(":memory:")
+	if err != nil {
+		t.Fatal("unexpected error:", err)
+	}
+	defer func() {
+		if err := store.GetDB().Close(); err != nil {
+			t.Fatal(err)
+		}
+	}()
+
+	existing := NewUser().
+		SetEmail("existing@test.com").
+		SetStatus(USER_STATUS_ACTIVE).
+		SetFirstName("Existing")
+
+	err = store.UserCreate(context.Background(), existing)
+	if err != nil {
+		t.Fatal("unexpected error:", err)
+	}
+
+	found, err := store.UserFindByEmailOrCreate(context.Background(), "existing@test.com", USER_STATUS_INACTIVE)
+	if err != nil {
+		t.Fatal("unexpected error:", err)
+	}
+	if found == nil {
+		t.Fatal("User MUST NOT be nil")
+	}
+	if found.GetID() != existing.GetID() {
+		t.Fatal("Should return existing user, not create a new one")
+	}
+	if found.GetStatus() != USER_STATUS_ACTIVE {
+		t.Fatal("Status should not change for existing user")
+	}
+}
+
+func TestStoreUserFindByEmailOrCreateNew(t *testing.T) {
+	store, err := initStore(":memory:")
+	if err != nil {
+		t.Fatal("unexpected error:", err)
+	}
+	defer func() {
+		if err := store.GetDB().Close(); err != nil {
+			t.Fatal(err)
+		}
+	}()
+
+	created, err := store.UserFindByEmailOrCreate(context.Background(), "new@test.com", USER_STATUS_ACTIVE)
+	if err != nil {
+		t.Fatal("unexpected error:", err)
+	}
+	if created == nil {
+		t.Fatal("User MUST NOT be nil")
+	}
+	if created.GetEmail() != "new@test.com" {
+		t.Fatalf("Expected email 'new@test.com', got '%s'", created.GetEmail())
+	}
+	if created.GetStatus() != USER_STATUS_ACTIVE {
+		t.Fatalf("Expected status '%s', got '%s'", USER_STATUS_ACTIVE, created.GetStatus())
+	}
+
+	found, err := store.UserFindByEmail(context.Background(), "new@test.com")
+	if err != nil {
+		t.Fatal("unexpected error:", err)
+	}
+	if found == nil {
+		t.Fatal("Created user MUST be findable")
+	}
+}
+
+func TestStoreUserErrorPaths(t *testing.T) {
+	store, err := initStore(":memory:")
+	if err != nil {
+		t.Fatal("unexpected error:", err)
+	}
+	defer func() {
+		if err := store.GetDB().Close(); err != nil {
+			t.Fatal(err)
+		}
+	}()
+
+	if err := store.UserCreate(context.Background(), nil); err == nil {
+		t.Fatal("UserCreate(nil) should return error")
+	}
+	if err := store.UserUpdate(context.Background(), nil); err == nil {
+		t.Fatal("UserUpdate(nil) should return error")
+	}
+	if err := store.UserDelete(context.Background(), nil); err == nil {
+		t.Fatal("UserDelete(nil) should return error")
+	}
+	if _, err := store.UserFindByID(context.Background(), ""); err == nil {
+		t.Fatal("UserFindByID('') should return error")
+	}
+	if err := store.UserDeleteByID(context.Background(), ""); err == nil {
+		t.Fatal("UserDeleteByID('') should return error")
+	}
+	if _, err := store.UserList(context.Background(), nil); err == nil {
+		t.Fatal("UserList(nil) should return error")
+	}
+}

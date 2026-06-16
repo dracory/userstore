@@ -2,6 +2,7 @@ package userstore
 
 import (
 	"testing"
+	"time"
 )
 
 func TestNewUser(t *testing.T) {
@@ -365,5 +366,152 @@ func TestUserChaining(t *testing.T) {
 
 	if user.GetRole() != USER_ROLE_ADMINISTRATOR {
 		t.Error("Method chaining should work")
+	}
+}
+
+func TestUserToMap(t *testing.T) {
+	user := NewUser().
+		SetStatus(USER_STATUS_ACTIVE).
+		SetFirstName("John").
+		SetLastName("Doe").
+		SetEmail("john@test.com").
+		SetPhone("+1234567890").
+		SetCountry("US").
+		SetTimezone("UTC").
+		SetBusinessName("Acme Inc").
+		SetMemo("Test memo").
+		SetProfileImageUrl("https://example.com/image.jpg").
+		SetRole(USER_ROLE_ADMINISTRATOR).
+		SetPassword("secret")
+
+	m := user.ToMap()
+
+	if m[COLUMN_ID] == "" {
+		t.Error("ToMap should contain a non-empty id")
+	}
+	if m[COLUMN_STATUS] != USER_STATUS_ACTIVE {
+		t.Errorf("Expected status '%s', got '%v'", USER_STATUS_ACTIVE, m[COLUMN_STATUS])
+	}
+	if m[COLUMN_FIRST_NAME] != "John" {
+		t.Errorf("Expected first_name 'John', got '%v'", m[COLUMN_FIRST_NAME])
+	}
+	if m[COLUMN_LAST_NAME] != "Doe" {
+		t.Errorf("Expected last_name 'Doe', got '%v'", m[COLUMN_LAST_NAME])
+	}
+	if m[COLUMN_EMAIL] != "john@test.com" {
+		t.Errorf("Expected email 'john@test.com', got '%v'", m[COLUMN_EMAIL])
+	}
+	if m[COLUMN_PHONE] != "+1234567890" {
+		t.Errorf("Expected phone '+1234567890', got '%v'", m[COLUMN_PHONE])
+	}
+	if m[COLUMN_COUNTRY] != "US" {
+		t.Errorf("Expected country 'US', got '%v'", m[COLUMN_COUNTRY])
+	}
+	if m[COLUMN_TIMEZONE] != "UTC" {
+		t.Errorf("Expected timezone 'UTC', got '%v'", m[COLUMN_TIMEZONE])
+	}
+	if m[COLUMN_BUSINESS_NAME] != "Acme Inc" {
+		t.Errorf("Expected business_name 'Acme Inc', got '%v'", m[COLUMN_BUSINESS_NAME])
+	}
+	if m[COLUMN_MEMO] != "Test memo" {
+		t.Errorf("Expected memo 'Test memo', got '%v'", m[COLUMN_MEMO])
+	}
+	if m[COLUMN_PROFILE_IMAGE_URL] != "https://example.com/image.jpg" {
+		t.Errorf("Expected profile_image_url 'https://example.com/image.jpg', got '%v'", m[COLUMN_PROFILE_IMAGE_URL])
+	}
+	if m[COLUMN_ROLE] != USER_ROLE_ADMINISTRATOR {
+		t.Errorf("Expected role '%s', got '%v'", USER_ROLE_ADMINISTRATOR, m[COLUMN_ROLE])
+	}
+	if m[COLUMN_PASSWORD] != "secret" {
+		t.Errorf("Expected password 'secret', got '%v'", m[COLUMN_PASSWORD])
+	}
+
+	// Verify time fields are time.Time
+	if _, ok := m[COLUMN_CREATED_AT].(time.Time); !ok {
+		t.Errorf("created_at should be time.Time, got %T", m[COLUMN_CREATED_AT])
+	}
+	if _, ok := m[COLUMN_UPDATED_AT].(time.Time); !ok {
+		t.Errorf("updated_at should be time.Time, got %T", m[COLUMN_UPDATED_AT])
+	}
+	if _, ok := m[COLUMN_SOFT_DELETED_AT].(time.Time); !ok {
+		t.Errorf("soft_deleted_at should be time.Time, got %T", m[COLUMN_SOFT_DELETED_AT])
+	}
+}
+
+func TestUserDataCompatibility(t *testing.T) {
+	user := NewUser().
+		SetFirstName("John").
+		SetLastName("Doe").
+		SetEmail("john@test.com")
+
+	// Data()
+	data := user.Data()
+	if data[COLUMN_FIRST_NAME] != "John" {
+		t.Errorf("Data() first_name should be 'John', got '%s'", data[COLUMN_FIRST_NAME])
+	}
+	if data[COLUMN_EMAIL] != "john@test.com" {
+		t.Errorf("Data() email should be 'john@test.com', got '%s'", data[COLUMN_EMAIL])
+	}
+
+	// DataChanged()
+	changed := user.DataChanged()
+	if changed[COLUMN_FIRST_NAME] != "John" {
+		t.Errorf("DataChanged() first_name should be 'John', got '%s'", changed[COLUMN_FIRST_NAME])
+	}
+
+	// MarkAsNotDirty() should not panic
+	user.MarkAsNotDirty()
+}
+
+func TestUserGetSetCompatibility(t *testing.T) {
+	user := NewUser()
+
+	user.Set(COLUMN_FIRST_NAME, "Jane")
+	if user.Get(COLUMN_FIRST_NAME) != "Jane" {
+		t.Errorf("Get/Set first_name should be 'Jane', got '%s'", user.Get(COLUMN_FIRST_NAME))
+	}
+
+	user.Set(COLUMN_EMAIL, "jane@test.com")
+	if user.Get(COLUMN_EMAIL) != "jane@test.com" {
+		t.Errorf("Get/Set email should be 'jane@test.com', got '%s'", user.Get(COLUMN_EMAIL))
+	}
+
+	user.Set(COLUMN_STATUS, USER_STATUS_ACTIVE)
+	if user.Get(COLUMN_STATUS) != USER_STATUS_ACTIVE {
+		t.Errorf("Get/Set status should be '%s', got '%s'", USER_STATUS_ACTIVE, user.Get(COLUMN_STATUS))
+	}
+
+	// Unknown column should return empty string
+	if user.Get("unknown_column") != "" {
+		t.Error("Get unknown column should return empty string")
+	}
+}
+
+func TestUserProfileImageOrDefaultUrl(t *testing.T) {
+	user := NewUser()
+	if user.ProfileImageOrDefaultUrl() != "/user/default.png" {
+		t.Errorf("Expected default URL, got '%s'", user.ProfileImageOrDefaultUrl())
+	}
+
+	user.SetProfileImageUrl("https://example.com/avatar.jpg")
+	if user.ProfileImageOrDefaultUrl() != "https://example.com/avatar.jpg" {
+		t.Errorf("Expected custom URL, got '%s'", user.ProfileImageOrDefaultUrl())
+	}
+}
+
+func TestUserIsSoftDeleted(t *testing.T) {
+	user := NewUser()
+	if user.IsSoftDeleted() {
+		t.Error("New user should not be soft deleted")
+	}
+
+	user.SetSoftDeletedAt("2000-01-01 00:00:00")
+	if !user.IsSoftDeleted() {
+		t.Error("User with past soft_deleted_at should be soft deleted")
+	}
+
+	user.SetSoftDeletedAt(MAX_DATETIME)
+	if user.IsSoftDeleted() {
+		t.Error("User with MAX_DATETIME soft_deleted_at should not be soft deleted")
 	}
 }
