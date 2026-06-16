@@ -5,37 +5,36 @@ import (
 	"database/sql"
 	"errors"
 
-	"github.com/dracory/sb"
+	"github.com/dracory/neat"
 )
 
-// NewStoreOptions define the options for creating a new block store
+// NewStoreOptions define the options for creating a new user store
 type NewStoreOptions struct {
 	UserTableName      string
 	DB                 *sql.DB
-	DbDriverName       string
 	AutomigrateEnabled bool
 	DebugEnabled       bool
 }
 
-// NewStore creates a new block store
+// NewStore creates a new user store
 func NewStore(opts NewStoreOptions) (StoreInterface, error) {
 	if opts.UserTableName == "" {
 		return nil, errors.New("user store: UserTableName is required")
 	}
 
 	if opts.DB == nil {
-		return nil, errors.New("shop store: DB is required")
+		return nil, errors.New("user store: DB is required")
 	}
 
-	if opts.DbDriverName == "" {
-		opts.DbDriverName = sb.DatabaseDriverName(opts.DB)
+	neatDB, err := neat.NewFromSQLDB(opts.DB)
+	if err != nil {
+		return nil, err
 	}
 
 	store := &storeImplementation{
 		userTableName:      opts.UserTableName,
+		db:                 neatDB,
 		automigrateEnabled: opts.AutomigrateEnabled,
-		db:                 opts.DB,
-		dbDriverName:       opts.DbDriverName,
 		debugEnabled:       opts.DebugEnabled,
 	}
 

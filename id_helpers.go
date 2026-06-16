@@ -3,14 +3,13 @@ package userstore
 import (
 	"strings"
 
+	neatuid "github.com/dracory/neat/support/uid"
 	"github.com/dracory/uid"
 )
 
-// GenerateShortID generates a new 9-character shortened ID using TimestampMicro
+// GenerateShortID generates a new shortened ID using neat's UID generator.
 func GenerateShortID() string {
-	timestampMicro := uid.TimestampMicro()
-	shortened, _ := uid.ShortenCrockford(timestampMicro)
-	return strings.ToLower(shortened)
+	return neatuid.GenerateShortID()
 }
 
 // ShortenID shortens any numeric ID string using Crockford Base32

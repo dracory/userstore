@@ -3,18 +3,16 @@ package userstore
 import (
 	"context"
 	"database/sql"
-	"errors"
 
-	"github.com/dracory/database"
+	"github.com/dracory/neat"
+	contractsschema "github.com/dracory/neat/contracts/database/schema"
 )
 
 // == TYPE ====================================================================
 
 type storeImplementation struct {
-	// roleTableName      string
 	userTableName      string
-	db                 *sql.DB
-	dbDriverName       string
+	db                 *neat.Database
 	automigrateEnabled bool
 	debugEnabled       bool
 }
@@ -32,33 +30,34 @@ func (store *storeImplementation) AutoMigrate() error {
 
 // MigrateUp creates the user table
 func (store *storeImplementation) MigrateUp(ctx context.Context, tx ...*sql.Tx) error {
-	var txToUse *sql.Tx
-	if len(tx) > 0 {
-		txToUse = tx[0]
+	if store.db.Schema().HasTable(store.userTableName) {
+		return nil
 	}
 
-	sqlStr, err := store.sqlUserTableCreate()
+	err := store.db.Schema().Create(store.userTableName, func(table contractsschema.Blueprint) {
+		table.String(COLUMN_ID, 21)
+		table.Primary(COLUMN_ID)
+		table.String(COLUMN_STATUS, 40)
+		table.String(COLUMN_FIRST_NAME, 50)
+		table.String(COLUMN_MIDDLE_NAMES, 50)
+		table.String(COLUMN_LAST_NAME, 50)
+		table.String(COLUMN_BUSINESS_NAME, 100)
+		table.String(COLUMN_PHONE, 20)
+		table.String(COLUMN_EMAIL, 100)
+		table.String(COLUMN_PASSWORD, 255)
+		table.String(COLUMN_ROLE, 50)
+		table.String(COLUMN_COUNTRY, 2)
+		table.String(COLUMN_TIMEZONE, 40)
+		table.String(COLUMN_PROFILE_IMAGE_URL, 255)
+		table.Text(COLUMN_METAS)
+		table.Text(COLUMN_MEMO)
+		table.DateTime(COLUMN_CREATED_AT)
+		table.DateTime(COLUMN_UPDATED_AT)
+		table.DateTime(COLUMN_SOFT_DELETED_AT)
+	})
+
 	if err != nil {
 		return err
-	}
-
-	if sqlStr == "" {
-		return errors.New("user table create sql is empty")
-	}
-
-	if store.db == nil {
-		return errors.New("userstore: database is nil")
-	}
-
-	var errExec error
-	if txToUse != nil {
-		_, errExec = txToUse.ExecContext(ctx, sqlStr)
-	} else {
-		_, errExec = store.db.ExecContext(ctx, sqlStr)
-	}
-
-	if errExec != nil {
-		return errExec
 	}
 
 	return nil
@@ -66,41 +65,21 @@ func (store *storeImplementation) MigrateUp(ctx context.Context, tx ...*sql.Tx) 
 
 // MigrateDown drops the user table
 func (store *storeImplementation) MigrateDown(ctx context.Context, tx ...*sql.Tx) error {
-	var txToUse *sql.Tx
-	if len(tx) > 0 {
-		txToUse = tx[0]
+	if !store.db.Schema().HasTable(store.userTableName) {
+		return nil
 	}
 
-	sqlStr, err := store.sqlUserTableDrop()
+	err := store.db.Schema().Drop(store.userTableName)
 	if err != nil {
 		return err
 	}
-
-	if sqlStr == "" {
-		return errors.New("user table drop sql is empty")
-	}
-
-	if store.db == nil {
-		return errors.New("userstore: database is nil")
-	}
-
-	var errExec error
-	if txToUse != nil {
-		_, errExec = txToUse.ExecContext(ctx, sqlStr)
-	} else {
-		_, errExec = store.db.ExecContext(ctx, sqlStr)
-	}
-
-	if errExec != nil {
-		return errExec
-	}
-
 	return nil
 }
 
 // GetDB - returns the database
 func (store *storeImplementation) GetDB() *sql.DB {
-	return store.db
+	db, _ := store.db.DB()
+	return db
 }
 
 // GetUserTableName returns the user table name
@@ -116,12 +95,9 @@ func (store *storeImplementation) SetUserTableName(tableName string) {
 // EnableDebug - enables the debug option
 func (st *storeImplementation) EnableDebug(debug bool) {
 	st.debugEnabled = debug
-}
-
-func (store *storeImplementation) toQuerableContext(ctx context.Context) database.QueryableContext {
-	if database.IsQueryableContext(ctx) {
-		return ctx.(database.QueryableContext)
+	if debug {
+		st.db.EnableDebug()
+	} else {
+		st.db.DisableDebug()
 	}
-
-	return database.Context(ctx, store.db)
 }

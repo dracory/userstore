@@ -2,16 +2,26 @@ package userstore
 
 import (
 	"encoding/json"
+	"time"
 
-	"github.com/dracory/dataobject"
-	"github.com/dracory/sb"
+	"github.com/dracory/neat/database/orm"
+	"github.com/dracory/neat/database/soft_delete"
 	"github.com/dromara/carbon/v2"
 )
 
-// == CLASS ===================================================================
+// == TYPE ====================================================================
 
 type roleImplementation struct {
-	dataobject.DataObject
+	orm.ShortID
+
+	StatusField    string `db:"status"`
+	HandleField    string `db:"handle"`
+	NameField      string `db:"name"`
+	MemoField      string `db:"memo"`
+	MetasField     string `db:"metas"`
+	CreatedAtField orm.CreatedAt
+	UpdatedAtField orm.UpdatedAt
+	soft_delete.SoftDeletesMaxDate
 }
 
 var _ RoleInterface = (*roleImplementation)(nil)
@@ -25,7 +35,7 @@ func NewRole() RoleInterface {
 		SetMemo("").
 		SetCreatedAt(carbon.Now(carbon.UTC).ToDateTimeString(carbon.UTC)).
 		SetUpdatedAt(carbon.Now(carbon.UTC).ToDateTimeString(carbon.UTC)).
-		SetSoftDeletedAt(sb.MAX_DATETIME)
+		SetSoftDeletedAt(MAX_DATETIME)
 
 	err := o.SetMetas(map[string]string{})
 
@@ -38,7 +48,34 @@ func NewRole() RoleInterface {
 
 func NewRoleFromExistingData(data map[string]string) RoleInterface {
 	o := &roleImplementation{}
-	o.Hydrate(data)
+	if v, ok := data[COLUMN_ID]; ok {
+		o.SetID(v)
+	}
+	if v, ok := data[COLUMN_STATUS]; ok {
+		o.SetStatus(v)
+	}
+	if v, ok := data[COLUMN_HANDLE]; ok {
+		o.SetHandle(v)
+	}
+	if v, ok := data[COLUMN_NAME]; ok {
+		o.SetName(v)
+	}
+	if v, ok := data[COLUMN_MEMO]; ok {
+		o.SetMemo(v)
+	}
+	if v, ok := data[COLUMN_METAS]; ok {
+		o.SetMetas(map[string]string{})
+		o.UpsertMetas(map[string]string{v: v})
+	}
+	if v, ok := data[COLUMN_CREATED_AT]; ok {
+		o.SetCreatedAt(v)
+	}
+	if v, ok := data[COLUMN_UPDATED_AT]; ok {
+		o.SetUpdatedAt(v)
+	}
+	if v, ok := data[COLUMN_SOFT_DELETED_AT]; ok {
+		o.SetSoftDeletedAt(v)
+	}
 	return o
 }
 
@@ -53,57 +90,137 @@ func (o *roleImplementation) IsActive() bool {
 }
 
 func (o *roleImplementation) IsSoftDeleted() bool {
-	return o.GetSoftDeletedAtCarbon().Compare("<", carbon.Now(carbon.UTC))
+	return o.SoftDeletedAt.Before(time.Now().UTC())
 }
 
 func (o *roleImplementation) IsInactive() bool {
 	return o.GetStatus() == USER_STATUS_INACTIVE
 }
 
+// == DATAOBJECT COMPATIBILITY ================================================
+
+// Data returns all fields as a map.
+func (o *roleImplementation) Data() map[string]string {
+	return map[string]string{
+		COLUMN_ID:              o.GetID(),
+		COLUMN_STATUS:          o.GetStatus(),
+		COLUMN_HANDLE:          o.GetHandle(),
+		COLUMN_NAME:            o.GetName(),
+		COLUMN_MEMO:            o.GetMemo(),
+		COLUMN_METAS:           o.MetasField,
+		COLUMN_CREATED_AT:      o.GetCreatedAt(),
+		COLUMN_UPDATED_AT:      o.GetUpdatedAt(),
+		COLUMN_SOFT_DELETED_AT: o.GetSoftDeletedAt(),
+	}
+}
+
+// DataChanged returns all fields as a map (dirty tracking disabled).
+func (o *roleImplementation) DataChanged() map[string]string {
+	return o.Data()
+}
+
+// MarkAsNotDirty is a no-op (dirty tracking disabled).
+func (o *roleImplementation) MarkAsNotDirty() {}
+
+// Get returns the value of the specified column.
+func (o *roleImplementation) Get(columnName string) string {
+	switch columnName {
+	case COLUMN_ID:
+		return o.GetID()
+	case COLUMN_STATUS:
+		return o.GetStatus()
+	case COLUMN_HANDLE:
+		return o.GetHandle()
+	case COLUMN_NAME:
+		return o.GetName()
+	case COLUMN_MEMO:
+		return o.GetMemo()
+	case COLUMN_METAS:
+		return o.MetasField
+	case COLUMN_CREATED_AT:
+		return o.GetCreatedAt()
+	case COLUMN_UPDATED_AT:
+		return o.GetUpdatedAt()
+	case COLUMN_SOFT_DELETED_AT:
+		return o.GetSoftDeletedAt()
+	}
+	return ""
+}
+
+// Set sets the value of the specified column.
+func (o *roleImplementation) Set(columnName string, value string) {
+	switch columnName {
+	case COLUMN_ID:
+		o.SetID(value)
+	case COLUMN_STATUS:
+		o.SetStatus(value)
+	case COLUMN_HANDLE:
+		o.SetHandle(value)
+	case COLUMN_NAME:
+		o.SetName(value)
+	case COLUMN_MEMO:
+		o.SetMemo(value)
+	case COLUMN_METAS:
+		o.MetasField = value
+	case COLUMN_CREATED_AT:
+		o.SetCreatedAt(value)
+	case COLUMN_UPDATED_AT:
+		o.SetUpdatedAt(value)
+	case COLUMN_SOFT_DELETED_AT:
+		o.SetSoftDeletedAt(value)
+	}
+}
+
 // == SETTERS AND GETTERS =====================================================
 
 func (o *roleImplementation) GetCreatedAt() string {
-	return o.Get(COLUMN_CREATED_AT)
+	if o.CreatedAtField.CreatedAt.IsZero() {
+		return ""
+	}
+	return carbon.CreateFromStdTime(o.CreatedAtField.CreatedAt).ToDateTimeString()
 }
 
 func (o *roleImplementation) GetCreatedAtCarbon() *carbon.Carbon {
-	return carbon.Parse(o.GetCreatedAt(), carbon.UTC)
+	return carbon.CreateFromStdTime(o.CreatedAtField.CreatedAt)
 }
 
 func (o *roleImplementation) SetCreatedAt(createdAt string) RoleInterface {
-	o.Set(COLUMN_CREATED_AT, createdAt)
+	if createdAt == "" {
+		return o
+	}
+	o.CreatedAtField.CreatedAt = carbon.Parse(createdAt, carbon.UTC).StdTime()
 	return o
 }
 
 func (o *roleImplementation) GetHandle() string {
-	return o.Get(COLUMN_HANDLE)
+	return o.HandleField
 }
 
 func (o *roleImplementation) SetHandle(handle string) RoleInterface {
-	o.Set(COLUMN_HANDLE, handle)
+	o.HandleField = handle
 	return o
 }
 
 func (o *roleImplementation) GetID() string {
-	return o.Get(COLUMN_ID)
+	return o.ShortID.ID
 }
 
 func (o *roleImplementation) SetID(id string) RoleInterface {
-	o.Set(COLUMN_ID, id)
+	o.ShortID.ID = id
 	return o
 }
 
 func (o *roleImplementation) GetMemo() string {
-	return o.Get(COLUMN_MEMO)
+	return o.MemoField
 }
 
 func (o *roleImplementation) SetMemo(memo string) RoleInterface {
-	o.Set(COLUMN_MEMO, memo)
+	o.MemoField = memo
 	return o
 }
 
 func (o *roleImplementation) GetMetas() (map[string]string, error) {
-	metasStr := o.Get(COLUMN_METAS)
+	metasStr := o.MetasField
 
 	if metasStr == "" {
 		metasStr = "{}"
@@ -143,7 +260,7 @@ func (o *roleImplementation) SetMetas(metas map[string]string) error {
 	if err != nil {
 		return err
 	}
-	o.Set(COLUMN_METAS, string(mapString))
+	o.MetasField = string(mapString)
 	return nil
 }
 
@@ -162,49 +279,57 @@ func (o *roleImplementation) UpsertMetas(metas map[string]string) error {
 }
 
 func (o *roleImplementation) GetName() string {
-	return o.Get(COLUMN_NAME)
+	return o.NameField
 }
 
 func (o *roleImplementation) SetName(name string) RoleInterface {
-	o.Set(COLUMN_NAME, name)
+	o.NameField = name
 	return o
 }
 
 func (o *roleImplementation) GetSoftDeletedAt() string {
-	return o.Get(COLUMN_SOFT_DELETED_AT)
+	if o.SoftDeletedAt.IsZero() {
+		return ""
+	}
+	return carbon.CreateFromStdTime(o.SoftDeletedAt).ToDateTimeString()
 }
 
 func (o *roleImplementation) GetSoftDeletedAtCarbon() *carbon.Carbon {
-	return carbon.Parse(o.GetSoftDeletedAt(), carbon.UTC)
+	return carbon.CreateFromStdTime(o.SoftDeletedAt)
 }
 
 func (o *roleImplementation) SetSoftDeletedAt(deletedAt string) RoleInterface {
-	o.Set(COLUMN_SOFT_DELETED_AT, deletedAt)
+	if deletedAt == "" {
+		return o
+	}
+	o.SoftDeletedAt = carbon.Parse(deletedAt, carbon.UTC).StdTime()
 	return o
 }
 
 func (o *roleImplementation) GetStatus() string {
-	return o.Get(COLUMN_STATUS)
+	return o.StatusField
 }
 
 func (o *roleImplementation) SetStatus(status string) RoleInterface {
-	o.Set(COLUMN_STATUS, status)
+	o.StatusField = status
 	return o
 }
 
 func (o *roleImplementation) GetUpdatedAt() string {
-	return o.Get(COLUMN_UPDATED_AT)
+	if o.UpdatedAtField.UpdatedAt.IsZero() {
+		return ""
+	}
+	return carbon.CreateFromStdTime(o.UpdatedAtField.UpdatedAt).ToDateTimeString()
 }
 
 func (o *roleImplementation) GetUpdatedAtCarbon() *carbon.Carbon {
-	return carbon.Parse(o.Get(COLUMN_UPDATED_AT), carbon.UTC)
+	return carbon.CreateFromStdTime(o.UpdatedAtField.UpdatedAt)
 }
 
 func (o *roleImplementation) SetUpdatedAt(updatedAt string) RoleInterface {
-	o.Set(COLUMN_UPDATED_AT, updatedAt)
+	if updatedAt == "" {
+		return o
+	}
+	o.UpdatedAtField.UpdatedAt = carbon.Parse(updatedAt, carbon.UTC).StdTime()
 	return o
-}
-
-func (o *roleImplementation) MarkAsNotDirty() {
-	o.DataObject.MarkAsNotDirty()
 }

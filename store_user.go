@@ -3,59 +3,40 @@ package userstore
 import (
 	"context"
 	"errors"
-	"log"
-	"strconv"
 	"strings"
+	"time"
 
-	"github.com/doug-martin/goqu/v9"
-	"github.com/dracory/database"
-	"github.com/dracory/sb"
+	contractsorm "github.com/dracory/neat/contracts/database/orm"
 	"github.com/dromara/carbon/v2"
 	"github.com/samber/lo"
-	"github.com/spf13/cast"
 )
 
+type userRow struct {
+	ID              string    `db:"id"`
+	Status          string    `db:"status"`
+	FirstName       string    `db:"first_name"`
+	MiddleNames     string    `db:"middle_names"`
+	LastName        string    `db:"last_name"`
+	BusinessName    string    `db:"business_name"`
+	Phone           string    `db:"phone"`
+	Email           string    `db:"email"`
+	Password        string    `db:"password"`
+	Role            string    `db:"role"`
+	Country         string    `db:"country"`
+	Timezone        string    `db:"timezone"`
+	ProfileImageUrl string    `db:"profile_image_url"`
+	Metas           string    `db:"metas"`
+	Memo            string    `db:"memo"`
+	CreatedAt       time.Time `db:"created_at"`
+	UpdatedAt       time.Time `db:"updated_at"`
+	SoftDeletedAt   time.Time `db:"soft_deleted_at"`
+}
+
 func (store *storeImplementation) UserCount(ctx context.Context, options UserQueryInterface) (int64, error) {
-	options.SetCountOnly(true)
-
-	q, _, err := store.userSelectQuery(options)
-
-	if err != nil {
-		return -1, err
-	}
-
-	sqlStr, params, errSql := q.Prepared(true).
-		Limit(1).
-		Select(goqu.COUNT(goqu.Star()).As("count")).
-		ToSQL()
-
-	if errSql != nil {
-		return -1, nil
-	}
-
-	if store.debugEnabled {
-		log.Println(sqlStr)
-	}
-
-	mapped, err := database.SelectToMapString(store.toQuerableContext(ctx), sqlStr, params...)
-	if err != nil {
-		return -1, err
-	}
-
-	if len(mapped) < 1 {
-		return -1, nil
-	}
-
-	countStr := mapped[0]["count"]
-
-	i, err := strconv.ParseInt(countStr, 10, 64)
-
-	if err != nil {
-		return -1, err
-
-	}
-
-	return i, nil
+	q := store.buildQuery(options)
+	var count int64
+	err := q.Table(store.userTableName).Count(&count)
+	return count, err
 }
 
 func (store *storeImplementation) UserCreate(ctx context.Context, user UserInterface) error {
@@ -63,38 +44,38 @@ func (store *storeImplementation) UserCreate(ctx context.Context, user UserInter
 		return errors.New("user is nil")
 	}
 
-	user.SetCreatedAt(carbon.Now(carbon.UTC).ToDateTimeString(carbon.UTC))
-	user.SetUpdatedAt(carbon.Now(carbon.UTC).ToDateTimeString(carbon.UTC))
-
-	data := user.Data()
-
-	sqlStr, params, errSql := goqu.Dialect(store.dbDriverName).
-		Insert(store.userTableName).
-		Prepared(true).
-		Rows(data).
-		ToSQL()
-
-	if errSql != nil {
-		return errSql
+	if user.GetCreatedAt() == "" {
+		user.SetCreatedAt(carbon.Now(carbon.UTC).ToDateTimeString(carbon.UTC))
+	}
+	if user.GetUpdatedAt() == "" {
+		user.SetUpdatedAt(carbon.Now(carbon.UTC).ToDateTimeString(carbon.UTC))
+	}
+	if user.GetSoftDeletedAt() == "" {
+		user.SetSoftDeletedAt(MAX_DATETIME)
 	}
 
-	if store.debugEnabled {
-		log.Println(sqlStr)
+	row := map[string]any{
+		COLUMN_ID:                user.GetID(),
+		COLUMN_STATUS:            user.GetStatus(),
+		COLUMN_FIRST_NAME:        user.GetFirstName(),
+		COLUMN_MIDDLE_NAMES:      user.GetMiddleNames(),
+		COLUMN_LAST_NAME:         user.GetLastName(),
+		COLUMN_BUSINESS_NAME:     user.GetBusinessName(),
+		COLUMN_PHONE:             user.GetPhone(),
+		COLUMN_EMAIL:             user.GetEmail(),
+		COLUMN_PASSWORD:          user.GetPassword(),
+		COLUMN_ROLE:              user.GetRole(),
+		COLUMN_COUNTRY:           user.GetCountry(),
+		COLUMN_TIMEZONE:          user.GetTimezone(),
+		COLUMN_PROFILE_IMAGE_URL: user.GetProfileImageUrl(),
+		COLUMN_METAS:             user.Get(COLUMN_METAS),
+		COLUMN_MEMO:              user.GetMemo(),
+		COLUMN_CREATED_AT:        user.GetCreatedAtCarbon().StdTime(),
+		COLUMN_UPDATED_AT:        user.GetUpdatedAtCarbon().StdTime(),
+		COLUMN_SOFT_DELETED_AT:   user.GetSoftDeletedAtCarbon().StdTime(),
 	}
 
-	if store.db == nil {
-		return errors.New("userstore: database is nil")
-	}
-
-	_, err := database.Execute(store.toQuerableContext(ctx), sqlStr, params...)
-
-	if err != nil {
-		return err
-	}
-
-	user.MarkAsNotDirty()
-
-	return nil
+	return store.db.Query().Table(store.userTableName).Create(row)
 }
 
 func (store *storeImplementation) UserDelete(ctx context.Context, user UserInterface) error {
@@ -110,21 +91,10 @@ func (store *storeImplementation) UserDeleteByID(ctx context.Context, id string)
 		return errors.New("user id is empty")
 	}
 
-	sqlStr, params, errSql := goqu.Dialect(store.dbDriverName).
-		Delete(store.userTableName).
-		Prepared(true).
-		Where(goqu.C(COLUMN_ID).Eq(id)).
-		ToSQL()
-
-	if errSql != nil {
-		return errSql
-	}
-
-	if store.debugEnabled {
-		log.Println(sqlStr)
-	}
-
-	_, err := database.Execute(store.toQuerableContext(ctx), sqlStr, params...)
+	_, err := store.db.Query().
+		Table(store.userTableName).
+		Where(COLUMN_ID+" = ?", id).
+		Delete()
 
 	return err
 }
@@ -196,59 +166,61 @@ func (store *storeImplementation) UserFindByID(ctx context.Context, id string) (
 
 func (store *storeImplementation) UserList(ctx context.Context, query UserQueryInterface) ([]UserInterface, error) {
 	if query == nil {
-		return []UserInterface{}, errors.New("at user list > user query is nil")
+		return []UserInterface{}, errors.New("user list > user query is nil")
 	}
 
-	q, columns, err := store.userSelectQuery(query)
+	q := store.buildQuery(query)
 
-	if err != nil {
+	var rows []userRow
+	if err := q.Table(store.userTableName).Get(&rows); err != nil {
 		return []UserInterface{}, err
 	}
 
-	sqlStr, sqlParams, errSql := q.Prepared(true).Select(columns...).ToSQL()
-
-	if errSql != nil {
-		return []UserInterface{}, nil
+	list := make([]UserInterface, 0, len(rows))
+	for _, r := range rows {
+		user := &userImplementation{}
+		user.SetID(r.ID)
+		user.SetStatus(r.Status)
+		user.SetFirstName(r.FirstName)
+		user.SetMiddleNames(r.MiddleNames)
+		user.SetLastName(r.LastName)
+		user.SetBusinessName(r.BusinessName)
+		user.SetPhone(r.Phone)
+		user.SetEmail(r.Email)
+		user.SetPassword(r.Password)
+		user.SetRole(r.Role)
+		user.SetCountry(r.Country)
+		user.SetTimezone(r.Timezone)
+		user.SetProfileImageUrl(r.ProfileImageUrl)
+		user.MetasField = r.Metas
+		user.SetMemo(r.Memo)
+		user.CreatedAtField.CreatedAt = r.CreatedAt
+		user.UpdatedAtField.UpdatedAt = r.UpdatedAt
+		user.SoftDeletedAt = r.SoftDeletedAt
+		list = append(list, user)
 	}
-
-	if store.debugEnabled {
-		log.Println(sqlStr)
-	}
-
-	if store.db == nil {
-		return []UserInterface{}, errors.New("userstore: database is nil")
-	}
-
-	db := sb.NewDatabase(store.db, store.dbDriverName)
-
-	if db == nil {
-		return []UserInterface{}, errors.New("userstore: database is nil")
-	}
-
-	modelMaps, err := database.SelectToMapString(store.toQuerableContext(ctx), sqlStr, sqlParams...)
-
-	if err != nil {
-		return []UserInterface{}, err
-	}
-
-	list := []UserInterface{}
-
-	lo.ForEach(modelMaps, func(modelMap map[string]string, index int) {
-		model := NewUserFromExistingData(modelMap)
-		list = append(list, model)
-	})
 
 	return list, nil
 }
 
 func (store *storeImplementation) UserSoftDelete(ctx context.Context, user UserInterface) error {
 	if user == nil {
-		return errors.New("at user soft delete > user is nil")
+		return errors.New("user soft delete > user is nil")
 	}
 
 	user.SetSoftDeletedAt(carbon.Now(carbon.UTC).ToDateTimeString(carbon.UTC))
 
-	return store.UserUpdate(ctx, user)
+	row := map[string]any{
+		COLUMN_SOFT_DELETED_AT: user.GetSoftDeletedAtCarbon().StdTime(),
+		COLUMN_UPDATED_AT:      carbon.Now(carbon.UTC).StdTime(),
+	}
+
+	_, err := store.db.Query().
+		Table(store.userTableName).
+		Where(COLUMN_ID+" = ?", user.GetID()).
+		Update(row)
+
+	return err
 }
 
 func (store *storeImplementation) UserSoftDeleteByID(ctx context.Context, id string) error {
@@ -263,142 +235,120 @@ func (store *storeImplementation) UserSoftDeleteByID(ctx context.Context, id str
 
 func (store *storeImplementation) UserUpdate(ctx context.Context, user UserInterface) error {
 	if user == nil {
-		return errors.New("at user update > user is nil")
+		return errors.New("user update > user is nil")
 	}
 
 	user.SetUpdatedAt(carbon.Now(carbon.UTC).ToDateTimeString())
 
-	dataChanged := user.DataChanged()
-
-	delete(dataChanged, COLUMN_ID) // ID is not updateable
-
-	if len(dataChanged) < 1 {
-		return nil
+	row := map[string]any{
+		COLUMN_STATUS:            user.GetStatus(),
+		COLUMN_FIRST_NAME:        user.GetFirstName(),
+		COLUMN_MIDDLE_NAMES:      user.GetMiddleNames(),
+		COLUMN_LAST_NAME:         user.GetLastName(),
+		COLUMN_BUSINESS_NAME:     user.GetBusinessName(),
+		COLUMN_PHONE:             user.GetPhone(),
+		COLUMN_EMAIL:             user.GetEmail(),
+		COLUMN_PASSWORD:          user.GetPassword(),
+		COLUMN_ROLE:              user.GetRole(),
+		COLUMN_COUNTRY:           user.GetCountry(),
+		COLUMN_TIMEZONE:          user.GetTimezone(),
+		COLUMN_PROFILE_IMAGE_URL: user.GetProfileImageUrl(),
+		COLUMN_METAS:             user.Get(COLUMN_METAS),
+		COLUMN_MEMO:              user.GetMemo(),
+		COLUMN_UPDATED_AT:        user.GetUpdatedAtCarbon().StdTime(),
 	}
 
-	sqlStr, params, errSql := goqu.Dialect(store.dbDriverName).
-		Update(store.userTableName).
-		Prepared(true).
-		Set(dataChanged).
-		Where(goqu.C(COLUMN_ID).Eq(user.GetID())).
-		ToSQL()
-
-	if errSql != nil {
-		return errSql
-	}
-
-	if store.debugEnabled {
-		log.Println(sqlStr)
-	}
-
-	if store.db == nil {
-		return errors.New("userstore: database is nil")
-	}
-
-	_, err := database.Execute(store.toQuerableContext(ctx), sqlStr, params...)
-
-	user.MarkAsNotDirty()
+	_, err := store.db.Query().
+		Table(store.userTableName).
+		Where(COLUMN_ID+" = ?", user.GetID()).
+		Update(row)
 
 	return err
 }
 
-func (store *storeImplementation) userSelectQuery(options UserQueryInterface) (selectDataset *goqu.SelectDataset, columns []any, err error) {
+// == QUERY BUILDER ==========================================================
+
+func (store *storeImplementation) buildQuery(options UserQueryInterface) contractsorm.Query {
+	q := store.db.Query()
+
 	if options == nil {
-		return nil, nil, errors.New("user options is nil")
+		return q
 	}
 
-	if err := options.Validate(); err != nil {
-		return nil, nil, err
+	if options.HasID() && options.GetID() != "" {
+		q = q.Where(COLUMN_ID+" = ?", options.GetID())
 	}
 
-	q := goqu.Dialect(store.dbDriverName).From(store.userTableName)
-
-	if options.HasID() {
-		q = q.Where(goqu.C(COLUMN_ID).Eq(options.GetID()))
+	if options.HasIDIn() && len(options.IDIn()) > 0 {
+		q = q.Where(COLUMN_ID+" IN ?", options.IDIn())
 	}
 
-	if options.HasIDIn() {
-		q = q.Where(goqu.C(COLUMN_ID).In(options.IDIn()))
+	if options.HasStatus() && options.Status() != "" {
+		q = q.Where(COLUMN_STATUS+" = ?", options.Status())
 	}
 
-	if options.HasStatus() {
-		q = q.Where(goqu.C(COLUMN_STATUS).Eq(options.Status()))
+	if options.HasStatusIn() && len(options.StatusIn()) > 0 {
+		q = q.Where(COLUMN_STATUS+" IN ?", options.StatusIn())
 	}
 
-	if options.HasStatusIn() {
-		q = q.Where(goqu.C(COLUMN_STATUS).In(options.StatusIn()))
+	if options.HasEmail() && options.Email() != "" {
+		q = q.Where(COLUMN_EMAIL+" = ?", options.Email())
 	}
 
-	if options.HasEmail() {
-		q = q.Where(goqu.C(COLUMN_EMAIL).Eq(options.Email()))
+	if options.HasEmailLike() && options.EmailLike() != "" {
+		q = q.Where(COLUMN_EMAIL+" LIKE ?", `%`+options.EmailLike()+`%`)
 	}
 
-	if options.HasEmailLike() {
-		q = q.Where(goqu.C(COLUMN_EMAIL).Like(`%` + options.EmailLike() + `%`))
+	if options.HasFirstName() && options.FirstName() != "" {
+		q = q.Where(COLUMN_FIRST_NAME+" = ?", options.FirstName())
 	}
 
-	if options.HasFirstName() {
-		q = q.Where(goqu.C(COLUMN_FIRST_NAME).Eq(options.FirstName()))
+	if options.HasFirstNameLike() && options.FirstNameLike() != "" {
+		q = q.Where(COLUMN_FIRST_NAME+" LIKE ?", `%`+options.FirstNameLike()+`%`)
 	}
 
-	if options.HasFirstNameLike() {
-		q = q.Where(goqu.C(COLUMN_FIRST_NAME).Like(`%` + options.FirstNameLike() + `%`))
+	if options.HasLastName() && options.LastName() != "" {
+		q = q.Where(COLUMN_LAST_NAME+" = ?", options.LastName())
 	}
 
-	if options.HasLastName() {
-		q = q.Where(goqu.C(COLUMN_LAST_NAME).Eq(options.LastName()))
+	if options.HasLastNameLike() && options.LastNameLike() != "" {
+		q = q.Where(COLUMN_LAST_NAME+" LIKE ?", `%`+options.LastNameLike()+`%`)
 	}
 
-	if options.HasLastNameLike() {
-		q = q.Where(goqu.C(COLUMN_LAST_NAME).Like(`%` + options.LastNameLike() + `%`))
+	if options.HasMetaLike() && options.MetaLike() != "" {
+		q = q.Where(COLUMN_METAS+" LIKE ?", `%`+options.MetaLike()+`%`)
 	}
 
-	if options.HasMetaLike() {
-		q = q.Where(goqu.C(COLUMN_METAS).Like(`%` + options.MetaLike() + `%`))
+	if options.HasCreatedAtGte() && options.CreatedAtGte() != "" {
+		q = q.Where(COLUMN_CREATED_AT+" >= ?", options.CreatedAtGte())
 	}
 
-	if options.HasCreatedAtGte() && options.HasCreatedAtLte() {
-		q = q.Where(
-			goqu.C(COLUMN_CREATED_AT).Gte(options.CreatedAtGte()),
-			goqu.C(COLUMN_CREATED_AT).Lte(options.CreatedAtLte()),
-		)
-	} else if options.HasCreatedAtGte() {
-		q = q.Where(goqu.C(COLUMN_CREATED_AT).Gte(options.CreatedAtGte()))
-	} else if options.HasCreatedAtLte() {
-		q = q.Where(goqu.C(COLUMN_CREATED_AT).Lte(options.CreatedAtLte()))
+	if options.HasCreatedAtLte() && options.CreatedAtLte() != "" {
+		q = q.Where(COLUMN_CREATED_AT+" <= ?", options.CreatedAtLte())
 	}
 
-	if !options.IsCountOnly() {
-		if options.HasLimit() {
-			q = q.Limit(cast.ToUint(options.Limit()))
-		}
-
-		if options.HasOffset() {
-			q = q.Offset(cast.ToUint(options.Offset()))
-		}
+	if options.HasLimit() && options.Limit() > 0 {
+		q = q.Limit(options.Limit())
 	}
 
-	if options.HasOrderBy() {
-		sort := lo.Ternary(options.HasSortDirection(), options.SortDirection(), sb.DESC)
-		if strings.EqualFold(sort, sb.ASC) {
-			q = q.Order(goqu.I(options.OrderBy()).Asc())
+	if options.HasOffset() && options.Offset() > 0 {
+		q = q.Offset(options.Offset())
+	}
+
+	if options.HasOrderBy() && options.OrderBy() != "" {
+		sort := lo.Ternary(options.HasSortDirection(), options.SortDirection(), "DESC")
+		if strings.EqualFold(sort, "ASC") {
+			q = q.OrderBy(options.OrderBy(), "asc")
 		} else {
-			q = q.Order(goqu.I(options.OrderBy()).Desc())
+			q = q.OrderBy(options.OrderBy(), "desc")
 		}
 	}
 
-	columns = []any{}
-
-	for _, column := range options.Columns() {
-		columns = append(columns, column)
+	if options.HasSoftDeletedIncluded() && options.SoftDeletedIncluded() {
+		q = q.WithSoftDeleted()
+	} else {
+		q = q.Where(COLUMN_SOFT_DELETED_AT+" = ?", carbon.Parse(MAX_DATETIME, carbon.UTC).StdTime())
 	}
 
-	if options.SoftDeletedIncluded() {
-		return q, columns, nil // soft deleted users requested specifically
-	}
-
-	softDeleted := goqu.C(COLUMN_SOFT_DELETED_AT).
-		Gt(carbon.Now(carbon.UTC).ToDateTimeString())
-
-	return q.Where(softDeleted), columns, nil
+	return q
 }

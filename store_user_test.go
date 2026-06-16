@@ -4,9 +4,6 @@ import (
 	"context"
 	"strings"
 	"testing"
-
-	"github.com/dracory/database"
-	"github.com/dracory/sb"
 )
 
 func TestStoreUserCount(t *testing.T) {
@@ -254,12 +251,12 @@ func TestStoreUserFindByEmail(t *testing.T) {
 		t.Fatal("unexpected error:", err)
 	}
 
-	err = store.UserCreate(database.Context(context.Background(), store.GetDB()), user)
+	err = store.UserCreate(context.Background(), user)
 	if err != nil {
 		t.Error("unexpected error:", err)
 	}
 
-	userFound, errFind := store.UserFindByEmail(database.Context(context.Background(), store.GetDB()), user.GetEmail())
+	userFound, errFind := store.UserFindByEmail(context.Background(), user.GetEmail())
 
 	if errFind != nil {
 		t.Fatal("unexpected error:", errFind)
@@ -350,7 +347,7 @@ func TestStoreUserFindByID(t *testing.T) {
 		t.Fatal("unexpected error:", err)
 	}
 
-	ctx := database.Context(context.Background(), store.GetDB())
+	ctx := context.Background()
 	err = store.UserCreate(ctx, user)
 	if err != nil {
 		t.Error("unexpected error:", err)
@@ -509,7 +506,7 @@ func TestStoreUserSoftDelete(t *testing.T) {
 		t.Fatal("unexpected error:", err)
 	}
 
-	if user.GetSoftDeletedAt() == sb.MAX_DATETIME {
+	if user.GetSoftDeletedAt() == MAX_DATETIME {
 		t.Fatal("User MUST be soft deleted")
 	}
 
@@ -536,7 +533,7 @@ func TestStoreUserSoftDelete(t *testing.T) {
 		t.Fatal("User MUST be soft deleted")
 	}
 
-	if strings.Contains(userFindWithDeleted[0].GetSoftDeletedAt(), sb.MAX_DATETIME) {
+	if strings.Contains(userFindWithDeleted[0].GetSoftDeletedAt(), MAX_DATETIME) {
 		t.Fatal("User MUST be soft deleted", user.GetSoftDeletedAt())
 	}
 
@@ -579,7 +576,7 @@ func TestStoreUserSoftDeleteByID(t *testing.T) {
 		t.Fatal("unexpected error:", err)
 	}
 
-	if user.GetSoftDeletedAt() != sb.MAX_DATETIME {
+	if user.GetSoftDeletedAt() != MAX_DATETIME {
 		t.Fatal("User MUST NOT be soft deleted, as it was soft deleted by ID")
 	}
 
@@ -607,7 +604,7 @@ func TestStoreUserSoftDeleteByID(t *testing.T) {
 		t.Fatal("User MUST be soft deleted")
 	}
 
-	if strings.Contains(userFindWithDeleted[0].GetSoftDeletedAt(), sb.MAX_DATETIME) {
+	if strings.Contains(userFindWithDeleted[0].GetSoftDeletedAt(), MAX_DATETIME) {
 		t.Fatal("User MUST be soft deleted", user.GetSoftDeletedAt())
 	}
 

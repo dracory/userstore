@@ -11,8 +11,8 @@ func TestGenerateShortID(t *testing.T) {
 	if id == "" {
 		t.Error("ID should not be empty")
 	}
-	if len(id) > 11 {
-		t.Errorf("ID length should be <= 11, got %d", len(id))
+	if len(id) > 21 {
+		t.Errorf("ID length should be <= 21, got %d", len(id))
 	}
 	if len(id) < 9 {
 		t.Errorf("ID length should be >= 9, got %d", len(id))

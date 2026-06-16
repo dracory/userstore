@@ -2,17 +2,36 @@ package userstore
 
 import (
 	"encoding/json"
+	"time"
 
-	"github.com/dracory/dataobject"
-	"github.com/dracory/sb"
+	"github.com/dracory/neat/database/orm"
+	"github.com/dracory/neat/database/soft_delete"
 	"github.com/dracory/str"
 	"github.com/dromara/carbon/v2"
 )
 
-// == CLASS ===================================================================
+// == TYPE ====================================================================
 
 type userImplementation struct {
-	dataobject.DataObject
+	orm.ShortID
+
+	StatusField          string `db:"status"`
+	FirstNameField       string `db:"first_name"`
+	MiddleNamesField     string `db:"middle_names"`
+	LastNameField        string `db:"last_name"`
+	BusinessNameField    string `db:"business_name"`
+	PhoneField           string `db:"phone"`
+	EmailField           string `db:"email"`
+	PasswordField        string `db:"password"`
+	RoleField            string `db:"role"`
+	CountryField         string `db:"country"`
+	TimezoneField        string `db:"timezone"`
+	ProfileImageUrlField string `db:"profile_image_url"`
+	MetasField           string `db:"metas"`
+	MemoField            string `db:"memo"`
+	CreatedAtField       orm.CreatedAt
+	UpdatedAtField       orm.UpdatedAt
+	soft_delete.SoftDeletesMaxDate
 }
 
 var _ UserInterface = (*userImplementation)(nil)
@@ -21,7 +40,6 @@ var _ UserInterface = (*userImplementation)(nil)
 
 func NewUser() UserInterface {
 	o := &userImplementation{}
-
 	o.SetID(GenerateShortID()).
 		SetStatus(USER_STATUS_UNVERIFIED).
 		SetFirstName("").
@@ -38,7 +56,7 @@ func NewUser() UserInterface {
 		SetMemo("").
 		SetCreatedAt(carbon.Now(carbon.UTC).ToDateTimeString(carbon.UTC)).
 		SetUpdatedAt(carbon.Now(carbon.UTC).ToDateTimeString(carbon.UTC)).
-		SetSoftDeletedAt(sb.MAX_DATETIME)
+		SetSoftDeletedAt(MAX_DATETIME)
 
 	err := o.SetMetas(map[string]string{})
 
@@ -51,7 +69,61 @@ func NewUser() UserInterface {
 
 func NewUserFromExistingData(data map[string]string) UserInterface {
 	o := &userImplementation{}
-	o.Hydrate(data)
+	if v, ok := data[COLUMN_ID]; ok {
+		o.SetID(v)
+	}
+	if v, ok := data[COLUMN_STATUS]; ok {
+		o.SetStatus(v)
+	}
+	if v, ok := data[COLUMN_FIRST_NAME]; ok {
+		o.SetFirstName(v)
+	}
+	if v, ok := data[COLUMN_MIDDLE_NAMES]; ok {
+		o.SetMiddleNames(v)
+	}
+	if v, ok := data[COLUMN_LAST_NAME]; ok {
+		o.SetLastName(v)
+	}
+	if v, ok := data[COLUMN_BUSINESS_NAME]; ok {
+		o.SetBusinessName(v)
+	}
+	if v, ok := data[COLUMN_PHONE]; ok {
+		o.SetPhone(v)
+	}
+	if v, ok := data[COLUMN_EMAIL]; ok {
+		o.SetEmail(v)
+	}
+	if v, ok := data[COLUMN_PASSWORD]; ok {
+		o.SetPassword(v)
+	}
+	if v, ok := data[COLUMN_ROLE]; ok {
+		o.SetRole(v)
+	}
+	if v, ok := data[COLUMN_COUNTRY]; ok {
+		o.SetCountry(v)
+	}
+	if v, ok := data[COLUMN_TIMEZONE]; ok {
+		o.SetTimezone(v)
+	}
+	if v, ok := data[COLUMN_PROFILE_IMAGE_URL]; ok {
+		o.SetProfileImageUrl(v)
+	}
+	if v, ok := data[COLUMN_METAS]; ok {
+		o.SetMetas(map[string]string{})
+		o.UpsertMetas(map[string]string{v: v})
+	}
+	if v, ok := data[COLUMN_MEMO]; ok {
+		o.SetMemo(v)
+	}
+	if v, ok := data[COLUMN_CREATED_AT]; ok {
+		o.SetCreatedAt(v)
+	}
+	if v, ok := data[COLUMN_UPDATED_AT]; ok {
+		o.SetUpdatedAt(v)
+	}
+	if v, ok := data[COLUMN_SOFT_DELETED_AT]; ok {
+		o.SetSoftDeletedAt(v)
+	}
 	return o
 }
 
@@ -66,7 +138,7 @@ func (o *userImplementation) IsActive() bool {
 }
 
 func (o *userImplementation) IsSoftDeleted() bool {
-	return o.GetSoftDeletedAtCarbon().Compare("<", carbon.Now(carbon.UTC))
+	return o.SoftDeletedAt.Before(time.Now().UTC())
 }
 
 func (o *userImplementation) IsInactive() bool {
@@ -103,121 +175,239 @@ func (o *userImplementation) IsRegistrationCompleted() bool {
 	return o.GetFirstName() != "" && o.GetLastName() != ""
 }
 
-// == SETTERS AND GETTERS =====================================================
+// == DATAOBJECT COMPATIBILITY ================================================
 
 // Get returns the value of the specified column.
-// Always prefers to use the existing Get* methods.
-// func (o *userImplementation) GetValue(columnName string) string {
-// 	return o.Get(columnName)
-// }
+func (o *userImplementation) Get(columnName string) string {
+	switch columnName {
+	case COLUMN_ID:
+		return o.GetID()
+	case COLUMN_STATUS:
+		return o.GetStatus()
+	case COLUMN_FIRST_NAME:
+		return o.GetFirstName()
+	case COLUMN_MIDDLE_NAMES:
+		return o.GetMiddleNames()
+	case COLUMN_LAST_NAME:
+		return o.GetLastName()
+	case COLUMN_BUSINESS_NAME:
+		return o.GetBusinessName()
+	case COLUMN_PHONE:
+		return o.GetPhone()
+	case COLUMN_EMAIL:
+		return o.GetEmail()
+	case COLUMN_PASSWORD:
+		return o.GetPassword()
+	case COLUMN_ROLE:
+		return o.GetRole()
+	case COLUMN_COUNTRY:
+		return o.GetCountry()
+	case COLUMN_TIMEZONE:
+		return o.GetTimezone()
+	case COLUMN_PROFILE_IMAGE_URL:
+		return o.GetProfileImageUrl()
+	case COLUMN_METAS:
+		return o.MetasField
+	case COLUMN_MEMO:
+		return o.GetMemo()
+	case COLUMN_CREATED_AT:
+		return o.GetCreatedAt()
+	case COLUMN_UPDATED_AT:
+		return o.GetUpdatedAt()
+	case COLUMN_SOFT_DELETED_AT:
+		return o.GetSoftDeletedAt()
+	}
+	return ""
+}
 
 // Set sets the value of the specified column.
-// Always prefers to use the existing Set* methods.
-// func (o *userImplementation) Set(columnName string, value string) UserInterface {
-// 	o.Set(columnName, value)
-// 	return o
-// }
+func (o *userImplementation) Set(columnName string, value string) {
+	switch columnName {
+	case COLUMN_ID:
+		o.SetID(value)
+	case COLUMN_STATUS:
+		o.SetStatus(value)
+	case COLUMN_FIRST_NAME:
+		o.SetFirstName(value)
+	case COLUMN_MIDDLE_NAMES:
+		o.SetMiddleNames(value)
+	case COLUMN_LAST_NAME:
+		o.SetLastName(value)
+	case COLUMN_BUSINESS_NAME:
+		o.SetBusinessName(value)
+	case COLUMN_PHONE:
+		o.SetPhone(value)
+	case COLUMN_EMAIL:
+		o.SetEmail(value)
+	case COLUMN_PASSWORD:
+		o.SetPassword(value)
+	case COLUMN_ROLE:
+		o.SetRole(value)
+	case COLUMN_COUNTRY:
+		o.SetCountry(value)
+	case COLUMN_TIMEZONE:
+		o.SetTimezone(value)
+	case COLUMN_PROFILE_IMAGE_URL:
+		o.SetProfileImageUrl(value)
+	case COLUMN_METAS:
+		o.MetasField = value
+	case COLUMN_MEMO:
+		o.SetMemo(value)
+	case COLUMN_CREATED_AT:
+		o.SetCreatedAt(value)
+	case COLUMN_UPDATED_AT:
+		o.SetUpdatedAt(value)
+	case COLUMN_SOFT_DELETED_AT:
+		o.SetSoftDeletedAt(value)
+	}
+}
+
+// Data returns all fields as a map.
+func (o *userImplementation) Data() map[string]string {
+	return map[string]string{
+		COLUMN_ID:                o.GetID(),
+		COLUMN_STATUS:            o.GetStatus(),
+		COLUMN_FIRST_NAME:        o.GetFirstName(),
+		COLUMN_MIDDLE_NAMES:      o.GetMiddleNames(),
+		COLUMN_LAST_NAME:         o.GetLastName(),
+		COLUMN_BUSINESS_NAME:     o.GetBusinessName(),
+		COLUMN_PHONE:             o.GetPhone(),
+		COLUMN_EMAIL:             o.GetEmail(),
+		COLUMN_PASSWORD:          o.GetPassword(),
+		COLUMN_ROLE:              o.GetRole(),
+		COLUMN_COUNTRY:           o.GetCountry(),
+		COLUMN_TIMEZONE:          o.GetTimezone(),
+		COLUMN_PROFILE_IMAGE_URL: o.GetProfileImageUrl(),
+		COLUMN_METAS:             o.MetasField,
+		COLUMN_MEMO:              o.GetMemo(),
+		COLUMN_CREATED_AT:        o.GetCreatedAt(),
+		COLUMN_UPDATED_AT:        o.GetUpdatedAt(),
+		COLUMN_SOFT_DELETED_AT:   o.GetSoftDeletedAt(),
+	}
+}
+
+// DataChanged returns all fields as a map (dirty tracking disabled).
+func (o *userImplementation) DataChanged() map[string]string {
+	return o.Data()
+}
+
+// MarkAsNotDirty is a no-op (dirty tracking disabled).
+func (o *userImplementation) MarkAsNotDirty() {}
+
+// == SETTERS AND GETTERS =====================================================
 
 func (o *userImplementation) GetBusinessName() string {
-	return o.Get(COLUMN_BUSINESS_NAME)
+	return o.BusinessNameField
 }
 
 func (o *userImplementation) SetBusinessName(businessName string) UserInterface {
-	o.Set(COLUMN_BUSINESS_NAME, businessName)
+	o.BusinessNameField = businessName
 	return o
 }
 
 func (o *userImplementation) GetCountry() string {
-	return o.Get(COLUMN_COUNTRY)
+	return o.CountryField
 }
 
 func (o *userImplementation) SetCountry(country string) UserInterface {
-	o.Set(COLUMN_COUNTRY, country)
+	o.CountryField = country
 	return o
 }
 
 func (o *userImplementation) GetCreatedAt() string {
-	return o.Get(COLUMN_CREATED_AT)
+	if o.CreatedAtField.CreatedAt.IsZero() {
+		return ""
+	}
+	return carbon.CreateFromStdTime(o.CreatedAtField.CreatedAt).ToDateTimeString()
 }
 
 func (o *userImplementation) GetCreatedAtCarbon() *carbon.Carbon {
-	return carbon.Parse(o.GetCreatedAt(), carbon.UTC)
+	return carbon.CreateFromStdTime(o.CreatedAtField.CreatedAt)
 }
 
 func (o *userImplementation) SetCreatedAt(createdAt string) UserInterface {
-	o.Set(COLUMN_CREATED_AT, createdAt)
+	if createdAt == "" {
+		return o
+	}
+	o.CreatedAtField.CreatedAt = carbon.Parse(createdAt, carbon.UTC).StdTime()
 	return o
 }
 
 func (o *userImplementation) GetSoftDeletedAt() string {
-	return o.Get(COLUMN_SOFT_DELETED_AT)
+	if o.SoftDeletedAt.IsZero() {
+		return ""
+	}
+	return carbon.CreateFromStdTime(o.SoftDeletedAt).ToDateTimeString()
 }
 
 func (o *userImplementation) GetSoftDeletedAtCarbon() *carbon.Carbon {
-	return carbon.Parse(o.GetSoftDeletedAt(), carbon.UTC)
+	return carbon.CreateFromStdTime(o.SoftDeletedAt)
 }
 
 func (o *userImplementation) SetSoftDeletedAt(deletedAt string) UserInterface {
-	o.Set(COLUMN_SOFT_DELETED_AT, deletedAt)
+	if deletedAt == "" {
+		return o
+	}
+	o.SoftDeletedAt = carbon.Parse(deletedAt, carbon.UTC).StdTime()
 	return o
 }
 
 func (o *userImplementation) GetEmail() string {
-	return o.Get(COLUMN_EMAIL)
+	return o.EmailField
 }
 
 func (o *userImplementation) SetEmail(email string) UserInterface {
-	o.Set(COLUMN_EMAIL, email)
+	o.EmailField = email
 	return o
 }
 
 func (o *userImplementation) GetFirstName() string {
-	return o.Get(COLUMN_FIRST_NAME)
+	return o.FirstNameField
 }
 
 func (o *userImplementation) SetFirstName(firstName string) UserInterface {
-	o.Set(COLUMN_FIRST_NAME, firstName)
+	o.FirstNameField = firstName
 	return o
 }
 
 func (o *userImplementation) GetID() string {
-	return o.Get(COLUMN_ID)
+	return o.ShortID.ID
 }
 
 func (o *userImplementation) SetID(id string) UserInterface {
-	o.Set(COLUMN_ID, id)
+	o.ShortID.ID = id
 	return o
 }
 
 func (o *userImplementation) GetLastName() string {
-	return o.Get(COLUMN_LAST_NAME)
+	return o.LastNameField
 }
 
 func (o *userImplementation) SetLastName(lastName string) UserInterface {
-	o.Set(COLUMN_LAST_NAME, lastName)
+	o.LastNameField = lastName
 	return o
 }
 
 func (o *userImplementation) GetMemo() string {
-	return o.Get(COLUMN_MEMO)
+	return o.MemoField
 }
 
 func (o *userImplementation) SetMemo(memo string) UserInterface {
-	o.Set(COLUMN_MEMO, memo)
+	o.MemoField = memo
 	return o
 }
 
 func (o *userImplementation) GetMiddleNames() string {
-	return o.Get(COLUMN_MIDDLE_NAMES)
+	return o.MiddleNamesField
 }
 
 func (o *userImplementation) SetMiddleNames(middleNames string) UserInterface {
-	o.Set(COLUMN_MIDDLE_NAMES, middleNames)
+	o.MiddleNamesField = middleNames
 	return o
 }
 
 func (o *userImplementation) GetMetas() (map[string]string, error) {
-	metasStr := o.Get(COLUMN_METAS)
+	metasStr := o.MetasField
 
 	if metasStr == "" {
 		metasStr = "{}"
@@ -256,7 +446,7 @@ func (o *userImplementation) SetMetas(metas map[string]string) error {
 	if err != nil {
 		return err
 	}
-	o.Set(COLUMN_METAS, string(mapString))
+	o.MetasField = string(mapString)
 	return nil
 }
 
@@ -275,11 +465,11 @@ func (o *userImplementation) UpsertMetas(metas map[string]string) error {
 }
 
 func (o *userImplementation) GetPassword() string {
-	return o.Get(COLUMN_PASSWORD)
+	return o.PasswordField
 }
 
 func (o *userImplementation) PasswordCompare(password string) bool {
-	hash := o.Get(COLUMN_PASSWORD)
+	hash := o.GetPassword()
 	return str.BcryptHashCompare(password, hash)
 }
 
@@ -298,21 +488,21 @@ func (o *userImplementation) SetPasswordAndHash(password string) error {
 
 // SetPassword sets the password as provided, if you want it hashed use SetPasswordAndHash() method
 func (o *userImplementation) SetPassword(password string) UserInterface {
-	o.Set(COLUMN_PASSWORD, password)
+	o.PasswordField = password
 	return o
 }
 
 func (o *userImplementation) GetPhone() string {
-	return o.Get(COLUMN_PHONE)
+	return o.PhoneField
 }
 
 func (o *userImplementation) SetPhone(phone string) UserInterface {
-	o.Set(COLUMN_PHONE, phone)
+	o.PhoneField = phone
 	return o
 }
 
 func (o *userImplementation) GetProfileImageUrl() string {
-	return o.Get(COLUMN_PROFILE_IMAGE_URL)
+	return o.ProfileImageUrlField
 }
 
 func (o *userImplementation) ProfileImageOrDefaultUrl() string {
@@ -325,51 +515,53 @@ func (o *userImplementation) ProfileImageOrDefaultUrl() string {
 	return defaultURL
 }
 
-func (o *userImplementation) SetProfileImageUrl(imageUrl string) UserInterface {
-	o.Set(COLUMN_PROFILE_IMAGE_URL, imageUrl)
+func (o *userImplementation) SetProfileImageUrl(profileImageUrl string) UserInterface {
+	o.ProfileImageUrlField = profileImageUrl
 	return o
 }
 
 func (o *userImplementation) GetRole() string {
-	return o.Get(COLUMN_ROLE)
+	return o.RoleField
 }
 
 func (o *userImplementation) SetRole(role string) UserInterface {
-	o.Set(COLUMN_ROLE, role)
+	o.RoleField = role
 	return o
 }
 
 func (o *userImplementation) GetStatus() string {
-	return o.Get(COLUMN_STATUS)
+	return o.StatusField
 }
 
 func (o *userImplementation) SetStatus(status string) UserInterface {
-	o.Set(COLUMN_STATUS, status)
+	o.StatusField = status
 	return o
 }
 
 func (o *userImplementation) GetTimezone() string {
-	return o.Get(COLUMN_TIMEZONE)
+	return o.TimezoneField
 }
 
 func (o *userImplementation) SetTimezone(timezone string) UserInterface {
-	o.Set(COLUMN_TIMEZONE, timezone)
+	o.TimezoneField = timezone
 	return o
 }
 
 func (o *userImplementation) GetUpdatedAt() string {
-	return o.Get(COLUMN_UPDATED_AT)
+	if o.UpdatedAtField.UpdatedAt.IsZero() {
+		return ""
+	}
+	return carbon.CreateFromStdTime(o.UpdatedAtField.UpdatedAt).ToDateTimeString()
 }
 
 func (o *userImplementation) GetUpdatedAtCarbon() *carbon.Carbon {
-	return carbon.Parse(o.Get(COLUMN_UPDATED_AT), carbon.UTC)
+	return carbon.CreateFromStdTime(o.UpdatedAtField.UpdatedAt)
 }
 
 func (o *userImplementation) SetUpdatedAt(updatedAt string) UserInterface {
-	o.Set(COLUMN_UPDATED_AT, updatedAt)
+	if updatedAt == "" {
+		return o
+	}
+	o.UpdatedAtField.UpdatedAt = carbon.Parse(updatedAt, carbon.UTC).StdTime()
 	return o
-}
-
-func (o *userImplementation) MarkAsNotDirty() {
-	o.DataObject.MarkAsNotDirty()
 }
