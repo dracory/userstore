@@ -54,28 +54,7 @@ func (store *storeImplementation) UserCreate(ctx context.Context, user UserInter
 		user.SetSoftDeletedAt(MAX_DATETIME)
 	}
 
-	row := map[string]any{
-		COLUMN_ID:                user.GetID(),
-		COLUMN_STATUS:            user.GetStatus(),
-		COLUMN_FIRST_NAME:        user.GetFirstName(),
-		COLUMN_MIDDLE_NAMES:      user.GetMiddleNames(),
-		COLUMN_LAST_NAME:         user.GetLastName(),
-		COLUMN_BUSINESS_NAME:     user.GetBusinessName(),
-		COLUMN_PHONE:             user.GetPhone(),
-		COLUMN_EMAIL:             user.GetEmail(),
-		COLUMN_PASSWORD:          user.GetPassword(),
-		COLUMN_ROLE:              user.GetRole(),
-		COLUMN_COUNTRY:           user.GetCountry(),
-		COLUMN_TIMEZONE:          user.GetTimezone(),
-		COLUMN_PROFILE_IMAGE_URL: user.GetProfileImageUrl(),
-		COLUMN_METAS:             user.Get(COLUMN_METAS),
-		COLUMN_MEMO:              user.GetMemo(),
-		COLUMN_CREATED_AT:        user.GetCreatedAtCarbon().StdTime(),
-		COLUMN_UPDATED_AT:        user.GetUpdatedAtCarbon().StdTime(),
-		COLUMN_SOFT_DELETED_AT:   user.GetSoftDeletedAtCarbon().StdTime(),
-	}
-
-	return store.db.Query().Table(store.userTableName).Create(row)
+	return store.db.Query().Table(store.userTableName).Create(user.ToMap())
 }
 
 func (store *storeImplementation) UserDelete(ctx context.Context, user UserInterface) error {
@@ -240,23 +219,10 @@ func (store *storeImplementation) UserUpdate(ctx context.Context, user UserInter
 
 	user.SetUpdatedAt(carbon.Now(carbon.UTC).ToDateTimeString())
 
-	row := map[string]any{
-		COLUMN_STATUS:            user.GetStatus(),
-		COLUMN_FIRST_NAME:        user.GetFirstName(),
-		COLUMN_MIDDLE_NAMES:      user.GetMiddleNames(),
-		COLUMN_LAST_NAME:         user.GetLastName(),
-		COLUMN_BUSINESS_NAME:     user.GetBusinessName(),
-		COLUMN_PHONE:             user.GetPhone(),
-		COLUMN_EMAIL:             user.GetEmail(),
-		COLUMN_PASSWORD:          user.GetPassword(),
-		COLUMN_ROLE:              user.GetRole(),
-		COLUMN_COUNTRY:           user.GetCountry(),
-		COLUMN_TIMEZONE:          user.GetTimezone(),
-		COLUMN_PROFILE_IMAGE_URL: user.GetProfileImageUrl(),
-		COLUMN_METAS:             user.Get(COLUMN_METAS),
-		COLUMN_MEMO:              user.GetMemo(),
-		COLUMN_UPDATED_AT:        user.GetUpdatedAtCarbon().StdTime(),
-	}
+	row := user.ToMap()
+
+	delete(row, COLUMN_ID)
+	delete(row, COLUMN_CREATED_AT)
 
 	_, err := store.db.Query().
 		Table(store.userTableName).

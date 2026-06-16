@@ -48,6 +48,7 @@ type RoleInterface interface {
 	Data() map[string]string
 	DataChanged() map[string]string
 	MarkAsNotDirty()
+	ToMap() map[string]any
 
 	// setters and getters
 
@@ -92,6 +93,7 @@ type UserInterface interface {
 	MarkAsNotDirty()
 	Get(columnName string) string
 	Set(columnName string, value string)
+	ToMap() map[string]any
 
 	// methods
 

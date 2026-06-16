@@ -122,6 +122,21 @@ func (o *roleImplementation) DataChanged() map[string]string {
 // MarkAsNotDirty is a no-op (dirty tracking disabled).
 func (o *roleImplementation) MarkAsNotDirty() {}
 
+// ToMap returns a DB-ready map[string]any of the role.
+func (o *roleImplementation) ToMap() map[string]any {
+	return map[string]any{
+		COLUMN_ID:              o.GetID(),
+		COLUMN_STATUS:          o.GetStatus(),
+		COLUMN_HANDLE:          o.GetHandle(),
+		COLUMN_NAME:            o.GetName(),
+		COLUMN_MEMO:            o.GetMemo(),
+		COLUMN_METAS:           o.MetasField,
+		COLUMN_CREATED_AT:      o.GetCreatedAtCarbon().StdTime(),
+		COLUMN_UPDATED_AT:      o.GetUpdatedAtCarbon().StdTime(),
+		COLUMN_SOFT_DELETED_AT: o.GetSoftDeletedAtCarbon().StdTime(),
+	}
+}
+
 // Get returns the value of the specified column.
 func (o *roleImplementation) Get(columnName string) string {
 	switch columnName {

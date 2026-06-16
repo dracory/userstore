@@ -9,7 +9,8 @@ import (
 	"github.com/dracory/form"
 	"github.com/dracory/hb"
 	"github.com/dracory/req"
-	"github.com/dracory/sb"
+
+	// "github.com/dracory/sb"
 	"github.com/dracory/userstore"
 	"github.com/dracory/userstore/admin/shared"
 	"github.com/samber/lo"
@@ -506,7 +507,7 @@ func (controller *userManagerController) prepareData(config shared.Config) (data
 	data.page = req.GetStringTrimmedOr(config.Request, "page", "0")
 	data.pageInt = cast.ToInt(data.page)
 	data.perPage = cast.ToInt(req.GetStringTrimmedOr(config.Request, "per_page", "10"))
-	data.sortOrder = req.GetStringTrimmedOr(config.Request, "sort_order", sb.DESC)
+	data.sortOrder = req.GetStringTrimmedOr(config.Request, "sort_order", userstore.SORT_ORDER_DESC)
 	data.sortBy = req.GetStringTrimmedOr(config.Request, "by", userstore.COLUMN_CREATED_AT)
 	data.formEmail = req.GetStringTrimmed(config.Request, "email")
 	data.formFirstName = req.GetStringTrimmed(config.Request, "first_name")

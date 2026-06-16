@@ -294,6 +294,30 @@ func (o *userImplementation) DataChanged() map[string]string {
 // MarkAsNotDirty is a no-op (dirty tracking disabled).
 func (o *userImplementation) MarkAsNotDirty() {}
 
+// ToMap returns a DB-ready map[string]any of the user.
+func (o *userImplementation) ToMap() map[string]any {
+	return map[string]any{
+		COLUMN_ID:                o.GetID(),
+		COLUMN_STATUS:            o.GetStatus(),
+		COLUMN_FIRST_NAME:        o.GetFirstName(),
+		COLUMN_MIDDLE_NAMES:      o.GetMiddleNames(),
+		COLUMN_LAST_NAME:         o.GetLastName(),
+		COLUMN_BUSINESS_NAME:     o.GetBusinessName(),
+		COLUMN_PHONE:             o.GetPhone(),
+		COLUMN_EMAIL:             o.GetEmail(),
+		COLUMN_PASSWORD:          o.GetPassword(),
+		COLUMN_ROLE:              o.GetRole(),
+		COLUMN_COUNTRY:           o.GetCountry(),
+		COLUMN_TIMEZONE:          o.GetTimezone(),
+		COLUMN_PROFILE_IMAGE_URL: o.GetProfileImageUrl(),
+		COLUMN_METAS:             o.MetasField,
+		COLUMN_MEMO:              o.GetMemo(),
+		COLUMN_CREATED_AT:        o.GetCreatedAtCarbon().StdTime(),
+		COLUMN_UPDATED_AT:        o.GetUpdatedAtCarbon().StdTime(),
+		COLUMN_SOFT_DELETED_AT:   o.GetSoftDeletedAtCarbon().StdTime(),
+	}
+}
+
 // == SETTERS AND GETTERS =====================================================
 
 func (o *userImplementation) GetBusinessName() string {
