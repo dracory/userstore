@@ -8,7 +8,7 @@ require (
 	github.com/dracory/cdn v1.11.0
 	github.com/dracory/form v0.23.0
 	github.com/dracory/hb v1.88.0
-	github.com/dracory/neat v0.17.0
+	github.com/dracory/neat v0.23.0
 	github.com/dracory/req v0.1.0
 	github.com/dracory/str v0.18.0
 	github.com/dracory/uid v1.9.0

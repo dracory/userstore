@@ -235,7 +235,8 @@ func (store *storeImplementation) UserUpdate(ctx context.Context, user UserInter
 // == QUERY BUILDER ==========================================================
 
 func (store *storeImplementation) buildQuery(options UserQueryInterface) contractsorm.Query {
-	q := store.db.Query()
+	// Use Model() to enable neat's automatic soft delete handling via SoftDeletesMaxDate
+	q := store.db.Query().Model(&userImplementation{})
 
 	if options == nil {
 		return q
@@ -310,10 +311,9 @@ func (store *storeImplementation) buildQuery(options UserQueryInterface) contrac
 		}
 	}
 
+	// Handle soft delete filtering via neat's automatic handling (SoftDeletesMaxDate)
 	if options.HasSoftDeletedIncluded() && options.SoftDeletedIncluded() {
 		q = q.WithSoftDeleted()
-	} else {
-		q = q.Where(COLUMN_SOFT_DELETED_AT+" = ?", carbon.Parse(MAX_DATETIME, carbon.UTC).StdTime())
 	}
 
 	return q
