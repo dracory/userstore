@@ -3,7 +3,6 @@ package admin
 import (
 	"context"
 
-	"github.com/dracory/bs"
 	"github.com/dracory/hb"
 	"github.com/dracory/req"
 	"github.com/dracory/userstore"
@@ -81,23 +80,23 @@ func (controller *userDeleteController) modal(data userDeleteControllerData) hb.
 
 	jsCloseFn := `function closeModal` + modalID + `() {document.getElementById('ModalUserDelete').remove();[...document.getElementsByClassName('` + modalBackdropClass + `')].forEach(el => el.remove());}`
 
-	modal := bs.Modal().
+	modal := hb.Div().Class("modal").
 		ID(modalID).
 		Class("fade show").
 		Style(`display:block;position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);z-index:1051;`).
 		Child(hb.Script(jsCloseFn)).
-		Child(bs.ModalDialog().
-			Child(bs.ModalContent().
+		Child(hb.Div().Class("modal-dialog").
+			Child(hb.Div().Class("modal-content").
 				Child(
-					bs.ModalHeader().
+					hb.Div().Class("modal-header").
 						Child(modalHeading).
 						Child(modalClose)).
 				Child(
-					bs.ModalBody().
+					hb.Div().Class("modal-body").
 						Child(hb.Paragraph().Text("Are you sure you want to delete this user?").Style(`margin-bottom:20px;color:red;`)).
 						Child(hb.Paragraph().Text("This action cannot be undone.")).
 						Child(formGroupUserId)).
-				Child(bs.ModalFooter().
+				Child(hb.Div().Class("modal-footer").
 					Style(`display:flex;justify-content:space-between;`).
 					Child(
 						hb.Button().HTML("Close").

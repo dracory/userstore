@@ -5,7 +5,6 @@ import (
 	"net/http"
 	"strings"
 
-	"github.com/dracory/bs"
 	"github.com/dracory/form"
 	"github.com/dracory/hb"
 	"github.com/dracory/req"
@@ -169,22 +168,22 @@ func (controller *userManagerController) onModalUserFilterShow(data userManagerC
 		},
 	}).Build()
 
-	modal := bs.Modal().
+	modal := hb.Div().Class("modal").
 		ID("ModalMessage").
 		Class("fade show").
 		Style(`display:block;position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);z-index:1051;`).
 		Children([]hb.TagInterface{
-			bs.ModalDialog().Children([]hb.TagInterface{
-				bs.ModalContent().Children([]hb.TagInterface{
-					bs.ModalHeader().Children([]hb.TagInterface{
+			hb.Div().Class("modal-dialog").Children([]hb.TagInterface{
+				hb.Div().Class("modal-content").Children([]hb.TagInterface{
+					hb.Div().Class("modal-header").Children([]hb.TagInterface{
 						title,
 						buttonModalClose,
 					}),
 
-					bs.ModalBody().
+					hb.Div().Class("modal-body").
 						Child(filterForm),
 
-					bs.ModalFooter().
+					hb.Div().Class("modal-footer").
 						Style(`display:flex;justify-content:space-between;`).
 						Child(buttonCancel).
 						Child(buttonOk),
@@ -487,7 +486,7 @@ func (controller *userManagerController) tablePagination(data userManagerControl
 
 	url = lo.Ternary(strings.Contains(url, "?"), url+"&page=", url+"?page=") // page must be last
 
-	pagination := bs.Pagination(bs.PaginationOptions{
+	pagination := shared.Pagination(shared.PaginationOptions{
 		NumberItems:       count,
 		CurrentPageNumber: page,
 		PagesToShow:       5,
@@ -497,7 +496,7 @@ func (controller *userManagerController) tablePagination(data userManagerControl
 
 	return hb.Div().
 		Class(`d-flex justify-content-left mt-5 pagination-primary-soft rounded mb-0`).
-		HTML(pagination)
+		Child(pagination)
 }
 
 func (controller *userManagerController) prepareData(config shared.Config) (data userManagerControllerData, errorMessage string) {

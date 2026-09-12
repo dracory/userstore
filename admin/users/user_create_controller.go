@@ -4,7 +4,6 @@ import (
 	"context"
 	"net/http"
 
-	"github.com/dracory/bs"
 	"github.com/dracory/hb"
 	"github.com/dracory/req"
 	"github.com/dracory/userstore"
@@ -54,20 +53,20 @@ func (controller userCreateController) ToTag(config shared.Config) hb.TagInterfa
 func (controller *userCreateController) modal(data userCreateControllerData) hb.TagInterface {
 	submitUrl := shared.Url(data.config.Request, shared.PathUserCreate, map[string]string{})
 
-	formGroupFirstName := bs.FormGroup().
+	formGroupFirstName := hb.Div().Class("form-group mt-3").
 		Class("mb-3").
-		Child(bs.FormLabel("First name")).
-		Child(bs.FormInput().Name("user_first_name").Value(data.firstName))
+		Child(hb.Div().Class("form-label").HTML("First name")).
+		Child(hb.Input().Class("form-control").Name("user_first_name").Value(data.firstName))
 
-	formGroupLastName := bs.FormGroup().
+	formGroupLastName := hb.Div().Class("form-group mt-3").
 		Class("mb-3").
-		Child(bs.FormLabel("Last name")).
-		Child(bs.FormInput().Name("user_last_name").Value(data.lastName))
+		Child(hb.Div().Class("form-label").HTML("Last name")).
+		Child(hb.Input().Class("form-control").Name("user_last_name").Value(data.lastName))
 
-	formGroupEmail := bs.FormGroup().
+	formGroupEmail := hb.Div().Class("form-group mt-3").
 		Class("mb-3").
-		Child(bs.FormLabel("Email")).
-		Child(bs.FormInput().Name("user_email").Value(data.email))
+		Child(hb.Div().Class("form-label").HTML("Email")).
+		Child(hb.Input().Class("form-control").Name("user_email").Value(data.email))
 
 	modalID := "ModaluserCreate"
 	modalBackdropClass := "ModalBackdrop"
@@ -100,23 +99,23 @@ func (controller *userCreateController) modal(data userCreateControllerData) hb.
 		Data("bs-dismiss", "modal").
 		OnClick(modalCloseScript)
 
-	modal := bs.Modal().
+	modal := hb.Div().Class("modal").
 		ID(modalID).
 		Class("fade show").
 		Style(`display:block;position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);z-index:1051;`).
 		Child(hb.Script(jsCloseFn)).
-		Child(bs.ModalDialog().
-			Child(bs.ModalContent().
+		Child(hb.Div().Class("modal-dialog").
+			Child(hb.Div().Class("modal-content").
 				Child(
-					bs.ModalHeader().
+					hb.Div().Class("modal-header").
 						Child(modalHeading).
 						Child(modalClose)).
 				Child(
-					bs.ModalBody().
+					hb.Div().Class("modal-body").
 						Child(formGroupFirstName).
 						Child(formGroupLastName).
 						Child(formGroupEmail)).
-				Child(bs.ModalFooter().
+				Child(hb.Div().Class("modal-footer").
 					Style(`display:flex;justify-content:space-between;`).
 					Child(buttonCancel).
 					Child(buttonSend)),
