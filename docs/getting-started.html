@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Getting Started - UserStore Documentation</title>
+    <style>
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; line-height: 1.6; color: #333; max-width: 800px; margin: 0 auto; padding: 2rem; }
+        a { color: #3498db; text-decoration: none; }
+        a:hover { text-decoration: underline; }
+        .back-link { display: inline-block; margin-bottom: 2rem; color: #666; }
+        .back-link:hover { color: #3498db; }
+        h1 { color: #2c3e50; border-bottom: 2px solid #eee; padding-bottom: 0.5rem; }
+        h2 { color: #34495e; margin-top: 2rem; border-bottom: 1px solid #eee; padding-bottom: 0.3rem; }
+        h3 { color: #555; margin-top: 1.5rem; }
+        pre { background: #f8f9fa; padding: 1rem; border-radius: 4px; overflow-x: auto; border: 1px solid #e9ecef; }
+        code { background: #f8f9fa; padding: 0.2rem 0.4rem; border-radius: 3px; font-family: "SF Mono", Monaco, Inconsolata, "Fira Code", monospace; font-size: 0.9em; }
+        pre code { background: none; padding: 0; }
+        ul, ol { padding-left: 2rem; }
+        li { margin: 0.3rem 0; }
+        p { margin: 1rem 0; }
+        strong { color: #2c3e50; }
+        table { border-collapse: collapse; width: 100%; margin: 1rem 0; }
+        th, td { border: 1px solid #e9ecef; padding: 0.5rem 0.75rem; text-align: left; font-size: 0.9rem; }
+        th { background: #f8f9fa; color: #2c3e50; }
+        .footer { margin-top: 3rem; padding-top: 1rem; border-top: 1px solid #eee; color: #999; font-size: 0.85rem; text-align: center; }
+    </style>
+</head>
+<body>
+    <a href="index.html" class="back-link">&#8592; Back to Index</a>
+
+    <h1>Getting Started</h1>
+
+    <p>UserStore is a robust user management package for Go. It supports SQLite, MySQL, and PostgreSQL through a standard <code>*sql.DB</code> connection.</p>
+
+    <h2>Installation</h2>
+
+    <pre><code>go get github.com/dracory/userstore</code></pre>
+
+    <h2>Creating the Store</h2>
+
+    <p>Create a store with <code>NewStore</code> and a <code>NewStoreOptions</code> struct:</p>
+
+    <pre><code>userStore, err := userstore.NewStore(userstore.NewStoreOptions{
+    DB:                 databaseInstance, // *sql.DB
+    UserTableName:      "user",
+    RoleTableName:      "role",       // required when RolesEnabled is true
+    UserRoleTableName:  "user_role",  // required when RolesEnabled is true
+    RolesEnabled:       true,
+    GroupTableName:     "groups",     // required when GroupsEnabled is true ("group" is a reserved SQL keyword)
+    UserGroupTableName: "user_group", // required when GroupsEnabled is true
+    GroupsEnabled:      true,
+    AutomigrateEnabled: true,
+    DebugEnabled:       false,
+})
+
+if err != nil {
+    return err
+}</code></pre>
+
+    <h2>Store Options</h2>
+
+    <table>
+        <tr><th>Option</th><th>Type</th><th>Description</th></tr>
+        <tr><td><code>DB</code></td><td><code>*sql.DB</code></td><td>Database connection (required).</td></tr>
+        <tr><td><code>UserTableName</code></td><td><code>string</code></td><td>Name of the user table (required).</td></tr>
+        <tr><td><code>RolesEnabled</code></td><td><code>bool</code></td><td>Enable role and user-role tables.</td></tr>
+        <tr><td><code>RoleTableName</code></td><td><code>string</code></td><td>Required when <code>RolesEnabled</code> is true.</td></tr>
+        <tr><td><code>UserRoleTableName</code></td><td><code>string</code></td><td>Required when <code>RolesEnabled</code> is true.</td></tr>
+        <tr><td><code>GroupsEnabled</code></td><td><code>bool</code></td><td>Enable group and user-group tables.</td></tr>
+        <tr><td><code>GroupTableName</code></td><td><code>string</code></td><td>Required when <code>GroupsEnabled</code> is true. Avoid <code>"group"</code> &mdash; it is a reserved SQL keyword.</td></tr>
+        <tr><td><code>UserGroupTableName</code></td><td><code>string</code></td><td>Required when <code>GroupsEnabled</code> is true.</td></tr>
+        <tr><td><code>AutomigrateEnabled</code></td><td><code>bool</code></td><td>Run <code>MigrateUp</code> automatically on store creation.</td></tr>
+        <tr><td><code>DebugEnabled</code></td><td><code>bool</code></td><td>Enable debug output.</td></tr>
+    </table>
+
+    <h2>API Conventions</h2>
+
+    <p>All entities use the same convention:</p>
+
+    <ul>
+        <li><strong>Getters</strong> use the <code>Get</code> prefix: <code>GetID()</code>, <code>GetName()</code>, <code>GetEmail()</code>, <code>GetStatus()</code>.</li>
+        <li><strong>Setters</strong> use the <code>Set</code> prefix and return the entity for chaining: <code>SetName("John").SetStatus(userstore.USER_STATUS_ACTIVE)</code>.</li>
+        <li>Entities are created with constructors: <code>NewUser()</code>, <code>NewRole()</code>, <code>NewGroup()</code>, <code>NewUserRole()</code>, <code>NewUserGroup()</code>.</li>
+        <li>Queries are created with: <code>NewUserQuery()</code>, <code>NewRoleQuery()</code>, <code>NewGroupQuery()</code>, <code>NewUserRoleQuery()</code>, <code>NewUserGroupQuery()</code>.</li>
+        <li>All store methods take a <code>context.Context</code> as the first argument.</li>
+    </ul>
+
+    <h2>Quick Example</h2>
+
+    <pre><code>user := userstore.NewUser().
+    SetStatus(userstore.USER_STATUS_ACTIVE).
+    SetFirstName("John").
+    SetLastName("Doe").
+    SetEmail("test@test.com")
+
+err := userStore.UserCreate(context.Background(), user)</code></pre>
+
+    <h2>Runnable Examples</h2>
+
+    <p>The <code>examples/</code> directory contains complete runnable programs:</p>
+
+    <ul>
+        <li><code>examples/basic</code> &mdash; creating, finding, updating, and soft deleting users</li>
+        <li><code>examples/roles</code> &mdash; creating roles and assigning them to users</li>
+        <li><code>examples/groups</code> &mdash; creating groups and managing memberships</li>
+    </ul>
+
+    <pre><code>go run ./examples/basic</code></pre>
+
+    <div class="footer">
+        <p>UserStore Documentation</p>
+    </div>
+</body>
+</html>

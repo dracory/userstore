@@ -21,7 +21,7 @@ Supports multiple database storages (SQLite, MySQL, or PostgreSQL)
 
 ## Documentation
 
-View the complete documentation at: https://htmlpreview.github.io/?https://raw.githubusercontent.com/dracory/userstore/main/docs/livewiki-html/index.html
+View the complete documentation at: https://htmlpreview.github.io/?https://raw.githubusercontent.com/dracory/userstore/main/docs/index.html
 
 ## License
 

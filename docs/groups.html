@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Groups - UserStore Documentation</title>
+    <style>
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; line-height: 1.6; color: #333; max-width: 800px; margin: 0 auto; padding: 2rem; }
+        a { color: #3498db; text-decoration: none; }
+        a:hover { text-decoration: underline; }
+        .back-link { display: inline-block; margin-bottom: 2rem; color: #666; }
+        .back-link:hover { color: #3498db; }
+        h1 { color: #2c3e50; border-bottom: 2px solid #eee; padding-bottom: 0.5rem; }
+        h2 { color: #34495e; margin-top: 2rem; border-bottom: 1px solid #eee; padding-bottom: 0.3rem; }
+        h3 { color: #555; margin-top: 1.5rem; }
+        pre { background: #f8f9fa; padding: 1rem; border-radius: 4px; overflow-x: auto; border: 1px solid #e9ecef; }
+        code { background: #f8f9fa; padding: 0.2rem 0.4rem; border-radius: 3px; font-family: "SF Mono", Monaco, Inconsolata, "Fira Code", monospace; font-size: 0.9em; }
+        pre code { background: none; padding: 0; }
+        ul, ol { padding-left: 2rem; }
+        li { margin: 0.3rem 0; }
+        p { margin: 1rem 0; }
+        strong { color: #2c3e50; }
+        .footer { margin-top: 3rem; padding-top: 1rem; border-top: 1px solid #eee; color: #999; font-size: 0.85rem; text-align: center; }
+    </style>
+</head>
+<body>
+    <a href="index.html" class="back-link">&#8592; Back to Index</a>
+
+    <h1>Groups</h1>
+
+    <p>Groups require <code>GroupsEnabled: true</code> in the store options, along with <code>GroupTableName</code> and <code>UserGroupTableName</code>. Use a name like <code>"groups"</code> for the table &mdash; <code>"group"</code> is a reserved SQL keyword.</p>
+
+    <h2>Creating a Group</h2>
+
+    <pre><code>group := userstore.NewGroup().
+    SetName("Staff").
+    SetHandle("staff").
+    SetStatus(userstore.GROUP_STATUS_ACTIVE)
+
+err := userStore.GroupCreate(context.Background(), group)</code></pre>
+
+    <p>Group statuses: <code>GROUP_STATUS_ACTIVE</code>, <code>GROUP_STATUS_INACTIVE</code>, <code>GROUP_STATUS_DELETED</code>. Status helpers: <code>IsActive()</code>, <code>IsInactive()</code>, <code>IsSoftDeleted()</code>.</p>
+
+    <h2>Finding Groups</h2>
+
+    <pre><code>// By ID or handle
+group, err := userStore.GroupFindByID(ctx, groupID)
+group, err := userStore.GroupFindByHandle(ctx, "staff")
+
+// Find by handle or create with the given status
+group, err := userStore.GroupFindByHandleOrCreate(ctx, "staff", userstore.GROUP_STATUS_ACTIVE)
+
+// List with a query
+groups, err := userStore.GroupList(ctx, userstore.NewGroupQuery().
+    SetStatus(userstore.GROUP_STATUS_ACTIVE).
+    SetLimit(10))</code></pre>
+
+    <h2>Adding Users to Groups</h2>
+
+    <p>Memberships are stored in the user-group table via the <code>UserGroupInterface</code> entity:</p>
+
+    <pre><code>userGroup := userstore.NewUserGroup().
+    SetUserID(user.GetID()).
+    SetGroupID(group.GetID())
+
+err := userStore.UserGroupCreate(ctx, userGroup)
+
+// Or find-or-create the membership
+userGroup, err := userStore.UserGroupFindByUserIDAndGroupIDOrCreate(
+    ctx, user.GetID(), group.GetID())</code></pre>
+
+    <h2>Checking Membership</h2>
+
+    <pre><code>// List a user's groups
+groups, err := userStore.UserGroups(ctx, user.GetID())
+
+// Check if a user belongs to one or more groups (all must match)
+isMember, err := userStore.UserHasGroups(ctx, user.GetID(), []string{group.GetID()})</code></pre>
+
+    <h2>Updating and Deleting</h2>
+
+    <pre><code>group.SetName("Team")
+err := userStore.GroupUpdate(ctx, group)
+
+// Soft delete
+err := userStore.GroupSoftDelete(ctx, group)
+err := userStore.GroupSoftDeleteByID(ctx, groupID)
+
+// Hard delete
+err := userStore.GroupDelete(ctx, group)
+err := userStore.GroupDeleteByID(ctx, groupID)
+
+// Remove a membership
+err := userStore.UserGroupDelete(ctx, userGroup)
+err := userStore.UserGroupSoftDelete(ctx, userGroup)</code></pre>
+
+    <h2>Meta Fields</h2>
+
+    <p>Groups support key-value meta fields, same as users: <code>SetMeta</code>, <code>GetMeta</code>, <code>GetMetas</code>, <code>SetMetas</code>.</p>
+
+    <div class="footer">
+        <p>UserStore Documentation</p>
+    </div>
+</body>
+</html>

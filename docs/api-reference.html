@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>API Reference - UserStore Documentation</title>
+    <style>
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; line-height: 1.6; color: #333; max-width: 800px; margin: 0 auto; padding: 2rem; }
+        a { color: #3498db; text-decoration: none; }
+        a:hover { text-decoration: underline; }
+        .back-link { display: inline-block; margin-bottom: 2rem; color: #666; }
+        .back-link:hover { color: #3498db; }
+        h1 { color: #2c3e50; border-bottom: 2px solid #eee; padding-bottom: 0.5rem; }
+        h2 { color: #34495e; margin-top: 2rem; border-bottom: 1px solid #eee; padding-bottom: 0.3rem; }
+        h3 { color: #555; margin-top: 1.5rem; }
+        pre { background: #f8f9fa; padding: 1rem; border-radius: 4px; overflow-x: auto; border: 1px solid #e9ecef; }
+        code { background: #f8f9fa; padding: 0.2rem 0.4rem; border-radius: 3px; font-family: "SF Mono", Monaco, Inconsolata, "Fira Code", monospace; font-size: 0.9em; }
+        pre code { background: none; padding: 0; }
+        ul, ol { padding-left: 2rem; }
+        li { margin: 0.3rem 0; }
+        p { margin: 1rem 0; }
+        strong { color: #2c3e50; }
+        table { border-collapse: collapse; width: 100%; margin: 1rem 0; }
+        th, td { border: 1px solid #e9ecef; padding: 0.5rem 0.75rem; text-align: left; font-size: 0.9rem; }
+        th { background: #f8f9fa; color: #2c3e50; }
+        .footer { margin-top: 3rem; padding-top: 1rem; border-top: 1px solid #eee; color: #999; font-size: 0.85rem; text-align: center; }
+    </style>
+</head>
+<body>
+    <a href="index.html" class="back-link">&#8592; Back to Index</a>
+
+    <h1>API Reference</h1>
+
+    <p>All store methods live on <code>StoreInterface</code> and take <code>context.Context</code> as the first argument.</p>
+
+    <h2>Base Store</h2>
+
+    <table>
+        <tr><th>Method</th><th>Description</th></tr>
+        <tr><td><code>GetUserTableName() / SetUserTableName(name)</code></td><td>User table name.</td></tr>
+        <tr><td><code>GetRoleTableName() / SetRoleTableName(name)</code></td><td>Role table name.</td></tr>
+        <tr><td><code>GetUserRoleTableName() / SetUserRoleTableName(name)</code></td><td>User-role table name.</td></tr>
+        <tr><td><code>GetGroupTableName() / SetGroupTableName(name)</code></td><td>Group table name.</td></tr>
+        <tr><td><code>GetUserGroupTableName() / SetUserGroupTableName(name)</code></td><td>User-group table name.</td></tr>
+        <tr><td><code>MigrateUp(ctx, tx...)</code></td><td>Create tables. Optional <code>*sql.Tx</code>.</td></tr>
+        <tr><td><code>MigrateDown(ctx, tx...)</code></td><td>Drop tables. Optional <code>*sql.Tx</code>.</td></tr>
+        <tr><td><code>EnableDebug(bool)</code></td><td>Toggle debug mode.</td></tr>
+        <tr><td><code>GetDB()</code></td><td>Returns the underlying <code>*sql.DB</code>.</td></tr>
+    </table>
+
+    <h2>Users</h2>
+
+    <table>
+        <tr><th>Method</th><th>Description</th></tr>
+        <tr><td><code>UserCreate(ctx, user)</code></td><td>Create a user.</td></tr>
+        <tr><td><code>UserUpdate(ctx, user)</code></td><td>Update a user.</td></tr>
+        <tr><td><code>UserDelete(ctx, user)</code> / <code>UserDeleteByID(ctx, id)</code></td><td>Hard delete.</td></tr>
+        <tr><td><code>UserSoftDelete(ctx, user)</code> / <code>UserSoftDeleteByID(ctx, id)</code></td><td>Soft delete.</td></tr>
+        <tr><td><code>UserFindByID(ctx, id)</code></td><td>Find by ID.</td></tr>
+        <tr><td><code>UserFindByEmail(ctx, email)</code></td><td>Find by email.</td></tr>
+        <tr><td><code>UserFindByEmailOrCreate(ctx, email, createStatus)</code></td><td>Find by email or create.</td></tr>
+        <tr><td><code>UserList(ctx, query)</code></td><td>List with <code>UserQueryInterface</code>.</td></tr>
+        <tr><td><code>UserCount(ctx, query)</code></td><td>Count with <code>UserQueryInterface</code>.</td></tr>
+    </table>
+
+    <h2>Roles</h2>
+
+    <table>
+        <tr><th>Method</th><th>Description</th></tr>
+        <tr><td><code>RoleCreate(ctx, role)</code></td><td>Create a role.</td></tr>
+        <tr><td><code>RoleUpdate(ctx, role)</code></td><td>Update a role.</td></tr>
+        <tr><td><code>RoleDelete(ctx, role)</code> / <code>RoleDeleteByID(ctx, id)</code></td><td>Hard delete.</td></tr>
+        <tr><td><code>RoleSoftDelete(ctx, role)</code> / <code>RoleSoftDeleteByID(ctx, id)</code></td><td>Soft delete.</td></tr>
+        <tr><td><code>RoleFindByID(ctx, id)</code></td><td>Find by ID.</td></tr>
+        <tr><td><code>RoleFindByHandle(ctx, handle)</code></td><td>Find by handle.</td></tr>
+        <tr><td><code>RoleFindByHandleOrCreate(ctx, handle, createStatus)</code></td><td>Find by handle or create.</td></tr>
+        <tr><td><code>RoleList(ctx, query)</code></td><td>List with <code>RoleQueryInterface</code>.</td></tr>
+        <tr><td><code>RoleCount(ctx, query)</code></td><td>Count with <code>RoleQueryInterface</code>.</td></tr>
+    </table>
+
+    <h2>User Roles</h2>
+
+    <table>
+        <tr><th>Method</th><th>Description</th></tr>
+        <tr><td><code>UserRoleCreate(ctx, userRole)</code></td><td>Assign a role to a user.</td></tr>
+        <tr><td><code>UserRoleUpdate(ctx, userRole)</code></td><td>Update an assignment.</td></tr>
+        <tr><td><code>UserRoleDelete(ctx, userRole)</code> / <code>UserRoleDeleteByID(ctx, id)</code></td><td>Hard delete assignment.</td></tr>
+        <tr><td><code>UserRoleSoftDelete(ctx, userRole)</code> / <code>UserRoleSoftDeleteByID(ctx, id)</code></td><td>Soft delete assignment.</td></tr>
+        <tr><td><code>UserRoleFindByID(ctx, id)</code></td><td>Find assignment by ID.</td></tr>
+        <tr><td><code>UserRoleFindByUserIDAndRoleID(ctx, userID, roleID)</code></td><td>Find assignment by pair.</td></tr>
+        <tr><td><code>UserRoleFindByUserIDAndRoleIDOrCreate(ctx, userID, roleID)</code></td><td>Find or create assignment.</td></tr>
+        <tr><td><code>UserRoleList(ctx, query)</code> / <code>UserRoleCount(ctx, query)</code></td><td>List/count with <code>UserRoleQueryInterface</code>.</td></tr>
+        <tr><td><code>UserRoles(ctx, userID)</code></td><td>All roles assigned to a user.</td></tr>
+        <tr><td><code>UserHasRoles(ctx, userID, roleIDs)</code></td><td>True if the user has all given roles.</td></tr>
+    </table>
+
+    <h2>Groups</h2>
+
+    <table>
+        <tr><th>Method</th><th>Description</th></tr>
+        <tr><td><code>GroupCreate(ctx, group)</code></td><td>Create a group.</td></tr>
+        <tr><td><code>GroupUpdate(ctx, group)</code></td><td>Update a group.</td></tr>
+        <tr><td><code>GroupDelete(ctx, group)</code> / <code>GroupDeleteByID(ctx, id)</code></td><td>Hard delete.</td></tr>
+        <tr><td><code>GroupSoftDelete(ctx, group)</code> / <code>GroupSoftDeleteByID(ctx, id)</code></td><td>Soft delete.</td></tr>
+        <tr><td><code>GroupFindByID(ctx, id)</code></td><td>Find by ID.</td></tr>
+        <tr><td><code>GroupFindByHandle(ctx, handle)</code></td><td>Find by handle.</td></tr>
+        <tr><td><code>GroupFindByHandleOrCreate(ctx, handle, createStatus)</code></td><td>Find by handle or create.</td></tr>
+        <tr><td><code>GroupList(ctx, query)</code></td><td>List with <code>GroupQueryInterface</code>.</td></tr>
+        <tr><td><code>GroupCount(ctx, query)</code></td><td>Count with <code>GroupQueryInterface</code>.</td></tr>
+    </table>
+
+    <h2>User Groups</h2>
+
+    <table>
+        <tr><th>Method</th><th>Description</th></tr>
+        <tr><td><code>UserGroupCreate(ctx, userGroup)</code></td><td>Add a user to a group.</td></tr>
+        <tr><td><code>UserGroupUpdate(ctx, userGroup)</code></td><td>Update a membership.</td></tr>
+        <tr><td><code>UserGroupDelete(ctx, userGroup)</code> / <code>UserGroupDeleteByID(ctx, id)</code></td><td>Hard delete membership.</td></tr>
+        <tr><td><code>UserGroupSoftDelete(ctx, userGroup)</code> / <code>UserGroupSoftDeleteByID(ctx, id)</code></td><td>Soft delete membership.</td></tr>
+        <tr><td><code>UserGroupFindByID(ctx, id)</code></td><td>Find membership by ID.</td></tr>
+        <tr><td><code>UserGroupFindByUserIDAndGroupID(ctx, userID, groupID)</code></td><td>Find membership by pair.</td></tr>
+        <tr><td><code>UserGroupFindByUserIDAndGroupIDOrCreate(ctx, userID, groupID)</code></td><td>Find or create membership.</td></tr>
+        <tr><td><code>UserGroupList(ctx, query)</code> / <code>UserGroupCount(ctx, query)</code></td><td>List/count with <code>UserGroupQueryInterface</code>.</td></tr>
+        <tr><td><code>UserGroups(ctx, userID)</code></td><td>All groups a user belongs to.</td></tr>
+        <tr><td><code>UserHasGroups(ctx, userID, groupIDs)</code></td><td>True if the user belongs to all given groups.</td></tr>
+    </table>
+
+    <h2>Entities</h2>
+
+    <p>All entities implement <code>Data()</code>, <code>DataChanged()</code>, <code>MarkAsNotDirty()</code>, and <code>ToMap()</code>, plus <code>Get</code>/<code>Set</code> accessors for their columns and carbon-based datetime getters (<code>GetCreatedAtCarbon</code>, <code>GetUpdatedAtCarbon</code>, <code>GetSoftDeletedAtCarbon</code>).</p>
+
+    <ul>
+        <li><strong>UserInterface</strong> &mdash; <code>NewUser()</code>, <code>NewUserFromExistingData(data)</code></li>
+        <li><strong>RoleInterface</strong> &mdash; <code>NewRole()</code>, <code>NewRoleFromExistingData(data)</code></li>
+        <li><strong>GroupInterface</strong> &mdash; <code>NewGroup()</code>, <code>NewGroupFromExistingData(data)</code></li>
+        <li><strong>UserRoleInterface</strong> &mdash; <code>NewUserRole()</code>, <code>NewUserRoleFromExistingData(data)</code></li>
+        <li><strong>UserGroupInterface</strong> &mdash; <code>NewUserGroup()</code>, <code>NewUserGroupFromExistingData(data)</code></li>
+    </ul>
+
+    <div class="footer">
+        <p>UserStore Documentation</p>
+    </div>
+</body>
+</html>

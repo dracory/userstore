@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>UserStore Documentation</title>
+    <style>
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; line-height: 1.6; color: #333; max-width: 900px; margin: 0 auto; padding: 2rem; }
+        h1 { color: #2c3e50; border-bottom: 2px solid #eee; padding-bottom: 0.5rem; }
+        .subtitle { color: #666; font-size: 1.1rem; margin-bottom: 2rem; }
+        .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.5rem; margin-top: 2rem; }
+        .card { border: 1px solid #eee; border-radius: 8px; padding: 1.5rem; transition: transform 0.2s, box-shadow 0.2s; text-decoration: none; color: inherit; display: block; }
+        .card:hover { transform: translateY(-5px); box-shadow: 0 10px 20px rgba(0,0,0,0.05); border-color: #3498db; }
+        .card h2 { margin-top: 0; color: #3498db; font-size: 1.25rem; }
+        .card p { margin-bottom: 0; font-size: 0.9rem; color: #666; }
+        .badge { display: inline-block; background: #27ae60; color: white; padding: 0.2rem 0.5rem; border-radius: 4px; font-size: 0.75rem; margin-bottom: 0.5rem; }
+        .badge.core { background: #3498db; }
+        .badge.entities { background: #9b59b6; }
+        .badge.technical { background: #f39c12; }
+        .section-title { color: #7f8c8d; font-size: 0.85rem; text-transform: uppercase; letter-spacing: 1px; margin: 2rem 0 1rem 0; font-weight: 600; }
+        .footer { margin-top: 3rem; padding-top: 1rem; border-top: 1px solid #eee; color: #999; font-size: 0.85rem; text-align: center; }
+        .footer a { color: #3498db; text-decoration: none; }
+    </style>
+</head>
+<body>
+    <h1>UserStore Documentation</h1>
+    <p class="subtitle">A robust user management package for Go with support for SQLite, MySQL, and PostgreSQL</p>
+
+    <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 2rem; border-radius: 8px; margin: 2rem 0;">
+        <h2 style="color: white; margin-top: 0; border-bottom: 1px solid rgba(255,255,255,0.3); padding-bottom: 0.5rem;">Key Features</h2>
+        <p style="margin-bottom: 1rem;"><strong>User, Role, and Group Management.</strong> Complete CRUD for users, roles, and groups, plus user-to-role and user-to-group assignment tables with find-or-create helpers.</p>
+        <p style="margin-bottom: 1rem;"><strong>Fluent API.</strong> Entities and query builders use consistent <code>Get</code>/<code>Set</code> method chaining throughout.</p>
+        <p style="margin-bottom: 0;"><strong>Built-in Essentials.</strong> Password hashing and verification, soft deletes, meta (key-value) storage for custom fields, and per-entity query builders for complex searches.</p>
+    </div>
+
+    <div class="section-title">Getting Started</div>
+    <div class="grid">
+        <a href="getting-started.html" class="card">
+            <span class="badge core">Core</span>
+            <h2>Getting Started</h2>
+            <p>Installation, store setup, table names, automigration, and API conventions.</p>
+        </a>
+        <a href="api-reference.html" class="card">
+            <span class="badge core">Core</span>
+            <h2>API Reference</h2>
+            <p>Complete store interface method reference organized by entity.</p>
+        </a>
+    </div>
+
+    <div class="section-title">Entities</div>
+    <div class="grid">
+        <a href="users.html" class="card">
+            <span class="badge entities">Entities</span>
+            <h2>Users</h2>
+            <p>User entity: statuses, password hashing, meta fields, CRUD, and soft deletes.</p>
+        </a>
+        <a href="roles.html" class="card">
+            <span class="badge entities">Entities</span>
+            <h2>Roles</h2>
+            <p>Role entity and user-role assignments, find-or-create, and UserHasRoles checks.</p>
+        </a>
+        <a href="groups.html" class="card">
+            <span class="badge entities">Entities</span>
+            <h2>Groups</h2>
+            <p>Group entity and user-group memberships, find-or-create, and UserHasGroups checks.</p>
+        </a>
+    </div>
+
+    <div class="section-title">Querying</div>
+    <div class="grid">
+        <a href="queries.html" class="card">
+            <span class="badge technical">Technical</span>
+            <h2>Query Builders</h2>
+            <p>Filtering, sorting, pagination, and soft-deleted inclusion for every entity query.</p>
+        </a>
+    </div>
+
+    <div class="footer">
+        <p>UserStore - <a href="https://github.com/dracory/userstore">GitHub Repository</a></p>
+        <p>Generated HTML documentation</p>
+    </div>
+</body>
+</html>

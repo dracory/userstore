@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Query Builders - UserStore Documentation</title>
+    <style>
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; line-height: 1.6; color: #333; max-width: 800px; margin: 0 auto; padding: 2rem; }
+        a { color: #3498db; text-decoration: none; }
+        a:hover { text-decoration: underline; }
+        .back-link { display: inline-block; margin-bottom: 2rem; color: #666; }
+        .back-link:hover { color: #3498db; }
+        h1 { color: #2c3e50; border-bottom: 2px solid #eee; padding-bottom: 0.5rem; }
+        h2 { color: #34495e; margin-top: 2rem; border-bottom: 1px solid #eee; padding-bottom: 0.3rem; }
+        h3 { color: #555; margin-top: 1.5rem; }
+        pre { background: #f8f9fa; padding: 1rem; border-radius: 4px; overflow-x: auto; border: 1px solid #e9ecef; }
+        code { background: #f8f9fa; padding: 0.2rem 0.4rem; border-radius: 3px; font-family: "SF Mono", Monaco, Inconsolata, "Fira Code", monospace; font-size: 0.9em; }
+        pre code { background: none; padding: 0; }
+        ul, ol { padding-left: 2rem; }
+        li { margin: 0.3rem 0; }
+        p { margin: 1rem 0; }
+        strong { color: #2c3e50; }
+        table { border-collapse: collapse; width: 100%; margin: 1rem 0; }
+        th, td { border: 1px solid #e9ecef; padding: 0.5rem 0.75rem; text-align: left; font-size: 0.9rem; }
+        th { background: #f8f9fa; color: #2c3e50; }
+        .footer { margin-top: 3rem; padding-top: 1rem; border-top: 1px solid #eee; color: #999; font-size: 0.85rem; text-align: center; }
+    </style>
+</head>
+<body>
+    <a href="index.html" class="back-link">&#8592; Back to Index</a>
+
+    <h1>Query Builders</h1>
+
+    <p>Every entity has a dedicated query builder used with the store's <code>List</code> and <code>Count</code> methods. All setters return the query for chaining.</p>
+
+    <h2>Common Options</h2>
+
+    <p>All query builders share these setters:</p>
+
+    <table>
+        <tr><th>Setter</th><th>Description</th></tr>
+        <tr><td><code>SetID(id)</code></td><td>Filter by exact ID.</td></tr>
+        <tr><td><code>SetIDIn(ids)</code></td><td>Filter by a set of IDs.</td></tr>
+        <tr><td><code>SetColumns(columns)</code></td><td>Select specific columns.</td></tr>
+        <tr><td><code>SetCountOnly(bool)</code></td><td>Used with <code>Count</code> methods.</td></tr>
+        <tr><td><code>SetLimit(n)</code> / <code>SetOffset(n)</code></td><td>Pagination.</td></tr>
+        <tr><td><code>SetOrderBy(col)</code> / <code>SetSortDirection(dir)</code></td><td>Sorting; use <code>SORT_ORDER_ASC</code> / <code>SORT_ORDER_DESC</code>.</td></tr>
+        <tr><td><code>SetSoftDeletedIncluded(bool)</code></td><td>Include soft-deleted records (excluded by default).</td></tr>
+    </table>
+
+    <h2>UserQuery</h2>
+
+    <pre><code>users, err := userStore.UserList(ctx, userstore.NewUserQuery().
+    SetStatus(userstore.USER_STATUS_ACTIVE).
+    SetStatusIn([]string{userstore.USER_STATUS_ACTIVE, userstore.USER_STATUS_UNVERIFIED}).
+    SetEmail("test@test.com").
+    SetEmailLike("@example.com").
+    SetFirstNameLike("Jo%").
+    SetLastNameLike("D%").
+    SetMetaLike("theme").
+    SetCreatedAtGte("2025-01-01 00:00:00").
+    SetCreatedAtLte("2025-12-31 23:59:59").
+    SetOrderBy(userstore.COLUMN_CREATED_AT).
+    SetSortDirection(userstore.SORT_ORDER_DESC).
+    SetLimit(10).
+    SetOffset(0))
+
+count, err := userStore.UserCount(ctx, userstore.NewUserQuery().
+    SetStatus(userstore.USER_STATUS_ACTIVE))</code></pre>
+
+    <h2>RoleQuery</h2>
+
+    <pre><code>roles, err := userStore.RoleList(ctx, userstore.NewRoleQuery().
+    SetStatus(userstore.ROLE_STATUS_ACTIVE).
+    SetHandle("admin").
+    SetTitleLike("%admin%").
+    SetParentID(parentID).
+    SetOrderBy(userstore.COLUMN_NAME).
+    SetSortDirection(userstore.SORT_ORDER_ASC).
+    SetLimit(10))</code></pre>
+
+    <h2>GroupQuery</h2>
+
+    <pre><code>groups, err := userStore.GroupList(ctx, userstore.NewGroupQuery().
+    SetStatus(userstore.GROUP_STATUS_ACTIVE).
+    SetHandle("staff").
+    SetTitleLike("%staff%").
+    SetOrderBy(userstore.COLUMN_NAME).
+    SetLimit(10))</code></pre>
+
+    <h2>UserRoleQuery</h2>
+
+    <pre><code>userRoles, err := userStore.UserRoleList(ctx, userstore.NewUserRoleQuery().
+    SetUserID(userID).
+    SetUserIDIn([]string{userID1, userID2}).
+    SetRoleID(roleID).
+    SetRoleIDIn([]string{roleID1, roleID2}).
+    SetLimit(100))</code></pre>
+
+    <h2>UserGroupQuery</h2>
+
+    <pre><code>userGroups, err := userStore.UserGroupList(ctx, userstore.NewUserGroupQuery().
+    SetUserID(userID).
+    SetUserIDIn([]string{userID1, userID2}).
+    SetGroupID(groupID).
+    SetGroupIDIn([]string{groupID1, groupID2}).
+    SetLimit(100))</code></pre>
+
+    <h2>Soft-Deleted Records</h2>
+
+    <p>Soft-deleted records are excluded from list and count results by default. Pass <code>SetSoftDeletedIncluded(true)</code> to include them:</p>
+
+    <pre><code>all, err := userStore.UserList(ctx, userstore.NewUserQuery().
+    SetSoftDeletedIncluded(true))</code></pre>
+
+    <div class="footer">
+        <p>UserStore Documentation</p>
+    </div>
+</body>
+</html>
