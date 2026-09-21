@@ -14,9 +14,12 @@ type storeImplementation struct {
 	userTableName      string
 	roleTableName      string
 	userRoleTableName  string
+	groupTableName     string
+	userGroupTableName string
 	db                 *neat.Database
 	automigrateEnabled bool
 	rolesEnabled       bool
+	groupsEnabled      bool
 	debugEnabled       bool
 }
 
@@ -96,6 +99,41 @@ func (store *storeImplementation) MigrateUp(ctx context.Context, tx ...*sql.Tx) 
 		}
 	}
 
+	if store.groupsEnabled && !store.db.Schema().HasTable(store.groupTableName) {
+		err := store.db.Schema().Create(store.groupTableName, func(table contractsschema.Blueprint) {
+			table.String(COLUMN_ID, 21)
+			table.Primary(COLUMN_ID)
+			table.String(COLUMN_STATUS, 40)
+			table.String(COLUMN_HANDLE, 100)
+			table.String(COLUMN_NAME, 100)
+			table.Text(COLUMN_METAS)
+			table.Text(COLUMN_MEMO)
+			table.DateTime(COLUMN_CREATED_AT)
+			table.DateTime(COLUMN_UPDATED_AT)
+			table.DateTime(COLUMN_SOFT_DELETED_AT)
+		})
+
+		if err != nil {
+			return err
+		}
+	}
+
+	if store.groupsEnabled && !store.db.Schema().HasTable(store.userGroupTableName) {
+		err := store.db.Schema().Create(store.userGroupTableName, func(table contractsschema.Blueprint) {
+			table.String(COLUMN_ID, 21)
+			table.Primary(COLUMN_ID)
+			table.String(COLUMN_USER_ID, 21)
+			table.String(COLUMN_GROUP_ID, 21)
+			table.DateTime(COLUMN_CREATED_AT)
+			table.DateTime(COLUMN_UPDATED_AT)
+			table.DateTime(COLUMN_SOFT_DELETED_AT)
+		})
+
+		if err != nil {
+			return err
+		}
+	}
+
 	return nil
 }
 
@@ -117,6 +155,20 @@ func (store *storeImplementation) MigrateDown(ctx context.Context, tx ...*sql.Tx
 
 	if store.rolesEnabled && store.db.Schema().HasTable(store.userRoleTableName) {
 		err := store.db.Schema().Drop(store.userRoleTableName)
+		if err != nil {
+			return err
+		}
+	}
+
+	if store.groupsEnabled && store.db.Schema().HasTable(store.groupTableName) {
+		err := store.db.Schema().Drop(store.groupTableName)
+		if err != nil {
+			return err
+		}
+	}
+
+	if store.groupsEnabled && store.db.Schema().HasTable(store.userGroupTableName) {
+		err := store.db.Schema().Drop(store.userGroupTableName)
 		if err != nil {
 			return err
 		}
@@ -159,6 +211,26 @@ func (store *storeImplementation) GetUserRoleTableName() string {
 // SetUserRoleTableName sets the user role table name
 func (store *storeImplementation) SetUserRoleTableName(tableName string) {
 	store.userRoleTableName = tableName
+}
+
+// GetGroupTableName returns the group table name
+func (store *storeImplementation) GetGroupTableName() string {
+	return store.groupTableName
+}
+
+// SetGroupTableName sets the group table name
+func (store *storeImplementation) SetGroupTableName(tableName string) {
+	store.groupTableName = tableName
+}
+
+// GetUserGroupTableName returns the user group table name
+func (store *storeImplementation) GetUserGroupTableName() string {
+	return store.userGroupTableName
+}
+
+// SetUserGroupTableName sets the user group table name
+func (store *storeImplementation) SetUserGroupTableName(tableName string) {
+	store.userGroupTableName = tableName
 }
 
 // EnableDebug - enables the debug option

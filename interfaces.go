@@ -13,6 +13,8 @@ type StoreInterface interface {
 	storeUserInterface
 	storeRoleInterface
 	storeUserRoleInterface
+	storeGroupInterface
+	storeUserGroupInterface
 }
 
 // storeBaseInterface defines the base store methods
@@ -31,6 +33,16 @@ type storeBaseInterface interface {
 	GetUserRoleTableName() string
 	// SetUserRoleTableName sets the user role table name
 	SetUserRoleTableName(tableName string)
+
+	// GetGroupTableName returns the group table name
+	GetGroupTableName() string
+	// SetGroupTableName sets the group table name
+	SetGroupTableName(tableName string)
+
+	// GetUserGroupTableName returns the user group table name
+	GetUserGroupTableName() string
+	// SetUserGroupTableName sets the user group table name
+	SetUserGroupTableName(tableName string)
 
 	// MigrateDown drops the user table
 	MigrateDown(ctx context.Context, tx ...*sql.Tx) error
@@ -124,6 +136,62 @@ type storeUserRoleInterface interface {
 	UserRoleSoftDeleteByID(ctx context.Context, id string) error
 	// UserRoleUpdate updates a user role
 	UserRoleUpdate(ctx context.Context, userRole UserRoleInterface) error
+}
+
+// storeGroupInterface defines the group store methods
+type storeGroupInterface interface {
+	// GroupCreate creates a new group
+	GroupCreate(ctx context.Context, group GroupInterface) error
+	// GroupCount returns the number of groups
+	GroupCount(ctx context.Context, options GroupQueryInterface) (int64, error)
+	// GroupDelete deletes a group
+	GroupDelete(ctx context.Context, group GroupInterface) error
+	// GroupDeleteByID deletes a group by ID
+	GroupDeleteByID(ctx context.Context, id string) error
+	// GroupFindByHandle finds a group by handle
+	GroupFindByHandle(ctx context.Context, handle string) (GroupInterface, error)
+	// GroupFindByHandleOrCreate finds a group by handle or creates it
+	GroupFindByHandleOrCreate(ctx context.Context, handle, createStatus string) (GroupInterface, error)
+	// GroupFindByID finds a group by ID
+	GroupFindByID(ctx context.Context, id string) (GroupInterface, error)
+	// GroupList returns a list of groups
+	GroupList(ctx context.Context, query GroupQueryInterface) ([]GroupInterface, error)
+	// GroupSoftDelete soft deletes a group
+	GroupSoftDelete(ctx context.Context, group GroupInterface) error
+	// GroupSoftDeleteByID soft deletes a group by ID
+	GroupSoftDeleteByID(ctx context.Context, id string) error
+	// GroupUpdate updates a group
+	GroupUpdate(ctx context.Context, group GroupInterface) error
+}
+
+// storeUserGroupInterface defines the user group store methods
+type storeUserGroupInterface interface {
+	// UserGroupCreate creates a new user group
+	UserGroupCreate(ctx context.Context, userGroup UserGroupInterface) error
+	// UserGroupCount returns the number of user groups
+	UserGroupCount(ctx context.Context, options UserGroupQueryInterface) (int64, error)
+	// UserGroupDelete deletes a user group
+	UserGroupDelete(ctx context.Context, userGroup UserGroupInterface) error
+	// UserGroupDeleteByID deletes a user group by ID
+	UserGroupDeleteByID(ctx context.Context, id string) error
+	// UserGroupFindByID finds a user group by ID
+	UserGroupFindByID(ctx context.Context, id string) (UserGroupInterface, error)
+	// UserGroupFindByUserIDAndGroupID finds a user group by user ID and group ID
+	UserGroupFindByUserIDAndGroupID(ctx context.Context, userID, groupID string) (UserGroupInterface, error)
+	// UserGroupFindByUserIDAndGroupIDOrCreate finds a user group by user ID and group ID or creates it
+	UserGroupFindByUserIDAndGroupIDOrCreate(ctx context.Context, userID, groupID string) (UserGroupInterface, error)
+	// UserGroupList returns a list of user groups
+	UserGroupList(ctx context.Context, query UserGroupQueryInterface) ([]UserGroupInterface, error)
+	// UserGroups returns the groups a user belongs to
+	UserGroups(ctx context.Context, userID string) ([]GroupInterface, error)
+	// UserHasGroups returns true if the user belongs to all the given groups
+	UserHasGroups(ctx context.Context, userID string, groupIDs []string) (bool, error)
+	// UserGroupSoftDelete soft deletes a user group
+	UserGroupSoftDelete(ctx context.Context, userGroup UserGroupInterface) error
+	// UserGroupSoftDeleteByID soft deletes a user group by ID
+	UserGroupSoftDeleteByID(ctx context.Context, id string) error
+	// UserGroupUpdate updates a user group
+	UserGroupUpdate(ctx context.Context, userGroup UserGroupInterface) error
 }
 
 // RoleInterface defines the interface for a role
@@ -410,4 +478,143 @@ type UserInterface interface {
 	GetUpdatedAtCarbon() *carbon.Carbon
 	// SetUpdatedAt sets the updated at datetime
 	SetUpdatedAt(updatedAt string) UserInterface
+}
+
+// GroupInterface defines the interface for a group
+type GroupInterface interface {
+	// from dataobject
+
+	// Data returns all fields as a map
+	Data() map[string]string
+	// DataChanged returns the changed fields as a map
+	DataChanged() map[string]string
+	// MarkAsNotDirty marks all fields as not changed
+	MarkAsNotDirty()
+	// ToMap returns a DB-ready map of the group
+	ToMap() map[string]any
+
+	// methods
+
+	// IsActive returns true if the group is active
+	IsActive() bool
+	// IsInactive returns true if the group is inactive
+	IsInactive() bool
+	// IsSoftDeleted returns true if the group is soft deleted
+	IsSoftDeleted() bool
+
+	// setters and getters
+
+	// GetCreatedAt returns the created at datetime
+	GetCreatedAt() string
+	// GetCreatedAtCarbon returns the created at datetime as carbon
+	GetCreatedAtCarbon() *carbon.Carbon
+	// SetCreatedAt sets the created at datetime
+	SetCreatedAt(createdAt string) GroupInterface
+
+	// GetHandle returns the handle
+	GetHandle() string
+	// SetHandle sets the handle
+	SetHandle(handle string) GroupInterface
+
+	// GetID returns the ID
+	GetID() string
+	// SetID sets the ID
+	SetID(id string) GroupInterface
+
+	// GetName returns the name
+	GetName() string
+	// SetName sets the name
+	SetName(name string) GroupInterface
+
+	// GetMemo returns the memo
+	GetMemo() string
+	// SetMemo sets the memo
+	SetMemo(memo string) GroupInterface
+
+	// GetMeta returns the value of the meta with the given name
+	GetMeta(name string) string
+	// SetMeta sets the value of the meta with the given name
+	SetMeta(name string, value string) error
+	// GetMetas returns all metas
+	GetMetas() (map[string]string, error)
+	// SetMetas sets all metas, overwriting existing ones
+	SetMetas(metas map[string]string) error
+	// UpsertMetas merges the given metas with the existing ones
+	UpsertMetas(metas map[string]string) error
+
+	// GetStatus returns the status
+	GetStatus() string
+	// SetStatus sets the status
+	SetStatus(status string) GroupInterface
+
+	// GetSoftDeletedAt returns the soft deleted at datetime
+	GetSoftDeletedAt() string
+	// GetSoftDeletedAtCarbon returns the soft deleted at datetime as carbon
+	GetSoftDeletedAtCarbon() *carbon.Carbon
+	// SetSoftDeletedAt sets the soft deleted at datetime
+	SetSoftDeletedAt(softDeletedAt string) GroupInterface
+
+	// GetUpdatedAt returns the updated at datetime
+	GetUpdatedAt() string
+	// GetUpdatedAtCarbon returns the updated at datetime as carbon
+	GetUpdatedAtCarbon() *carbon.Carbon
+	// SetUpdatedAt sets the updated at datetime
+	SetUpdatedAt(updatedAt string) GroupInterface
+}
+
+// UserGroupInterface defines the interface for a user group membership
+type UserGroupInterface interface {
+	// from dataobject
+
+	// Data returns all fields as a map
+	Data() map[string]string
+	// DataChanged returns the changed fields as a map
+	DataChanged() map[string]string
+	// MarkAsNotDirty marks all fields as not changed
+	MarkAsNotDirty()
+	// ToMap returns a DB-ready map of the user group
+	ToMap() map[string]any
+
+	// methods
+
+	// IsSoftDeleted returns true if the user group is soft deleted
+	IsSoftDeleted() bool
+
+	// setters and getters
+
+	// GetCreatedAt returns the created at datetime
+	GetCreatedAt() string
+	// GetCreatedAtCarbon returns the created at datetime as carbon
+	GetCreatedAtCarbon() *carbon.Carbon
+	// SetCreatedAt sets the created at datetime
+	SetCreatedAt(createdAt string) UserGroupInterface
+
+	// GetID returns the ID
+	GetID() string
+	// SetID sets the ID
+	SetID(id string) UserGroupInterface
+
+	// GetUserID returns the user ID
+	GetUserID() string
+	// SetUserID sets the user ID
+	SetUserID(userID string) UserGroupInterface
+
+	// GetGroupID returns the group ID
+	GetGroupID() string
+	// SetGroupID sets the group ID
+	SetGroupID(groupID string) UserGroupInterface
+
+	// GetSoftDeletedAt returns the soft deleted at datetime
+	GetSoftDeletedAt() string
+	// GetSoftDeletedAtCarbon returns the soft deleted at datetime as carbon
+	GetSoftDeletedAtCarbon() *carbon.Carbon
+	// SetSoftDeletedAt sets the soft deleted at datetime
+	SetSoftDeletedAt(softDeletedAt string) UserGroupInterface
+
+	// GetUpdatedAt returns the updated at datetime
+	GetUpdatedAt() string
+	// GetUpdatedAtCarbon returns the updated at datetime as carbon
+	GetUpdatedAtCarbon() *carbon.Carbon
+	// SetUpdatedAt sets the updated at datetime
+	SetUpdatedAt(updatedAt string) UserGroupInterface
 }
