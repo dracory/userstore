@@ -41,6 +41,9 @@ go get github.com/dracory/userstore
 userStore, err = userstore.NewStore(userstore.NewStoreOptions{
 	DB:                 databaseInstance,
     UserTableName:      "user",
+	RoleTableName:      "role",       // required when RolesEnabled is true
+	UserRoleTableName:  "user_role",  // required when RolesEnabled is true
+	RolesEnabled:       true,
 	AutomigrateEnabled: true,
 	DebugEnabled:       false,
 })
@@ -68,7 +71,7 @@ user := userstore.NewUser().
     SetLastName("Doe").
     SetEmail("test@test.com")
 
-err := userStore.UserCreate(user)
+err := userStore.UserCreate(context.Background(), user)
 
 if err != nil {
 	return errors.New("user failed to create")
@@ -91,13 +94,31 @@ status := user.GetStatus()
 role := userstore.NewRole().
     SetName("Administrator").
     SetHandle("admin").
-    SetStatus(userstore.USER_STATUS_ACTIVE)
+    SetStatus(userstore.ROLE_STATUS_ACTIVE)
 
-err := userStore.RoleCreate(role)
+err := userStore.RoleCreate(context.Background(), role)
 
 if err != nil {
 	return errors.New("role failed to create")
 }
+```
+
+### Assigning a Role to a User
+
+```golang
+userRole := userstore.NewUserRole().
+    SetUserID(user.GetID()).
+    SetRoleID(role.GetID())
+
+err := userStore.UserRoleCreate(context.Background(), userRole)
+
+if err != nil {
+	return errors.New("user role failed to create")
+}
+
+// Or find-or-create the assignment
+userRole, err := userStore.UserRoleFindByUserIDAndRoleIDOrCreate(
+    context.Background(), user.GetID(), role.GetID())
 ```
 
 ### Finding Users

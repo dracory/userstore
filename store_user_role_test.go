@@ -300,6 +300,160 @@ func TestStoreUserRoleSoftDeleteByID(t *testing.T) {
 	}
 }
 
+func TestStoreUserHasRole(t *testing.T) {
+	store, err := initStore(":memory:")
+	if err != nil {
+		t.Fatal("unexpected error:", err)
+	}
+	defer func() {
+		if err := store.GetDB().Close(); err != nil {
+			t.Fatal(err)
+		}
+	}()
+
+	role := NewRole().
+		SetStatus(ROLE_STATUS_ACTIVE).
+		SetHandle("administrator").
+		SetName("Administrator")
+
+	err = store.RoleCreate(context.Background(), role)
+	if err != nil {
+		t.Fatal("unexpected error:", err)
+	}
+
+	hasRole, err := store.UserHasRoles(context.Background(), "user_1", []string{role.GetID()})
+	if err != nil {
+		t.Fatal("unexpected error:", err)
+	}
+	if hasRole {
+		t.Fatal("UserHasRoles should return false before assignment")
+	}
+
+	err = store.UserRoleCreate(context.Background(), NewUserRole().
+		SetUserID("user_1").
+		SetRoleID(role.GetID()))
+	if err != nil {
+		t.Fatal("unexpected error:", err)
+	}
+
+	hasRole, err = store.UserHasRoles(context.Background(), "user_1", []string{role.GetID()})
+	if err != nil {
+		t.Fatal("unexpected error:", err)
+	}
+	if !hasRole {
+		t.Fatal("UserHasRoles should return true after assignment")
+	}
+}
+
+func TestStoreUserHasRolesMultiple(t *testing.T) {
+	store, err := initStore(":memory:")
+	if err != nil {
+		t.Fatal("unexpected error:", err)
+	}
+	defer func() {
+		if err := store.GetDB().Close(); err != nil {
+			t.Fatal(err)
+		}
+	}()
+
+	role1 := NewRole().SetStatus(ROLE_STATUS_ACTIVE).SetHandle("admin").SetName("Admin")
+	role2 := NewRole().SetStatus(ROLE_STATUS_ACTIVE).SetHandle("manager").SetName("Manager")
+	role3 := NewRole().SetStatus(ROLE_STATUS_ACTIVE).SetHandle("editor").SetName("Editor")
+
+	for _, role := range []RoleInterface{role1, role2, role3} {
+		err = store.RoleCreate(context.Background(), role)
+		if err != nil {
+			t.Fatal("unexpected error:", err)
+		}
+	}
+
+	err = store.UserRoleCreate(context.Background(), NewUserRole().SetUserID("user_1").SetRoleID(role1.GetID()))
+	if err != nil {
+		t.Fatal("unexpected error:", err)
+	}
+	err = store.UserRoleCreate(context.Background(), NewUserRole().SetUserID("user_1").SetRoleID(role2.GetID()))
+	if err != nil {
+		t.Fatal("unexpected error:", err)
+	}
+
+	// User has both assigned roles
+	hasRoles, err := store.UserHasRoles(context.Background(), "user_1", []string{role1.GetID(), role2.GetID()})
+	if err != nil {
+		t.Fatal("unexpected error:", err)
+	}
+	if !hasRoles {
+		t.Fatal("UserHasRoles should return true for assigned roles")
+	}
+
+	// User does not have all three roles
+	hasRoles, err = store.UserHasRoles(context.Background(), "user_1", []string{role1.GetID(), role2.GetID(), role3.GetID()})
+	if err != nil {
+		t.Fatal("unexpected error:", err)
+	}
+	if hasRoles {
+		t.Fatal("UserHasRoles should return false when a role is missing")
+	}
+}
+
+func TestStoreUserRoles(t *testing.T) {
+	store, err := initStore(":memory:")
+	if err != nil {
+		t.Fatal("unexpected error:", err)
+	}
+	defer func() {
+		if err := store.GetDB().Close(); err != nil {
+			t.Fatal(err)
+		}
+	}()
+
+	role1 := NewRole().SetStatus(ROLE_STATUS_ACTIVE).SetHandle("admin").SetName("Admin")
+	role2 := NewRole().SetStatus(ROLE_STATUS_ACTIVE).SetHandle("manager").SetName("Manager")
+
+	err = store.RoleCreate(context.Background(), role1)
+	if err != nil {
+		t.Fatal("unexpected error:", err)
+	}
+	err = store.RoleCreate(context.Background(), role2)
+	if err != nil {
+		t.Fatal("unexpected error:", err)
+	}
+
+	err = store.UserRoleCreate(context.Background(), NewUserRole().SetUserID("user_1").SetRoleID(role1.GetID()))
+	if err != nil {
+		t.Fatal("unexpected error:", err)
+	}
+	err = store.UserRoleCreate(context.Background(), NewUserRole().SetUserID("user_1").SetRoleID(role2.GetID()))
+	if err != nil {
+		t.Fatal("unexpected error:", err)
+	}
+	err = store.UserRoleCreate(context.Background(), NewUserRole().SetUserID("user_2").SetRoleID(role1.GetID()))
+	if err != nil {
+		t.Fatal("unexpected error:", err)
+	}
+
+	roles, err := store.UserRoles(context.Background(), "user_1")
+	if err != nil {
+		t.Fatal("unexpected error:", err)
+	}
+
+	if len(roles) != 2 {
+		t.Fatalf("Expected 2 roles for user_1, got %d", len(roles))
+	}
+
+	roles, err = store.UserRoles(context.Background(), "user_2")
+	if err != nil {
+		t.Fatal("unexpected error:", err)
+	}
+
+	if len(roles) != 1 {
+		t.Fatalf("Expected 1 role for user_2, got %d", len(roles))
+	}
+
+	if roles[0].GetHandle() != "admin" {
+		t.Fatalf("Expected handle 'admin', got '%s'", roles[0].GetHandle())
+	}
+}
+
 func TestStoreUserRoleUpdate(t *testing.T) {
 	store, err := initStore(":memory:")
 	if err != nil {

@@ -162,6 +162,52 @@ func (store *storeImplementation) UserRoleList(ctx context.Context, query UserRo
 	return list, nil
 }
 
+// UserRoles returns the roles assigned to a user
+func (store *storeImplementation) UserRoles(ctx context.Context, userID string) ([]RoleInterface, error) {
+	if userID == "" {
+		return []RoleInterface{}, errors.New("user id is empty")
+	}
+
+	userRoles, err := store.UserRoleList(ctx, NewUserRoleQuery().SetUserID(userID))
+
+	if err != nil {
+		return []RoleInterface{}, err
+	}
+
+	roleIDs := lo.Map(userRoles, func(userRole UserRoleInterface, _ int) string {
+		return userRole.GetRoleID()
+	})
+
+	if len(roleIDs) == 0 {
+		return []RoleInterface{}, nil
+	}
+
+	return store.RoleList(ctx, NewRoleQuery().SetIDIn(roleIDs))
+}
+
+// UserHasRoles returns true if the user has all the given roles
+func (store *storeImplementation) UserHasRoles(ctx context.Context, userID string, roleIDs []string) (bool, error) {
+	if userID == "" {
+		return false, errors.New("user id is empty")
+	}
+
+	roleIDs = lo.Uniq(roleIDs)
+
+	if len(roleIDs) == 0 {
+		return false, errors.New("role ids are empty")
+	}
+
+	count, err := store.UserRoleCount(ctx, NewUserRoleQuery().
+		SetUserID(userID).
+		SetRoleIDIn(roleIDs))
+
+	if err != nil {
+		return false, err
+	}
+
+	return count == int64(len(roleIDs)), nil
+}
+
 func (store *storeImplementation) UserRoleSoftDelete(ctx context.Context, userRole UserRoleInterface) error {
 	if userRole == nil {
 		return errors.New("user role soft delete > user role is nil")
