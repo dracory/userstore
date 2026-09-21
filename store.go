@@ -13,6 +13,7 @@ import (
 type storeImplementation struct {
 	userTableName      string
 	roleTableName      string
+	userRoleTableName  string
 	db                 *neat.Database
 	automigrateEnabled bool
 	rolesEnabled       bool
@@ -79,6 +80,22 @@ func (store *storeImplementation) MigrateUp(ctx context.Context, tx ...*sql.Tx) 
 		}
 	}
 
+	if store.rolesEnabled && !store.db.Schema().HasTable(store.userRoleTableName) {
+		err := store.db.Schema().Create(store.userRoleTableName, func(table contractsschema.Blueprint) {
+			table.String(COLUMN_ID, 21)
+			table.Primary(COLUMN_ID)
+			table.String(COLUMN_USER_ID, 21)
+			table.String(COLUMN_ROLE_ID, 21)
+			table.DateTime(COLUMN_CREATED_AT)
+			table.DateTime(COLUMN_UPDATED_AT)
+			table.DateTime(COLUMN_SOFT_DELETED_AT)
+		})
+
+		if err != nil {
+			return err
+		}
+	}
+
 	return nil
 }
 
@@ -93,6 +110,13 @@ func (store *storeImplementation) MigrateDown(ctx context.Context, tx ...*sql.Tx
 
 	if store.rolesEnabled && store.db.Schema().HasTable(store.roleTableName) {
 		err := store.db.Schema().Drop(store.roleTableName)
+		if err != nil {
+			return err
+		}
+	}
+
+	if store.rolesEnabled && store.db.Schema().HasTable(store.userRoleTableName) {
+		err := store.db.Schema().Drop(store.userRoleTableName)
 		if err != nil {
 			return err
 		}
@@ -125,6 +149,16 @@ func (store *storeImplementation) GetRoleTableName() string {
 // SetRoleTableName sets the role table name
 func (store *storeImplementation) SetRoleTableName(tableName string) {
 	store.roleTableName = tableName
+}
+
+// GetUserRoleTableName returns the user role table name
+func (store *storeImplementation) GetUserRoleTableName() string {
+	return store.userRoleTableName
+}
+
+// SetUserRoleTableName sets the user role table name
+func (store *storeImplementation) SetUserRoleTableName(tableName string) {
+	store.userRoleTableName = tableName
 }
 
 // EnableDebug - enables the debug option

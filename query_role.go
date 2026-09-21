@@ -2,6 +2,7 @@ package userstore
 
 import "errors"
 
+// RoleQueryInterface defines the interface for role queries
 type RoleQueryInterface interface {
 	// Validate validates the query
 	Validate() error

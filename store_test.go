@@ -38,6 +38,7 @@ func initStore(filepath string) (StoreInterface, error) {
 		DB:                 db,
 		UserTableName:      "user_table",
 		RoleTableName:      "role_table",
+		UserRoleTableName:  "user_role_table",
 		RolesEnabled:       true,
 		AutomigrateEnabled: true,
 	})
