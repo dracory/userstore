@@ -11,7 +11,7 @@ Supports multiple database storages (SQLite, MySQL, or PostgreSQL)
 
 ## Features
 
-- User and Role management
+- User, Role, and Group management
 - Soft delete support
 - Meta data storage for custom fields
 - Password hashing and verification
@@ -44,6 +44,9 @@ userStore, err = userstore.NewStore(userstore.NewStoreOptions{
 	RoleTableName:      "role",       // required when RolesEnabled is true
 	UserRoleTableName:  "user_role",  // required when RolesEnabled is true
 	RolesEnabled:       true,
+	GroupTableName:     "groups",     // required when GroupsEnabled is true ("group" is a reserved SQL keyword)
+	UserGroupTableName: "user_group", // required when GroupsEnabled is true
+	GroupsEnabled:      true,
 	AutomigrateEnabled: true,
 	DebugEnabled:       false,
 })
@@ -119,6 +122,53 @@ if err != nil {
 // Or find-or-create the assignment
 userRole, err := userStore.UserRoleFindByUserIDAndRoleIDOrCreate(
     context.Background(), user.GetID(), role.GetID())
+
+// List a user's roles
+roles, err := userStore.UserRoles(context.Background(), user.GetID())
+
+// Check if a user has one or more roles (all must match)
+hasRoles, err := userStore.UserHasRoles(
+    context.Background(), user.GetID(), []string{role.GetID()})
+```
+
+### Creating a Group
+
+```golang
+group := userstore.NewGroup().
+    SetName("Staff").
+    SetHandle("staff").
+    SetStatus(userstore.GROUP_STATUS_ACTIVE)
+
+err := userStore.GroupCreate(context.Background(), group)
+
+if err != nil {
+	return errors.New("group failed to create")
+}
+```
+
+### Adding a User to a Group
+
+```golang
+userGroup := userstore.NewUserGroup().
+    SetUserID(user.GetID()).
+    SetGroupID(group.GetID())
+
+err := userStore.UserGroupCreate(context.Background(), userGroup)
+
+if err != nil {
+	return errors.New("user group failed to create")
+}
+
+// Or find-or-create the membership
+userGroup, err := userStore.UserGroupFindByUserIDAndGroupIDOrCreate(
+    context.Background(), user.GetID(), group.GetID())
+
+// List a user's groups
+groups, err := userStore.UserGroups(context.Background(), user.GetID())
+
+// Check if a user belongs to one or more groups (all must match)
+isMember, err := userStore.UserHasGroups(
+    context.Background(), user.GetID(), []string{group.GetID()})
 ```
 
 ### Finding Users
@@ -148,4 +198,18 @@ err := userStore.UserUpdate(context.Background(), user)
 
 ```golang
 err := userStore.UserSoftDelete(context.Background(), user)
+```
+
+## Runnable Examples
+
+See the `examples/` directory for complete runnable programs:
+
+- `examples/basic` — creating, finding, updating, and soft deleting users
+- `examples/roles` — creating roles and assigning them to users
+- `examples/groups` — creating groups and managing memberships
+
+Run any of them with:
+
+```
+go run ./examples/basic
 ```
