@@ -1,4 +1,4 @@
-# UserStore <a href="https://gitpod.io/#https://github.com/dracory/userstore" style="float:right:"><img src="https://gitpod.io/button/open-in-gitpod.svg" alt="Open in Gitpod" loading="lazy"></a>
+# UserStore
 
 
 [![Tests Status](https://github.com/dracory/userstore/actions/workflows/tests.yml/badge.svg?branch=main)](https://github.com/dracory/userstore/actions/workflows/tests.yml)
