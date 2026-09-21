@@ -11,8 +11,10 @@ import (
 // NewStoreOptions define the options for creating a new user store
 type NewStoreOptions struct {
 	UserTableName      string
+	RoleTableName      string
 	DB                 *sql.DB
 	AutomigrateEnabled bool
+	RolesEnabled       bool
 	DebugEnabled       bool
 }
 
@@ -26,6 +28,10 @@ func NewStore(opts NewStoreOptions) (StoreInterface, error) {
 		return nil, errors.New("user store: DB is required")
 	}
 
+	if opts.RolesEnabled && opts.RoleTableName == "" {
+		return nil, errors.New("user store: RoleTableName is required when RolesEnabled is true")
+	}
+
 	neatDB, err := neat.NewFromSQLDB(opts.DB)
 	if err != nil {
 		return nil, err
@@ -33,8 +39,10 @@ func NewStore(opts NewStoreOptions) (StoreInterface, error) {
 
 	store := &storeImplementation{
 		userTableName:      opts.UserTableName,
+		roleTableName:      opts.RoleTableName,
 		db:                 neatDB,
 		automigrateEnabled: opts.AutomigrateEnabled,
+		rolesEnabled:       opts.RolesEnabled,
 		debugEnabled:       opts.DebugEnabled,
 	}
 

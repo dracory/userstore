@@ -3,51 +3,93 @@ package userstore
 import "errors"
 
 type RoleQueryInterface interface {
+	// Validate validates the query
 	Validate() error
 
+	// Columns returns the columns to retrurn from the database
 	Columns() []string
+
+	// SetColumns sets the columns to retrurn from the database
 	SetColumns(columns []string) RoleQueryInterface
 
+	// HasCountOnly returns true if the query is for counting only
 	HasCountOnly() bool
+	// IsCountOnly returns true if the query is for counting only
 	IsCountOnly() bool
+	// SetCountOnly sets the query to count only
 	SetCountOnly(countOnly bool) RoleQueryInterface
 
+	// HasHandle returns true if the query has a handle
 	HasHandle() bool
+	// Handle returns the handle
 	Handle() string
+	// SetHandle sets the handle
 	SetHandle(handle string) RoleQueryInterface
 
+	// HasID returns true if the query has an ID
 	HasID() bool
+	// GetID returns the ID
 	GetID() string
+	// SetID sets the ID
 	SetID(id string) RoleQueryInterface
 
+	// HasIDIn returns true if the query has an ID in
+	HasIDIn() bool
+	// IDIn returns the ID in
+	IDIn() []string
+	// SetIDIn sets the ID in
+	SetIDIn(idIn []string) RoleQueryInterface
+
+	// HasLimit returns true if the query has a limit
 	HasLimit() bool
+	// Limit returns the limit
 	Limit() int
+	// SetLimit sets the limit
 	SetLimit(limit int) RoleQueryInterface
 
+	// HasOffset returns true if the query has an offset
 	HasOffset() bool
+	// Offset returns the offset
 	Offset() int
+	// SetOffset sets the offset
 	SetOffset(offset int) RoleQueryInterface
 
+	// HasOrderBy returns true if the query has an order by
 	HasOrderBy() bool
+	// OrderBy returns the order by
 	OrderBy() string
+	// SetOrderBy sets the order by
 	SetOrderBy(orderBy string) RoleQueryInterface
 
+	// HasSortDirection returns true if the query has a sort direction
 	HasSortDirection() bool
+	// SortDirection returns the sort direction
 	SortDirection() string
+	// SetSortDirection sets the sort direction
 	SetSortDirection(sortDirection string) RoleQueryInterface
 
+	// HasSoftDeletedIncluded returns true if the query has soft deleted included
 	HasSoftDeletedIncluded() bool
+	// SoftDeletedIncluded returns the soft deleted included
 	SoftDeletedIncluded() bool
+	// SetSoftDeletedIncluded sets the soft deleted included
 	SetSoftDeletedIncluded(softDeletedIncluded bool) RoleQueryInterface
 
+	// HasStatus returns true if the query has a status
 	HasStatus() bool
+	// Status returns the status
 	Status() string
+	// SetStatus sets the status
 	SetStatus(status string) RoleQueryInterface
 
+	// HasTitleLike returns true if the query has a title like
 	HasTitleLike() bool
+	// TitleLike returns the title like
 	TitleLike() string
+	// SetTitleLike sets the title like
 	SetTitleLike(titleLike string) RoleQueryInterface
 
+	// hasProperty returns true if the query has a property
 	hasProperty(name string) bool
 }
 

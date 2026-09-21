@@ -13,6 +13,11 @@ type StoreInterface interface {
 	// SetUserTableName sets the user table name
 	SetUserTableName(tableName string)
 
+	// GetRoleTableName returns the role table name
+	GetRoleTableName() string
+	// SetRoleTableName sets the role table name
+	SetRoleTableName(tableName string)
+
 	// MigrateDown drops the user table
 	MigrateDown(ctx context.Context, tx ...*sql.Tx) error
 	// MigrateUp creates the user table
@@ -21,14 +26,17 @@ type StoreInterface interface {
 	EnableDebug(debug bool)
 	GetDB() *sql.DB
 
-	// RoleCreate(ctx context.Context, role RoleInterface) error
-	// RoleDelete(ctx context.Context, role RoleInterface) error
-	// RoleDeleteByID(ctx context.Context, id string) error
-	// RoleFindByID(ctx context.Context, id string) (RoleInterface, error)
-	// RoleList(ctx context.Context, query RoleQueryInterface) ([]RoleInterface, error)
-	// RoleSoftDelete(ctx context.Context, role RoleInterface) error
-	// RoleSoftDeleteByID(ctx context.Context, id string) error
-	// RoleUpdate(ctx context.Context, role RoleInterface) error
+	RoleCreate(ctx context.Context, role RoleInterface) error
+	RoleCount(ctx context.Context, options RoleQueryInterface) (int64, error)
+	RoleDelete(ctx context.Context, role RoleInterface) error
+	RoleDeleteByID(ctx context.Context, id string) error
+	RoleFindByHandle(ctx context.Context, handle string) (RoleInterface, error)
+	RoleFindByHandleOrCreate(ctx context.Context, handle, createStatus string) (RoleInterface, error)
+	RoleFindByID(ctx context.Context, id string) (RoleInterface, error)
+	RoleList(ctx context.Context, query RoleQueryInterface) ([]RoleInterface, error)
+	RoleSoftDelete(ctx context.Context, role RoleInterface) error
+	RoleSoftDeleteByID(ctx context.Context, id string) error
+	RoleUpdate(ctx context.Context, role RoleInterface) error
 
 	UserCreate(ctx context.Context, user UserInterface) error
 	UserCount(ctx context.Context, options UserQueryInterface) (int64, error)
@@ -50,6 +58,12 @@ type RoleInterface interface {
 	DataChanged() map[string]string
 	MarkAsNotDirty()
 	ToMap() map[string]any
+
+	// methods
+
+	IsActive() bool
+	IsInactive() bool
+	IsSoftDeleted() bool
 
 	// setters and getters
 

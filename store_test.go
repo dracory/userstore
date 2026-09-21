@@ -37,6 +37,8 @@ func initStore(filepath string) (StoreInterface, error) {
 	store, err := NewStore(NewStoreOptions{
 		DB:                 db,
 		UserTableName:      "user_table",
+		RoleTableName:      "role_table",
+		RolesEnabled:       true,
 		AutomigrateEnabled: true,
 	})
 

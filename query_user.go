@@ -3,87 +3,187 @@ package userstore
 import "errors"
 
 type UserQueryInterface interface {
+	// Validate validates the query
 	Validate() error
 
+	// Columns returns the columns to return from the database
 	Columns() []string
+
+	// SetColumns sets the columns to return from the database
 	SetColumns(columns []string) UserQueryInterface
 
+	// HasCountOnly returns true if the query is for counting only
 	HasCountOnly() bool
+
+	// IsCountOnly returns true if the query is for counting only
 	IsCountOnly() bool
+
+	// SetCountOnly sets the query to count only
 	SetCountOnly(countOnly bool) UserQueryInterface
 
+	// HasCreatedAtGte returns true if the query has a created at greater than or equal to
 	HasCreatedAtGte() bool
+
+	// CreatedAtGte returns the created at greater than or equal to
 	CreatedAtGte() string
+
+	// SetCreatedAtGte sets the created at greater than or equal to
 	SetCreatedAtGte(createdAtGte string) UserQueryInterface
 
+	// HasCreatedAtLte returns true if the query has a created at less than or equal to
 	HasCreatedAtLte() bool
+
+	// CreatedAtLte returns the created at less than or equal to
 	CreatedAtLte() string
+
+	// SetCreatedAtLte sets the created at less than or equal to
 	SetCreatedAtLte(createdAtLte string) UserQueryInterface
 
+	// HasEmail returns true if the query has an email
 	HasEmail() bool
+
+	// Email returns the email
 	Email() string
+
+	// SetEmail sets the email
 	SetEmail(email string) UserQueryInterface
 
+	// HasEmailLike returns true if the query has an email like
 	HasEmailLike() bool
+
+	// EmailLike returns the email like
 	EmailLike() string
+
+	// SetEmailLike sets the email like
 	SetEmailLike(emailLike string) UserQueryInterface
 
+	// HasFirstName returns true if the query has a first name
 	HasFirstName() bool
+
+	// FirstName returns the first name
 	FirstName() string
+
+	// SetFirstName sets the first name
 	SetFirstName(firstName string) UserQueryInterface
 
+	// HasFirstNameLike returns true if the query has a first name like
 	HasFirstNameLike() bool
+
+	// FirstNameLike returns the first name like
 	FirstNameLike() string
+
+	// SetFirstNameLike sets the first name like
 	SetFirstNameLike(firstNameLike string) UserQueryInterface
 
+	// HasLastName returns true if the query has a last name
 	HasLastName() bool
+
+	// LastName returns the last name
 	LastName() string
+
+	// SetLastName sets the last name
 	SetLastName(lastName string) UserQueryInterface
 
+	// HasLastNameLike returns true if the query has a last name like
 	HasLastNameLike() bool
+
+	// LastNameLike returns the last name like
 	LastNameLike() string
+
+	// SetLastNameLike sets the last name like
 	SetLastNameLike(lastNameLike string) UserQueryInterface
 
+	// HasID returns true if the query has an ID
 	HasID() bool
+
+	// GetID returns the ID
 	GetID() string
+
+	// SetID sets the ID
 	SetID(id string) UserQueryInterface
 
+	// HasIDIn returns true if the query has an ID in
 	HasIDIn() bool
+
+	// IDIn returns the ID in
 	IDIn() []string
+
+	// SetIDIn sets the ID in
 	SetIDIn(idIn []string) UserQueryInterface
 
+	// HasMetaLike returns true if the query has a meta like
 	HasMetaLike() bool
+
+	// MetaLike returns the meta like
 	MetaLike() string
+
+	// SetMetaLike sets the meta like
 	SetMetaLike(metaLike string) UserQueryInterface
 
+	// HasLimit returns true if the query has a limit
 	HasLimit() bool
+
+	// Limit returns the limit
 	Limit() int
+
+	// SetLimit sets the limit
 	SetLimit(limit int) UserQueryInterface
 
+	// HasOffset returns true if the query has an offset
 	HasOffset() bool
+
+	// Offset returns the offset
 	Offset() int
+
+	// SetOffset sets the offset
 	SetOffset(offset int) UserQueryInterface
 
+	// HasOrderBy returns true if the query has an order by
 	HasOrderBy() bool
+
+	// OrderBy returns the order by
 	OrderBy() string
+
+	// SetOrderBy sets the order by
 	SetOrderBy(orderBy string) UserQueryInterface
 
+	// HasSortDirection returns true if the query has a sort direction
 	HasSortDirection() bool
+
+	// SortDirection returns the sort direction
 	SortDirection() string
+
+	// SetSortDirection sets the sort direction
 	SetSortDirection(sortDirection string) UserQueryInterface
 
+	// HasSoftDeletedIncluded returns true if the query has soft deleted included
 	HasSoftDeletedIncluded() bool
+
+	// SoftDeletedIncluded returns the soft deleted included
 	SoftDeletedIncluded() bool
+
+	// SetSoftDeletedIncluded sets the soft deleted included
 	SetSoftDeletedIncluded(softDeletedIncluded bool) UserQueryInterface
 
+	// HasStatus returns true if the query has a status
 	HasStatus() bool
+
+	// Status returns the status
 	Status() string
+
+	// SetStatus sets the status
 	SetStatus(status string) UserQueryInterface
 
+	// HasStatusIn returns true if the query has a status in
 	HasStatusIn() bool
+
+	// StatusIn returns the status in
 	StatusIn() []string
+
+	// SetStatusIn sets the status in
 	SetStatusIn(statusIn []string) UserQueryInterface
 
+	// hasProperty returns true if the query has a property
 	hasProperty(name string) bool
 }
 
