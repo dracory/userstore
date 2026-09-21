@@ -6,6 +6,7 @@ import (
 
 	"github.com/dracory/neat/database/orm"
 	"github.com/dracory/neat/database/soft_delete"
+	"github.com/dracory/neat/support/uid"
 	"github.com/dracory/str"
 	"github.com/dromara/carbon/v2"
 )
@@ -40,7 +41,7 @@ var _ UserInterface = (*userImplementation)(nil)
 
 func NewUser() UserInterface {
 	o := &userImplementation{}
-	o.SetID(GenerateShortID()).
+	o.SetID(uid.GenerateShortID()).
 		SetStatus(USER_STATUS_UNVERIFIED).
 		SetFirstName("").
 		SetMiddleNames("").
