@@ -34,7 +34,7 @@ func run() error {
 	store, err := userstore.NewStore(userstore.NewStoreOptions{
 		DB:                 db,
 		UserTableName:      "user",
-		GroupTableName:     "groups", // note: "group" is a reserved SQL keyword
+		GroupTableName:     "group",
 		UserGroupTableName: "user_group",
 		GroupsEnabled:      true, // required to create the group and user_group tables
 		AutomigrateEnabled: true,

@@ -44,7 +44,7 @@ userStore, err = userstore.NewStore(userstore.NewStoreOptions{
 	RoleTableName:      "role",       // required when RolesEnabled is true
 	UserRoleTableName:  "user_role",  // required when RolesEnabled is true
 	RolesEnabled:       true,
-	GroupTableName:     "groups",     // required when GroupsEnabled is true ("group" is a reserved SQL keyword)
+	GroupTableName:     "group",      // required when GroupsEnabled is true
 	UserGroupTableName: "user_group", // required when GroupsEnabled is true
 	GroupsEnabled:      true,
 	AutomigrateEnabled: true,
