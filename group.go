@@ -4,16 +4,17 @@ import (
 	"encoding/json"
 	"time"
 
+	"uuid"
+
 	"github.com/dracory/neat/database/orm"
 	"github.com/dracory/neat/database/soft_delete"
-	"github.com/dracory/neat/support/uid"
 	"github.com/dromara/carbon/v2"
 )
 
 // == TYPE ====================================================================
 
 type groupImplementation struct {
-	orm.ShortID
+	orm.StringID
 
 	StatusField    string `db:"status"`
 	HandleField    string `db:"handle"`
@@ -31,7 +32,7 @@ var _ GroupInterface = (*groupImplementation)(nil)
 
 func NewGroup() GroupInterface {
 	o := (&groupImplementation{}).
-		SetID(uid.GenerateShortID()).
+		SetID(uuid.NewV7().String()).
 		SetStatus(GROUP_STATUS_ACTIVE).
 		SetMemo("").
 		SetCreatedAt(carbon.Now(carbon.UTC).ToDateTimeString(carbon.UTC)).
@@ -165,11 +166,11 @@ func (o *groupImplementation) SetHandle(handle string) GroupInterface {
 }
 
 func (o *groupImplementation) GetID() string {
-	return o.ShortID.ID
+	return o.StringID.ID
 }
 
 func (o *groupImplementation) SetID(id string) GroupInterface {
-	o.ShortID.ID = id
+	o.StringID.ID = id
 	return o
 }
 
