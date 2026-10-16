@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	"time"
 
-	"github.com/google/uuid"
+	"uuid"
 
 	"github.com/dracory/neat/database/orm"
 	"github.com/dracory/neat/database/soft_delete"
@@ -42,7 +42,7 @@ var _ UserInterface = (*userImplementation)(nil)
 
 func NewUser() UserInterface {
 	o := &userImplementation{}
-	o.SetID(uuid.Must(uuid.NewV7()).String()).
+	o.SetID(uuid.NewV7().String()).
 		SetStatus(USER_STATUS_UNVERIFIED).
 		SetFirstName("").
 		SetMiddleNames("").

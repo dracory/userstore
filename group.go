@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	"time"
 
-	"github.com/google/uuid"
+	"uuid"
 
 	"github.com/dracory/neat/database/orm"
 	"github.com/dracory/neat/database/soft_delete"
@@ -32,7 +32,7 @@ var _ GroupInterface = (*groupImplementation)(nil)
 
 func NewGroup() GroupInterface {
 	o := (&groupImplementation{}).
-		SetID(uuid.Must(uuid.NewV7()).String()).
+		SetID(uuid.NewV7().String()).
 		SetStatus(GROUP_STATUS_ACTIVE).
 		SetMemo("").
 		SetCreatedAt(carbon.Now(carbon.UTC).ToDateTimeString(carbon.UTC)).

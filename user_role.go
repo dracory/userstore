@@ -3,7 +3,7 @@ package userstore
 import (
 	"time"
 
-	"github.com/google/uuid"
+	"uuid"
 
 	"github.com/dracory/neat/database/orm"
 	"github.com/dracory/neat/database/soft_delete"
@@ -28,7 +28,7 @@ var _ UserRoleInterface = (*userRoleImplementation)(nil)
 
 func NewUserRole() UserRoleInterface {
 	o := (&userRoleImplementation{}).
-		SetID(uuid.Must(uuid.NewV7()).String()).
+		SetID(uuid.NewV7().String()).
 		SetCreatedAt(carbon.Now(carbon.UTC).ToDateTimeString(carbon.UTC)).
 		SetUpdatedAt(carbon.Now(carbon.UTC).ToDateTimeString(carbon.UTC)).
 		SetSoftDeletedAt(MAX_DATETIME)

@@ -11,7 +11,6 @@ require (
 	github.com/dracory/req v0.1.0
 	github.com/dracory/str v0.19.0
 	github.com/dromara/carbon/v2 v2.6.18
-	github.com/google/uuid v1.6.0
 	github.com/samber/lo v1.53.0
 	github.com/spf13/cast v1.10.0
 	modernc.org/sqlite v1.60.1
@@ -21,6 +20,7 @@ require (
 	github.com/dracory/base v0.42.3 // indirect
 	github.com/dracory/uid v1.13.0 // indirect
 	github.com/dustin/go-humanize v1.1.0 // indirect
+	github.com/google/uuid v1.6.0 // indirect
 	github.com/mattn/go-isatty v0.0.24 // indirect
 	github.com/ncruces/go-strftime v1.1.0 // indirect
 	github.com/remyoudompheng/bigfft v0.0.0-20230129092748-24d4a6f8daec // indirect
