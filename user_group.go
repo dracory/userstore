@@ -3,16 +3,17 @@ package userstore
 import (
 	"time"
 
+	"github.com/google/uuid"
+
 	"github.com/dracory/neat/database/orm"
 	"github.com/dracory/neat/database/soft_delete"
-	"github.com/dracory/neat/support/uid"
 	"github.com/dromara/carbon/v2"
 )
 
 // == TYPE ====================================================================
 
 type userGroupImplementation struct {
-	orm.ShortID
+	orm.StringID
 
 	UserIDField    string `db:"user_id"`
 	GroupIDField   string `db:"group_id"`
@@ -27,7 +28,7 @@ var _ UserGroupInterface = (*userGroupImplementation)(nil)
 
 func NewUserGroup() UserGroupInterface {
 	o := (&userGroupImplementation{}).
-		SetID(uid.GenerateShortID()).
+		SetID(uuid.Must(uuid.NewV7()).String()).
 		SetCreatedAt(carbon.Now(carbon.UTC).ToDateTimeString(carbon.UTC)).
 		SetUpdatedAt(carbon.Now(carbon.UTC).ToDateTimeString(carbon.UTC)).
 		SetSoftDeletedAt(MAX_DATETIME)
@@ -120,11 +121,11 @@ func (o *userGroupImplementation) SetCreatedAt(createdAt string) UserGroupInterf
 }
 
 func (o *userGroupImplementation) GetID() string {
-	return o.ShortID.ID
+	return o.StringID.ID
 }
 
 func (o *userGroupImplementation) SetID(id string) UserGroupInterface {
-	o.ShortID.ID = id
+	o.StringID.ID = id
 	return o
 }
 

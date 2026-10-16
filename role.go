@@ -4,16 +4,17 @@ import (
 	"encoding/json"
 	"time"
 
+	"github.com/google/uuid"
+
 	"github.com/dracory/neat/database/orm"
 	"github.com/dracory/neat/database/soft_delete"
-	"github.com/dracory/neat/support/uid"
 	"github.com/dromara/carbon/v2"
 )
 
 // == TYPE ====================================================================
 
 type roleImplementation struct {
-	orm.ShortID
+	orm.StringID
 
 	StatusField    string `db:"status"`
 	HandleField    string `db:"handle"`
@@ -31,7 +32,7 @@ var _ RoleInterface = (*roleImplementation)(nil)
 
 func NewRole() RoleInterface {
 	o := (&roleImplementation{}).
-		SetID(uid.GenerateShortID()).
+		SetID(uuid.Must(uuid.NewV7()).String()).
 		SetStatus(USER_STATUS_UNVERIFIED).
 		SetMemo("").
 		SetCreatedAt(carbon.Now(carbon.UTC).ToDateTimeString(carbon.UTC)).
@@ -218,11 +219,11 @@ func (o *roleImplementation) SetHandle(handle string) RoleInterface {
 }
 
 func (o *roleImplementation) GetID() string {
-	return o.ShortID.ID
+	return o.StringID.ID
 }
 
 func (o *roleImplementation) SetID(id string) RoleInterface {
-	o.ShortID.ID = id
+	o.StringID.ID = id
 	return o
 }
 

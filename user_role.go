@@ -1,17 +1,19 @@
 package userstore
 
 import (
+	"time"
+
+	"github.com/google/uuid"
+
 	"github.com/dracory/neat/database/orm"
 	"github.com/dracory/neat/database/soft_delete"
-	"github.com/dracory/neat/support/uid"
 	"github.com/dromara/carbon/v2"
-	"time"
 )
 
 // == TYPE ====================================================================
 
 type userRoleImplementation struct {
-	orm.ShortID
+	orm.StringID
 
 	UserIDField    string `db:"user_id"`
 	RoleIDField    string `db:"role_id"`
@@ -26,7 +28,7 @@ var _ UserRoleInterface = (*userRoleImplementation)(nil)
 
 func NewUserRole() UserRoleInterface {
 	o := (&userRoleImplementation{}).
-		SetID(uid.GenerateShortID()).
+		SetID(uuid.Must(uuid.NewV7()).String()).
 		SetCreatedAt(carbon.Now(carbon.UTC).ToDateTimeString(carbon.UTC)).
 		SetUpdatedAt(carbon.Now(carbon.UTC).ToDateTimeString(carbon.UTC)).
 		SetSoftDeletedAt(MAX_DATETIME)
@@ -119,11 +121,11 @@ func (o *userRoleImplementation) SetCreatedAt(createdAt string) UserRoleInterfac
 }
 
 func (o *userRoleImplementation) GetID() string {
-	return o.ShortID.ID
+	return o.StringID.ID
 }
 
 func (o *userRoleImplementation) SetID(id string) UserRoleInterface {
-	o.ShortID.ID = id
+	o.StringID.ID = id
 	return o
 }
 

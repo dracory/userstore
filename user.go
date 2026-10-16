@@ -4,9 +4,10 @@ import (
 	"encoding/json"
 	"time"
 
+	"github.com/google/uuid"
+
 	"github.com/dracory/neat/database/orm"
 	"github.com/dracory/neat/database/soft_delete"
-	"github.com/dracory/neat/support/uid"
 	"github.com/dracory/str"
 	"github.com/dromara/carbon/v2"
 )
@@ -14,7 +15,7 @@ import (
 // == TYPE ====================================================================
 
 type userImplementation struct {
-	orm.ShortID
+	orm.StringID
 
 	StatusField          string `db:"status"`
 	FirstNameField       string `db:"first_name"`
@@ -41,7 +42,7 @@ var _ UserInterface = (*userImplementation)(nil)
 
 func NewUser() UserInterface {
 	o := &userImplementation{}
-	o.SetID(uid.GenerateShortID()).
+	o.SetID(uuid.Must(uuid.NewV7()).String()).
 		SetStatus(USER_STATUS_UNVERIFIED).
 		SetFirstName("").
 		SetMiddleNames("").
@@ -396,11 +397,11 @@ func (o *userImplementation) SetFirstName(firstName string) UserInterface {
 }
 
 func (o *userImplementation) GetID() string {
-	return o.ShortID.ID
+	return o.StringID.ID
 }
 
 func (o *userImplementation) SetID(id string) UserInterface {
-	o.ShortID.ID = id
+	o.StringID.ID = id
 	return o
 }
 
