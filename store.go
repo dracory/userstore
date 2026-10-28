@@ -38,7 +38,7 @@ func (store *storeImplementation) AutoMigrate() error {
 func (store *storeImplementation) MigrateUp(ctx context.Context, tx ...*sql.Tx) error {
 	if !store.db.Schema().HasTable(store.userTableName) {
 		err := store.db.Schema().Create(store.userTableName, func(table contractsschema.Blueprint) {
-			table.String(COLUMN_ID, 21)
+			table.String(COLUMN_ID, 40)
 			table.Primary(COLUMN_ID)
 			table.String(COLUMN_STATUS, 40)
 			table.String(COLUMN_FIRST_NAME, 50)
@@ -66,7 +66,7 @@ func (store *storeImplementation) MigrateUp(ctx context.Context, tx ...*sql.Tx) 
 
 	if store.rolesEnabled && !store.db.Schema().HasTable(store.roleTableName) {
 		err := store.db.Schema().Create(store.roleTableName, func(table contractsschema.Blueprint) {
-			table.String(COLUMN_ID, 21)
+			table.String(COLUMN_ID, 40)
 			table.Primary(COLUMN_ID)
 			table.String(COLUMN_STATUS, 40)
 			table.String(COLUMN_HANDLE, 100)
@@ -85,10 +85,10 @@ func (store *storeImplementation) MigrateUp(ctx context.Context, tx ...*sql.Tx) 
 
 	if store.rolesEnabled && !store.db.Schema().HasTable(store.userRoleTableName) {
 		err := store.db.Schema().Create(store.userRoleTableName, func(table contractsschema.Blueprint) {
-			table.String(COLUMN_ID, 21)
+			table.String(COLUMN_ID, 40)
 			table.Primary(COLUMN_ID)
-			table.String(COLUMN_USER_ID, 21)
-			table.String(COLUMN_ROLE_ID, 21)
+			table.String(COLUMN_USER_ID, 40)
+			table.String(COLUMN_ROLE_ID, 40)
 			table.DateTime(COLUMN_CREATED_AT)
 			table.DateTime(COLUMN_UPDATED_AT)
 			table.DateTime(COLUMN_SOFT_DELETED_AT)
@@ -101,7 +101,7 @@ func (store *storeImplementation) MigrateUp(ctx context.Context, tx ...*sql.Tx) 
 
 	if store.groupsEnabled && !store.db.Schema().HasTable(store.groupTableName) {
 		err := store.db.Schema().Create(store.groupTableName, func(table contractsschema.Blueprint) {
-			table.String(COLUMN_ID, 21)
+			table.String(COLUMN_ID, 40)
 			table.Primary(COLUMN_ID)
 			table.String(COLUMN_STATUS, 40)
 			table.String(COLUMN_HANDLE, 100)
@@ -120,10 +120,10 @@ func (store *storeImplementation) MigrateUp(ctx context.Context, tx ...*sql.Tx) 
 
 	if store.groupsEnabled && !store.db.Schema().HasTable(store.userGroupTableName) {
 		err := store.db.Schema().Create(store.userGroupTableName, func(table contractsschema.Blueprint) {
-			table.String(COLUMN_ID, 21)
+			table.String(COLUMN_ID, 40)
 			table.Primary(COLUMN_ID)
-			table.String(COLUMN_USER_ID, 21)
-			table.String(COLUMN_GROUP_ID, 21)
+			table.String(COLUMN_USER_ID, 40)
+			table.String(COLUMN_GROUP_ID, 40)
 			table.DateTime(COLUMN_CREATED_AT)
 			table.DateTime(COLUMN_UPDATED_AT)
 			table.DateTime(COLUMN_SOFT_DELETED_AT)
